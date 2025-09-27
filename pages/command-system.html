@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>综合运营指挥系统 - 院领导驾驶舱</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        /* 指挥体系特殊样式 */
+        .command-center {
+            padding: 24px;
+        }
+        
+        .command-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-item label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .filter-item select {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #fff;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #0066cc;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0052a3;
+        }
+        
+        .btn-default {
+            background-color: #fff;
+            color: #666;
+            border: 1px solid #d9d9d9;
+        }
+        
+        .btn-default:hover {
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border-top: 4px solid #0078d4;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .dashboard-item {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border-top: 3px solid #0078d4;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .dashboard-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dashboard-item h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        .chart-standard {
+            height: 300px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-normal {
+            background-color: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+        
+        .status-warning {
+            background-color: #fffbe6;
+            color: #fa8c16;
+            border: 1px solid #ffe58f;
+        }
+        
+        .status-danger {
+            background-color: #fff2f0;
+            color: #f5222d;
+            border: 1px solid #ffccc7;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .comparison-table th {
+            background-color: #f0f7ff;
+            font-weight: 600;
+            color: #0066cc;
+        }
+        
+        .comparison-table tr:hover {
+            background-color: #fafafa;
+        }
+        
+        .key-indicators {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .indicator-card {
+            padding: 16px;
+            background-color: #fff;
+            border-radius: 8px;
+            text-align: center;
+            border-top: 3px solid #0078d4;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .indicator-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .indicator-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0066cc;
+            margin-bottom: 4px;
+        }
+        
+        .indicator-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 深色主题适配 */
+        body.dark-theme .section {
+            background-color: #1e1e1e;
+            border-top-color: #0078d4;
+        }
+        
+        body.dark-theme .dashboard-item {
+            background-color: #1e1e1e;
+            border-top-color: #0078d4;
+        }
+        
+        body.dark-theme .indicator-card {
+            background-color: #1e1e1e;
+            border-top-color: #0078d4;
+        }
+        
+        body.dark-theme .section-title,
+        body.dark-theme .dashboard-item h3 {
+            color: #f0f0f0;
+        }
+        
+        body.dark-theme .indicator-value {
+            color: #4096ff;
+        }
+        
+        body.dark-theme .indicator-label {
+            color: #b0b0b0;
+        }
+        
+        body.dark-theme .comparison-table th {
+            background-color: #0d47a1;
+            color: #ffffff;
+        }
+        
+        body.dark-theme .comparison-table tr:hover {
+            background-color: #2a2a2a;
+        }
+        
+        body.dark-theme .comparison-table th,
+        body.dark-theme .comparison-table td {
+            border-bottom-color: #444;
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="content-wrapper responsive-wrapper">
+            <!-- 右侧内容区 -->
+            <main class="command-center">
+                <!-- 页面头部 -->
+                <div class="page-header">
+                    <h2>综合运营指挥系统<span class="english-title">Comprehensive Operation Command System</span></h2>
+                    <div class="breadcrumb">
+                        <a href="./index.html">首页</a> / 
+                        <a href="#">院领导驾驶舱</a> / 
+                        <span>综合运营指挥系统</span>
+                    </div>
+                </div>
+
+                <!-- 筛选控件 -->
+                <div class="filter-controls">
+                    <div class="filter-item">
+                        <label for="time-range">时间范围：</label>
+                        <select id="time-range">
+                            <option value="today">今日</option>
+                            <option value="week">本周</option>
+                            <option value="month" selected>本月</option>
+                            <option value="quarter">本季度</option>
+                            <option value="year">本年</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="department-type">科室类型：</label>
+                        <select id="department-type">
+                            <option value="all" selected>全部科室</option>
+                            <option value="internal">内科</option>
+                            <option value="surgery">外科</option>
+                            <option value="specialty">专科</option>
+                            <option value="medical">医技</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="refresh-btn">刷新数据</button>
+                    <button class="btn btn-default" id="export-btn">导出报告</button>
+                </div>
+
+                <!-- 关键指标卡片 -->
+                <div class="key-indicators">
+                    <div class="indicator-card">
+                        <div class="indicator-value">¥3.2亿</div>
+                        <div class="indicator-label">本月医疗收入</div>
+                    </div>
+                    <div class="indicator-card">
+                        <div class="indicator-value">92.8%</div>
+                        <div class="indicator-label">床位使用率</div>
+                    </div>
+                    <div class="indicator-card">
+                        <div class="indicator-value">85.2%</div>
+                        <div class="indicator-label">手术间使用率</div>
+                    </div>
+                    <div class="indicator-card">
+                        <div class="indicator-value">12</div>
+                        <div class="indicator-label">预警指标数量</div>
+                    </div>
+                </div>
+
+                <!-- 收入实时监控 -->
+                <div class="section">
+                    <h3 class="section-title">收入实时监控</h3>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <h3>科室收入对比分析</h3>
+                            <div id="departmentRevenueChart" class="chart-standard"></div>
+                        </div>
+                        <div class="dashboard-item">
+                            <h3>收入趋势分析</h3>
+                            <div id="revenueTrendChart" class="chart-standard"></div>
+                        </div>
+                    </div>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>科室名称</th>
+                                <th>本月收入</th>
+                                <th>上月收入</th>
+                                <th>同比增长</th>
+                                <th>排名</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>心内科</td>
+                                <td>¥2,580万</td>
+                                <td>¥2,350万</td>
+                                <td>+9.8%</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>骨科</td>
+                                <td>¥2,450万</td>
+                                <td>¥2,280万</td>
+                                <td>+7.5%</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td>神经外科</td>
+                                <td>¥2,120万</td>
+                                <td>¥1,980万</td>
+                                <td>+7.1%</td>
+                                <td>3</td>
+                            </tr>
+                            <tr>
+                                <td>普外科</td>
+                                <td>¥1,980万</td>
+                                <td>¥1,950万</td>
+                                <td>+1.5%</td>
+                                <td>4</td>
+                            </tr>
+                            <tr>
+                                <td>消化内科</td>
+                                <td>¥1,860万</td>
+                                <td>¥1,720万</td>
+                                <td>+8.1%</td>
+                                <td>5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 资源效益实时监控 -->
+                <div class="section">
+                    <h3 class="section-title">资源效益实时监控</h3>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <h3>床位使用状态</h3>
+                            <div id="bedUsageChart" class="chart-standard"></div>
+                        </div>
+                        <div class="dashboard-item">
+                            <h3>手术间使用状态</h3>
+                            <div id="operatingRoomChart" class="chart-standard"></div>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <h3>首台手术开台情况</h3>
+                            <table class="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>手术间</th>
+                                        <th>计划时间</th>
+                                        <th>实际时间</th>
+                                        <th>延迟时间</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>手术间1</td>
+                                        <td>08:30</td>
+                                        <td>08:32</td>
+                                        <td>2分钟</td>
+                                        <td><span class="status-badge status-normal">正常</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>手术间2</td>
+                                        <td>08:30</td>
+                                        <td>08:45</td>
+                                        <td>15分钟</td>
+                                        <td><span class="status-badge status-warning">预警</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>手术间3</td>
+                                        <td>08:30</td>
+                                        <td>09:05</td>
+                                        <td>35分钟</td>
+                                        <td><span class="status-badge status-danger">告警</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>手术间4</td>
+                                        <td>09:00</td>
+                                        <td>09:02</td>
+                                        <td>2分钟</td>
+                                        <td><span class="status-badge status-normal">正常</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>手术间5</td>
+                                        <td>09:30</td>
+                                        <td>09:28</td>
+                                        <td>-2分钟</td>
+                                        <td><span class="status-badge status-normal">正常</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="dashboard-item">
+                            <h3>空床分布情况</h3>
+                            <table class="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>科室</th>
+                                        <th>总床位数</th>
+                                        <th>占用床位数</th>
+                                        <th>空床位数</th>
+                                        <th>使用率</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>心内科</td>
+                                        <td>60</td>
+                                        <td>58</td>
+                                        <td>2</td>
+                                        <td>96.7%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>呼吸内科</td>
+                                        <td>50</td>
+                                        <td>45</td>
+                                        <td>5</td>
+                                        <td>90%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>消化内科</td>
+                                        <td>45</td>
+                                        <td>42</td>
+                                        <td>3</td>
+                                        <td>93.3%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>内分泌科</td>
+                                        <td>40</td>
+                                        <td>32</td>
+                                        <td>8</td>
+                                        <td>80%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>神经内科</td>
+                                        <td>55</td>
+                                        <td>55</td>
+                                        <td>0</td>
+                                        <td>100%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 指标预警实时监控 -->
+                <div class="section">
+                    <h3 class="section-title">指标预警实时监控</h3>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <h3>预警指标分布</h3>
+                            <div id="warningDistributionChart" class="chart-standard"></div>
+                        </div>
+                        <div class="dashboard-item">
+                            <h3>预警趋势分析</h3>
+                            <div id="warningTrendChart" class="chart-standard"></div>
+                        </div>
+                    </div>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>指标名称</th>
+                                <th>当前值</th>
+                                <th>目标值</th>
+                                <th>预警值</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>内科三区床位使用率</td>
+                                <td>102.5%</td>
+                                <td>≤95%</td>
+                                <td>≥100%</td>
+                                <td><span class="status-badge status-danger">告警</span></td>
+                                <td><button class="btn btn-default btn-sm">查看详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>手术间3首台晚开时间</td>
+                                <td>35分钟</td>
+                                <td>≤15分钟</td>
+                                <td>≥30分钟</td>
+                                <td><span class="status-badge status-danger">告警</span></td>
+                                <td><button class="btn btn-default btn-sm">查看详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>急诊科等候人数</td>
+                                <td>52人</td>
+                                <td>≤40人</td>
+                                <td>≥50人</td>
+                                <td><span class="status-badge status-warning">预警</span></td>
+                                <td><button class="btn btn-default btn-sm">查看详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>平均住院日</td>
+                                <td>7.8天</td>
+                                <td>≤8天</td>
+                                <td>≥8.5天</td>
+                                <td><span class="status-badge status-normal">正常</span></td>
+                                <td><button class="btn btn-default btn-sm">查看详情</button></td>
+                            </tr>
+                            <tr>
+                                <td>药占比</td>
+                                <td>38.5%</td>
+                                <td>≤40%</td>
+                                <td>≥42%</td>
+                                <td><span class="status-badge status-normal">正常</span></td>
+                                <td><button class="btn btn-default btn-sm">查看详情</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="./js/common.js"></script>
+    
+    <!-- 定义 showLoading 函数 -->
+    <script>
+        function showLoading() {
+            console.log('显示加载动画...');
+            // 这里应该是显示加载动画的代码
+        }
+        
+        function hideLoading() {
+            console.log('隐藏加载动画...');
+            // 这里应该是隐藏加载动画的代码
+        }
+    </script>
+    
+    <script src="./js/command-system.js?v=20250121"></script>
+
+    <!-- 加载统一导航组件 -->
+    <script src="./js/navigation-loader.js"></script>
+</body>
+</html>

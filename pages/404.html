@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面不存在 - 佛山市南海区中医院数据中心管理平台</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 80vh;
+            text-align: center;
+        }
+        
+        .error-code {
+            font-size: 80px;
+            font-weight: 700;
+            color: #0066cc;
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            font-size: 24px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .error-detail {
+            font-size: 16px;
+            color: #999;
+            margin-bottom: 40px;
+        }
+        
+        .back-button {
+            padding: 12px 32px;
+            background-color: #0066cc;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: #0052a3;
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <div class="main-content">
+        <main class="content">
+            <div class="page-header">
+                <h2>页面不存在<span class="english-title">Page Not Found</span></h2>
+            </div>
+            <div class="error-container">
+                    <div class="error-code">404</div>
+                    <div class="error-message">抱歉，您访问的页面不存在</div>
+                    <div class="error-detail">该页面可能已被删除、移动或暂时不可用</div>
+                    <button class="back-button" onclick="window.location.href='./index.html'">返回首页</button>
+                </div>
+            </main>
+        </div>
+
+    <script src="./js/common.js"></script>
+    <!-- 加载统一导航组件 -->
+    <script src="./js/navigation-loader.js"></script>
+</body>
+</html>

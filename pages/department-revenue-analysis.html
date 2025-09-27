@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科室收入分析 - 佛山市南海区中医院数据中心管理平台</title>
+    <link rel="preload" href="./css/style.css" as="style">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/department-revenue-analysis.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <!-- 右侧内容区 -->
+        <main class="revenue-analysis">
+            <!-- 页面头部 -->
+            <div class="page-header">
+                <h2>科室收入分析<span class="english-title">Department Revenue Analysis</span></h2>
+                <div class="breadcrumb">
+                    <a href="./index.html">首页</a> &gt; 
+                    <a href="#department-analysis">科主任运营分析</a> &gt; 
+                    <span>科室收入分析</span>
+                </div>
+            </div>
+
+            <!-- 收入指标卡片区域 -->
+            <div class="revenue-indicators-section">
+                <h3 class="section-title">收入指标概览</h3>
+                <div class="indicators-grid">
+                    <div class="indicator-card">
+                        <div class="card-header">
+                            <h4>医疗收入</h4>
+                            <span class="icon medical-icon">💊</span>
+                        </div>
+                        <div class="card-content">
+                            <div class="main-value" id="medical-revenue">0</div>
+                            <div class="sub-info">
+                                <span class="trend" id="medical-trend">+0%</span>
+                                <span class="period">较上月</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="indicator-card">
+                        <div class="card-header">
+                            <h4>门急诊收入</h4>
+                            <span class="icon outpatient-icon">🏥</span>
+                        </div>
+                        <div class="card-content">
+                            <div class="main-value" id="outpatient-revenue">0</div>
+                            <div class="sub-info">
+                                <span class="trend" id="outpatient-trend">+0%</span>
+                                <span class="period">较上月</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="indicator-card">
+                        <div class="card-header">
+                            <h4>住院收入</h4>
+                            <span class="icon inpatient-icon">🛏️</span>
+                        </div>
+                        <div class="card-content">
+                            <div class="main-value" id="inpatient-revenue">0</div>
+                            <div class="sub-info">
+                                <span class="trend" id="inpatient-trend">+0%</span>
+                                <span class="period">较上月</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="indicator-card">
+                        <div class="card-header">
+                            <h4>医疗服务收入</h4>
+                            <span class="icon service-icon">⚕️</span>
+                        </div>
+                        <div class="card-content">
+                            <div class="main-value" id="service-revenue">0</div>
+                            <div class="sub-info">
+                                <span class="trend" id="service-trend">+0%</span>
+                                <span class="period">较上月</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 收入趋势分析区域 -->
+            <div class="revenue-trend-section">
+                <h3 class="section-title">收入趋势分析</h3>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="time-selector">
+                            <button class="time-btn active" data-period="month">月度</button>
+                            <button class="time-btn" data-period="quarter">季度</button>
+                            <button class="time-btn" data-period="year">年度</button>
+                        </div>
+                        <div class="analysis-type">
+                            <select id="analysis-type">
+                                <option value="trend">趋势分析</option>
+                                <option value="compare">同比分析</option>
+                                <option value="chain">环比分析</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-content">
+                        <div id="revenue-trend-chart" class="chart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 科室收入对比排名区域 -->
+            <div class="department-ranking-section">
+                <h3 class="section-title">科室收入对比排名</h3>
+                <div class="ranking-container">
+                    <div class="ranking-header">
+                        <div class="ranking-controls">
+                            <select id="ranking-period">
+                                <option value="current-month">本月</option>
+                                <option value="current-quarter">本季度</option>
+                                <option value="current-year">本年度</option>
+                            </select>
+                            <select id="ranking-type">
+                                <option value="total">总收入</option>
+                                <option value="medical">医疗收入</option>
+                                <option value="outpatient">门急诊收入</option>
+                                <option value="inpatient">住院收入</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ranking-content">
+                        <div id="department-ranking-chart" class="chart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 收入来源分析区域 -->
+            <div class="revenue-source-section">
+                <h3 class="section-title">收入来源分析</h3>
+                <div class="source-analysis-container">
+                    <div class="source-charts-row">
+                        <div class="source-chart-item">
+                            <h4>医保自费构成</h4>
+                            <div id="insurance-composition-chart" class="chart"></div>
+                        </div>
+                        <div class="source-chart-item">
+                            <h4>患者来源分布</h4>
+                            <div id="patient-source-chart" class="chart"></div>
+                        </div>
+                    </div>
+                    <div class="source-trend-row">
+                        <h4>收入来源变动趋势</h4>
+                        <div id="source-trend-chart" class="chart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 收入波动监控区域 -->
+            <div class="revenue-monitoring-section">
+                <h3 class="section-title">收入波动监控</h3>
+                <div class="monitoring-container">
+                    <div class="monitoring-alerts">
+                        <div class="alert-item normal" id="revenue-alert">
+                            <div class="alert-icon">✅</div>
+                            <div class="alert-content">
+                                <h5>收入波动状态</h5>
+                                <p>当前收入指标波动在正常范围内</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="monitoring-chart">
+                        <div id="revenue-monitoring-chart" class="chart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 医生收入明细区域 -->
+            <div class="doctor-revenue-section">
+                <h3 class="section-title">医生收入明细</h3>
+                <div class="doctor-revenue-container">
+                    <div class="doctor-revenue-controls">
+                        <select id="department-filter">
+                            <option value="">全部科室</option>
+                            <option value="内科">内科</option>
+                            <option value="外科">外科</option>
+                            <option value="妇产科">妇产科</option>
+                            <option value="儿科">儿科</option>
+                            <option value="骨科">骨科</option>
+                            <option value="心内科">心内科</option>
+                            <option value="神经内科">神经内科</option>
+                            <option value="呼吸内科">呼吸内科</option>
+                            <option value="消化内科">消化内科</option>
+                            <option value="肿瘤科">肿瘤科</option>
+                        </select>
+                        <select id="doctor-period">
+                            <option value="current-month">本月</option>
+                            <option value="current-quarter">本季度</option>
+                            <option value="current-year">本年度</option>
+                        </select>
+                        <input type="text" id="doctor-search" placeholder="搜索医生姓名">
+                    </div>
+                    <div class="doctor-revenue-table">
+                        <table id="doctor-revenue-table">
+                            <thead>
+                                <tr>
+                                    <th>医生姓名</th>
+                                    <th>职称</th>
+                                    <th>门诊收入</th>
+                                    <th>住院收入</th>
+                                    <th>手术收入</th>
+                                    <th>药品收入</th>
+                                    <th>耗材收入</th>
+                                    <th>医疗收入</th>
+                                    <th>检查化验收入</th>
+                                    <th>总收入</th>
+                                    <th>同比增长</th>
+                                </tr>
+                            </thead>
+                            <tbody id="doctor-revenue-tbody">
+                                <!-- 动态生成内容 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 医生病种收入明细弹窗 -->
+            <div id="doctor-detail-modal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 id="modal-doctor-name">医生病种收入构成明细</h4>
+                        <span class="close">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="disease-revenue-table">
+                            <table id="disease-revenue-table">
+                                <thead>
+                                    <tr>
+                                        <th>病种名称</th>
+                                        <th>病例数</th>
+                                        <th>门诊收入</th>
+                                        <th>住院收入</th>
+                                        <th>药品收入</th>
+                                        <th>检查收入</th>
+                                        <th>总收入</th>
+                                        <th>占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="disease-revenue-tbody">
+                                    <!-- 动态生成内容 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 病种详细信息弹窗 -->
+    <div id="disease-detail-modal" class="modal">
+        <div class="modal-content disease-detail-modal">
+            <div class="modal-header">
+                <h3 id="disease-detail-title">病种详细信息</h3>
+                <span class="close" onclick="document.getElementById('disease-detail-modal').style.display='none'">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="disease-info-grid">
+                    <!-- 基本信息 -->
+                    <div class="info-section">
+                        <h4>基本信息</h4>
+                        <div class="info-item">
+                            <span class="label">病种名称：</span>
+                            <span id="disease-name-info"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">病例数：</span>
+                            <span id="disease-cases-info"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">DRG组：</span>
+                            <span id="disease-drg-info"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">RW值：</span>
+                            <span id="disease-rw-info"></span>
+                        </div>
+                    </div>
+
+                    <!-- 费用构成占比 -->
+                    <div class="info-section">
+                        <h4>费用构成占比</h4>
+                        <div class="cost-composition">
+                            <div class="cost-item">
+                                <span class="cost-label">药占比：</span>
+                                <div class="cost-bar">
+                                    <div class="cost-fill medicine-fill" id="medicine-ratio-bar"></div>
+                                    <span class="cost-value" id="medicine-ratio-value"></span>
+                                </div>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">耗材占比：</span>
+                                <div class="cost-bar">
+                                    <div class="cost-fill materials-fill" id="materials-ratio-bar"></div>
+                                    <span class="cost-value" id="materials-ratio-value"></span>
+                                </div>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">医疗服务收入占比：</span>
+                                <div class="cost-bar">
+                                    <div class="cost-fill medical-fill" id="medical-ratio-bar"></div>
+                                    <span class="cost-value" id="medical-ratio-value"></span>
+                                </div>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">检查化验占比：</span>
+                                <div class="cost-bar">
+                                    <div class="cost-fill examination-fill" id="examination-ratio-bar"></div>
+                                    <span class="cost-value" id="examination-ratio-value"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 医保支付情况 -->
+                    <div class="info-section">
+                        <h4>医保支付情况</h4>
+                        <div class="payment-info">
+                            <div class="payment-item">
+                                <span class="label">医保支付：</span>
+                                <span id="insurance-payment-info" class="amount"></span>
+                            </div>
+                            <div class="payment-item">
+                                <span class="label">成本：</span>
+                                <span id="cost-info" class="amount"></span>
+                            </div>
+                            <div class="payment-item">
+                                <span class="label">医保盈余：</span>
+                                <span id="insurance-surplus-info" class="amount surplus"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入脚本 -->
+    <script src="./js/common.js"></script>
+    <script src="./js/department-revenue-analysis.js"></script>
+    <script src="./js/navigation-loader.js"></script>
+</body>
+</html>

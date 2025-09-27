@@ -1,0 +1,297 @@
+{
+  "overview": {
+    "totalDepartments": 15,
+    "totalStaff": 1280,
+    "totalBeds": 850,
+    "totalEquipment": 650,
+    "bedUtilization": 92.5,
+    "equipmentUtilization": 82.5,
+    "staffEfficiency": 85.6,
+    "resourceAllocation": 88.2
+  },
+  "departmentResources": [
+    {
+      "id": "1",
+      "name": "内科",
+      "type": "临床科室",
+      "staffCount": 320,
+      "bedCount": 220,
+      "equipmentCount": 85,
+      "bedUtilization": 94.2,
+      "equipmentUtilization": 85.5,
+      "patientCount": 3250,
+      "avgLengthOfStay": 7.2,
+      "turnoverRate": 48.5,
+      "resourceScore": 92.5
+    },
+    {
+      "id": "2",
+      "name": "外科",
+      "type": "临床科室",
+      "staffCount": 280,
+      "bedCount": 180,
+      "equipmentCount": 120,
+      "bedUtilization": 91.8,
+      "equipmentUtilization": 88.2,
+      "patientCount": 1850,
+      "avgLengthOfStay": 6.5,
+      "turnoverRate": 52.3,
+      "resourceScore": 90.8
+    },
+    {
+      "id": "3",
+      "name": "妇产科",
+      "type": "临床科室",
+      "staffCount": 120,
+      "bedCount": 100,
+      "equipmentCount": 65,
+      "bedUtilization": 89.5,
+      "equipmentUtilization": 82.5,
+      "patientCount": 1520,
+      "avgLengthOfStay": 5.8,
+      "turnoverRate": 55.2,
+      "resourceScore": 88.5
+    },
+    {
+      "id": "4",
+      "name": "儿科",
+      "type": "临床科室",
+      "staffCount": 100,
+      "bedCount": 80,
+      "equipmentCount": 45,
+      "bedUtilization": 87.2,
+      "equipmentUtilization": 78.5,
+      "patientCount": 1850,
+      "avgLengthOfStay": 4.5,
+      "turnoverRate": 62.8,
+      "resourceScore": 85.2
+    },
+    {
+      "id": "5",
+      "name": "急诊科",
+      "type": "临床科室",
+      "staffCount": 80,
+      "bedCount": 0,
+      "equipmentCount": 55,
+      "bedUtilization": 0,
+      "equipmentUtilization": 75.8,
+      "patientCount": 2850,
+      "avgLengthOfStay": 0,
+      "turnoverRate": 0,
+      "resourceScore": 82.5
+    },
+    {
+      "id": "6",
+      "name": "影像科",
+      "type": "医技科室",
+      "staffCount": 65,
+      "bedCount": 0,
+      "equipmentCount": 85,
+      "bedUtilization": 0,
+      "equipmentUtilization": 92.5,
+      "patientCount": 0,
+      "avgLengthOfStay": 0,
+      "turnoverRate": 0,
+      "resourceScore": 95.8
+    },
+    {
+      "id": "7",
+      "name": "检验科",
+      "type": "医技科室",
+      "staffCount": 55,
+      "bedCount": 0,
+      "equipmentCount": 120,
+      "bedUtilization": 0,
+      "equipmentUtilization": 88.5,
+      "patientCount": 0,
+      "avgLengthOfStay": 0,
+      "turnoverRate": 0,
+      "resourceScore": 92.5
+    },
+    {
+      "id": "8",
+      "name": "药剂科",
+      "type": "医技科室",
+      "staffCount": 45,
+      "bedCount": 0,
+      "equipmentCount": 25,
+      "bedUtilization": 0,
+      "equipmentUtilization": 65.8,
+      "patientCount": 0,
+      "avgLengthOfStay": 0,
+      "turnoverRate": 0,
+      "resourceScore": 78.5
+    },
+    {
+      "id": "9",
+      "name": "手术室",
+      "type": "医技科室",
+      "staffCount": 75,
+      "bedCount": 0,
+      "equipmentCount": 150,
+      "bedUtilization": 0,
+      "equipmentUtilization": 85.2,
+      "patientCount": 0,
+      "avgLengthOfStay": 0,
+      "turnoverRate": 0,
+      "resourceScore": 88.2
+    },
+    {
+      "id": "10",
+      "name": "ICU",
+      "type": "临床科室",
+      "staffCount": 90,
+      "bedCount": 45,
+      "equipmentCount": 180,
+      "bedUtilization": 85.5,
+      "equipmentUtilization": 95.8,
+      "patientCount": 380,
+      "avgLengthOfStay": 12.5,
+      "turnoverRate": 28.5,
+      "resourceScore": 92.8
+    }
+  ],
+  "resourceTrends": {
+    "months": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+    "bedUtilization": [88.5, 89.2, 90.5, 91.2, 91.8, 92.0, 92.5, 92.8, 93.2, 92.5, 92.8, 92.5],
+    "equipmentUtilization": [78.5, 79.2, 80.5, 81.2, 81.8, 82.0, 82.5, 82.8, 83.2, 82.5, 82.8, 82.5],
+    "staffEfficiency": [82.5, 83.2, 84.5, 85.2, 85.8, 86.0, 85.6, 85.8, 86.2, 85.6, 85.8, 85.6],
+    "resourceAllocation": [85.5, 86.2, 87.5, 88.2, 88.8, 89.0, 88.2, 88.5, 88.8, 88.2, 88.5, 88.2]
+  },
+  "staffDistribution": {
+    "byDepartment": [
+      {"name": "内科", "doctors": 85, "nurses": 180, "technicians": 35, "others": 20},
+      {"name": "外科", "doctors": 75, "nurses": 150, "technicians": 35, "others": 20},
+      {"name": "妇产科", "doctors": 35, "nurses": 65, "technicians": 10, "others": 10},
+      {"name": "儿科", "doctors": 30, "nurses": 55, "technicians": 8, "others": 7},
+      {"name": "急诊科", "doctors": 25, "nurses": 40, "technicians": 8, "others": 7},
+      {"name": "影像科", "doctors": 20, "nurses": 10, "technicians": 30, "others": 5},
+      {"name": "检验科", "doctors": 15, "nurses": 5, "technicians": 30, "others": 5},
+      {"name": "药剂科", "doctors": 10, "nurses": 5, "technicians": 25, "others": 5},
+      {"name": "手术室", "doctors": 30, "nurses": 35, "technicians": 5, "others": 5},
+      {"name": "ICU", "doctors": 25, "nurses": 50, "technicians": 10, "others": 5}
+    ],
+    "byTitle": [
+      {"name": "主任医师", "count": 65, "percentage": 5.1},
+      {"name": "副主任医师", "count": 120, "percentage": 9.4},
+      {"name": "主治医师", "count": 220, "percentage": 17.2},
+      {"name": "住院医师", "count": 180, "percentage": 14.1},
+      {"name": "主任护师", "count": 45, "percentage": 3.5},
+      {"name": "副主任护师", "count": 85, "percentage": 6.6},
+      {"name": "主管护师", "count": 250, "percentage": 19.5},
+      {"name": "护师", "count": 180, "percentage": 14.1},
+      {"name": "护士", "count": 135, "percentage": 10.5}
+    ]
+  },
+  "equipmentDistribution": {
+    "byDepartment": [
+      {"name": "内科", "highEnd": 25, "medium": 40, "low": 20},
+      {"name": "外科", "highEnd": 45, "medium": 50, "low": 25},
+      {"name": "妇产科", "highEnd": 20, "medium": 30, "low": 15},
+      {"name": "儿科", "highEnd": 15, "medium": 20, "low": 10},
+      {"name": "急诊科", "highEnd": 20, "medium": 25, "low": 10},
+      {"name": "影像科", "highEnd": 50, "medium": 25, "low": 10},
+      {"name": "检验科", "highEnd": 60, "medium": 45, "low": 15},
+      {"name": "药剂科", "highEnd": 5, "medium": 12, "low": 8},
+      {"name": "手术室", "highEnd": 80, "medium": 50, "low": 20},
+      {"name": "ICU", "highEnd": 100, "medium": 60, "low": 20}
+    ],
+    "byType": [
+      {"name": "影像设备", "count": 85, "percentage": 13.1},
+      {"name": "检验设备", "count": 120, "percentage": 18.5},
+      {"name": "手术设备", "count": 150, "percentage": 23.1},
+      {"name": "监护设备", "count": 180, "percentage": 27.7},
+      {"name": "治疗设备", "count": 85, "percentage": 13.1},
+      {"name": "其他设备", "count": 30, "percentage": 4.6}
+    ]
+  },
+  "bedDistribution": {
+    "byDepartment": [
+      {"name": "内科", "beds": 220, "utilization": 94.2},
+      {"name": "外科", "beds": 180, "utilization": 91.8},
+      {"name": "妇产科", "beds": 100, "utilization": 89.5},
+      {"name": "儿科", "beds": 80, "utilization": 87.2},
+      {"name": "ICU", "beds": 45, "utilization": 85.5},
+      {"name": "其他科室", "beds": 225, "utilization": 82.3}
+    ],
+    "byType": [
+      {"name": "普通床位", "count": 650, "percentage": 76.5},
+      {"name": "重症床位", "count": 45, "percentage": 5.3},
+      {"name": "观察床位", "count": 85, "percentage": 10.0},
+      {"name": "特殊床位", "count": 70, "percentage": 8.2}
+    ]
+  },
+  "resourceEfficiency": {
+    "staffEfficiency": [
+      {"department": "内科", "outpatientPerDoctor": 25.5, "inpatientPerDoctor": 12.8, "surgeryPerDoctor": 3.2},
+      {"department": "外科", "outpatientPerDoctor": 18.5, "inpatientPerDoctor": 8.5, "surgeryPerDoctor": 5.8},
+      {"department": "妇产科", "outpatientPerDoctor": 22.5, "inpatientPerDoctor": 10.2, "surgeryPerDoctor": 4.2},
+      {"department": "儿科", "outpatientPerDoctor": 35.5, "inpatientPerDoctor": 15.8, "surgeryPerDoctor": 1.2},
+      {"department": "急诊科", "outpatientPerDoctor": 45.5, "inpatientPerDoctor": 5.8, "surgeryPerDoctor": 0.8}
+    ],
+    "equipmentEfficiency": [
+      {"department": "内科", "utilization": 85.5, "avgDailyUse": 12.5, "maintenanceRate": 2.5},
+      {"department": "外科", "utilization": 88.2, "avgDailyUse": 15.8, "maintenanceRate": 2.8},
+      {"department": "妇产科", "utilization": 82.5, "avgDailyUse": 10.2, "maintenanceRate": 3.2},
+      {"department": "儿科", "utilization": 78.5, "avgDailyUse": 8.5, "maintenanceRate": 3.5},
+      {"department": "急诊科", "utilization": 75.8, "avgDailyUse": 18.5, "maintenanceRate": 4.2}
+    ],
+    "bedEfficiency": [
+      {"department": "内科", "turnoverRate": 48.5, "avgLengthOfStay": 7.2, "bedUtilization": 94.2},
+      {"department": "外科", "turnoverRate": 52.3, "avgLengthOfStay": 6.5, "bedUtilization": 91.8},
+      {"department": "妇产科", "turnoverRate": 55.2, "avgLengthOfStay": 5.8, "bedUtilization": 89.5},
+      {"department": "儿科", "turnoverRate": 62.8, "avgLengthOfStay": 4.5, "bedUtilization": 87.2},
+      {"department": "ICU", "turnoverRate": 28.5, "avgLengthOfStay": 12.5, "bedUtilization": 85.5}
+    ]
+  },
+  "keyIndicators": [
+    {
+      "id": "1",
+      "name": "床位利用率",
+      "value": "92.5",
+      "unit": "%",
+      "trend": "up",
+      "change": "2.3%"
+    },
+    {
+      "id": "2",
+      "name": "设备使用率",
+      "value": "82.5",
+      "unit": "%",
+      "trend": "up",
+      "change": "1.8%"
+    },
+    {
+      "id": "3",
+      "name": "人员效率",
+      "value": "85.6",
+      "unit": "%",
+      "trend": "up",
+      "change": "1.5%"
+    },
+    {
+      "id": "4",
+      "name": "资源分配率",
+      "value": "88.2",
+      "unit": "%",
+      "trend": "up",
+      "change": "2.1%"
+    },
+    {
+      "id": "5",
+      "name": "平均住院日",
+      "value": "6.8",
+      "unit": "天",
+      "trend": "down",
+      "change": "-0.5%"
+    },
+    {
+      "id": "6",
+      "name": "床位周转率",
+      "value": "48.5",
+      "unit": "次/月",
+      "trend": "up",
+      "change": "2.8%"
+    }
+  ]
+}

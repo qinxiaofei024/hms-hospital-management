@@ -1,0 +1,87 @@
+# Jekyll配置文件 - HMS项目GitHub Pages部署
+
+# 站点信息
+title: "佛山市南海区中医院数据中心管理平台"
+description: "Hospital Management System - 医院管理系统"
+baseurl: "" # 如果部署在子目录，请设置为 "/repository-name"
+url: "" # 将被GitHub Pages自动设置
+
+# 构建设置
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# 插件
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# 排除文件
+exclude:
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - README.md
+  - LICENSE
+  - "*.log"
+  - "*.js" # 排除构建脚本
+  - "test-*.html"
+  - "debug-*.html"
+  - "simple-*.html"
+  - "fix_*.js"
+  - "test_*.js"
+  - "*.md"
+  - "tools/"
+  - "mirrors/"
+  - "websocket_server.py"
+  - "responsive-test-report.json"
+
+# 包含文件（确保重要文件被包含）
+include:
+  - "_*"
+  - ".htaccess"
+
+# 默认值
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+
+# 静态文件处理
+static_files:
+  - "*.css"
+  - "*.js"
+  - "*.json"
+  - "*.svg"
+  - "*.png"
+  - "*.jpg"
+  - "*.jpeg"
+  - "*.gif"
+
+# 集合设置
+collections_dir: collections
+
+# 时区
+timezone: Asia/Shanghai
+
+# 编码
+encoding: utf-8
+
+# 安全设置
+safe: true
+incremental: false
+profile: false
+
+# 服务器设置（本地开发用）
+host: 127.0.0.1
+port: 4000
+livereload: true

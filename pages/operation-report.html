@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>运营报告 - 院领导驾驶舱</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/html2pdf.bundle.min.js"></script>
+    <style>
+        /* 分析报告特殊样式 */
+        .report-container {
+            padding: 24px;
+        }
+        
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .report-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .report-date {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-item label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .filter-item select {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #fff;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #0066cc;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0052a3;
+        }
+        
+        .btn-default {
+            background-color: #fff;
+            color: #666;
+            border: 1px solid #d9d9d9;
+        }
+        
+        .btn-default:hover {
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border-top: 4px solid #0078d4;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .dashboard-item {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border-top: 3px solid #0078d4;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .dashboard-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dashboard-item h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        .chart-standard {
+            height: 300px;
+        }
+        
+        .key-findings {
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .key-findings h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0066cc;
+            margin-bottom: 16px;
+        }
+        
+        .key-findings ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .key-findings li {
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .key-findings li:before {
+            content: "•";
+            color: #0066cc;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        
+        .summary-table th,
+        .summary-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .summary-table th {
+            background-color: #f0f7ff;
+            font-weight: 600;
+            color: #0066cc;
+        }
+        
+        .summary-table tr:hover {
+            background-color: #fafafa;
+        }
+        
+        .highlight {
+            color: #0066cc;
+            font-weight: 600;
+        }
+        
+        .improvement-item {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid #0078d4;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+        
+        .improvement-item h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .improvement-item p {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+        }
+        
+        .trend-up {
+            color: #52c41a;
+        }
+        
+        .trend-down {
+            color: #f5222d;
+        }
+        
+        /* 深色主题适配 */
+        body.dark-theme .section {
+            background-color: #1e1e1e;
+            border-top-color: #0078d4;
+        }
+        
+        body.dark-theme .dashboard-item {
+            background-color: #1e1e1e;
+            border-top-color: #0078d4;
+        }
+        
+        body.dark-theme .section-title,
+        body.dark-theme .dashboard-item h3 {
+            color: #f0f0f0;
+        }
+        
+        body.dark-theme .summary-table th {
+            background-color: #0d47a1;
+            color: #ffffff;
+        }
+        
+        body.dark-theme .summary-table tr:hover {
+            background-color: #2a2a2a;
+        }
+        
+        body.dark-theme .summary-table th,
+        body.dark-theme .summary-table td {
+            border-bottom-color: #444;
+        }
+        
+        body.dark-theme .improvement-item {
+            background-color: #0d47a1;
+            border-left-color: #4096ff;
+        }
+        
+        body.dark-theme .improvement-item h4 {
+            color: #4096ff;
+        }
+        
+        body.dark-theme .improvement-item p {
+            color: #b0b0b0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="content-wrapper responsive-wrapper">
+            <main class="report-container">
+                <!-- 页面头部 -->
+                <div class="content-header">
+                    <h1>运营报告</h1>
+                    <div class="breadcrumb">
+                        <a href="./index.html">首页</a> / <a href="#">院领导驾驶舱</a> / <span>运营报告</span>
+                    </div>
+                </div>
+
+                <!-- 报告头部 -->
+                <div class="report-header">
+                    <div>
+                        <h3 class="report-title">佛山市南海区中医院2023-2025年度综合运营分析报告</h3>
+                        <div class="report-date">报告生成日期：2025年9月17日</div>
+                    </div>
+                </div>
+
+                <!-- 筛选控件 -->
+                <div class="filter-controls">
+                    <div class="filter-item">
+                        <label>报告周期：</label>
+                        <select id="reportPeriod">
+                            <option value="daily">日报</option>
+                            <option value="weekly" selected>周报</option>
+                            <option value="monthly">月报</option>
+                            <option value="quarterly">季报</option>
+                            <option value="yearly">年报</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>年份：</label>
+                        <select id="reportYear">
+                            <option value="2023">2023年</option>
+                            <option value="2024" selected>2024年</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button id="refreshBtn" class="btn btn-primary">刷新数据</button>
+                        <button class="btn btn-primary" id="export-pdf-btn">导出PDF</button>
+                        <button class="btn btn-default" id="print-btn">打印报告</button>
+                    </div>
+                </div>
+
+                <!-- 关键发现 -->
+                <div class="key-findings">
+                    <h3>关键发现</h3>
+                    <ul>
+                        <li>2025年上半年医院总收入达到<span class="highlight">3.2亿元</span>，同比增长<span class="highlight trend-up">12.5%</span>，主要来源于医疗服务收入的增长。</li>
+                        <li>门诊量达到<span class="highlight">56.8万人次</span>，同比增长<span class="highlight trend-up">8.3%</span>；住院量达到<span class="highlight">2.4万人次</span>，同比增长<span class="highlight trend-up">6.7%</span>。</li>
+                        <li>平均住院日降至<span class="highlight">7.8天</span>，同比下降<span class="highlight trend-down">0.3天</span>，医疗服务效率持续提升。</li>
+                        <li>药占比控制在<span class="highlight">38.5%</span>，同比下降<span class="highlight trend-down">2.3%</span>，符合国家相关政策要求。</li>
+                        <li>床位使用率保持在<span class="highlight">92.8%</span>，手术间使用率达到<span class="highlight">85.2%</span>，资源利用效率较高。</li>
+                    </ul>
+                </div>
+
+                <!-- 医疗服务分析 -->
+                <div class="section">
+                    <h3 class="section-title">一、医疗服务分析</h3>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <h3>医疗服务量趋势</h3>
+                            <div id="serviceVolumeChart" class="chart-standard"></div>
+                        </div>
+                        <div class="dashboard-item">
+                            <h3>门诊科室服务量分布</h3>
+                            <div id="outpatientDistributionChart" class="chart-standard"></div>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <h3>医疗服务效率指标</h3>
+                            <table class="summary-table">
+                                <thead>
+                                    <tr>
+                                        <th>指标名称</th>
+                                        <th>2023年</th>
+                                        <th>2024年</th>
+                                        <th>2025年</th>
+                                        <th>同比增长</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>平均住院日</td>
+                                        <td>8.5天</td>
+                                        <td>8.1天</td>
+                                        <td>7.8天</td>
+                                        <td class="trend-down">-3.7%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>床位周转率</td>
+                                        <td>42.3次/年</td>
+                                        <td>44.6次/年</td>
+                                        <td>46.8次/年</td>
+                                        <td class="trend-up">+4.9%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>术前平均住院日</td>
+                                        <td>2.3天</td>
+                                        <td>2.1天</td>
+                                        <td>1.9天</td>
+                                        <td class="trend-down">-9.5%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>床位使用率</td>
+                                        <td>89.5%</td>
+                                        <td>91.2%</td>
+                                        <td>92.8%</td>
+                                        <td class="trend-up">+1.7%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>手术间使用率</td>
+                                        <td>81.2%</td>
+                                        <td>83.5%</td>
+                                        <td>85.2%</td>
+                                        <td class="trend-up">+2.0%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="dashboard-item">
+                            <h3>医疗质量指标</h3>
+                            <table class="summary-table">
+                                <thead>
+                                    <tr>
+                                        <th>指标名称</th>
+                                        <th>2023年</th>
+                                        <th>2024年</th>
+                                        <th>2025年</th>
+                                        <th>同比增长</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>住院患者死亡率</td>
+                                        <td>0.56%</td>
+                                        <td>0.52%</td>
+                                        <td>0.48%</td>
+                                        <td class="trend-down">-7.7%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>手术并发症发生率</td>
+                                        <td>1.24%</td>
+                                        <td>1.15%</td>
+                                        <td>1.08%</td>
+                                        <td class="trend-down">-6.1%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>院内感染发生率</td>
+                                        <td>1.85%</td>
+                                        <td>1.62%</td>
+                                        <td>1.45%</td>
+                                        <td class="trend-down">-10.5%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>患者满意度</td>
+                                        <td>92.5%</td>
+                                        <td>93.8%</td>
+                                        <td>94.6%</td>
+                                        <td class="trend-up">+0.8%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>病例书写合格率</td>
+                                        <td>95.2%</td>
+                                        <td>96.8%</td>
+                                        <td>97.5%</td>
+                                        <td class="trend-up">+0.7%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 经济运行分析 -->
+                <div class="section">
+                    <h3 class="section-title">二、经济运行分析</h3>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <h3>医院总收入趋势</h3>
+                            <div id="totalRevenueChart" class="chart-standard"></div>
+                        </div>
+                        <div class="dashboard-item">
+                            <h3>收入结构分析</h3>
+                            <div id="revenueStructureChart" class="chart-standard"></div>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <h3>主要科室收入排名</h3>
+                            <div id="departmentRevenueChart" class="chart-standard"></div>
+                        </div>
+                        <div class="dashboard-item">
+                            <h3>成本控制指标</h3>
+                            <table class="summary-table">
+                                <thead>
+                                    <tr>
+                                        <th>指标名称</th>
+                                        <th>2023年</th>
+                                        <th>2024年</th>
+                                        <th>2025年</th>
+                                        <th>同比增长</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>药占比</td>
+                                        <td>43.2%</td>
+                                        <td>40.8%</td>
+                                        <td>38.5%</td>
+                                        <td class="trend-down">-5.6%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>卫生材料占比</td>
+                                        <td>18.5%</td>
+                                        <td>17.9%</td>
+                                        <td>17.2%</td>
+                                        <td class="trend-down">-3.9%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>人员经费占比</td>
+                                        <td>35.2%</td>
+                                        <td>36.8%</td>
+                                        <td>37.5%</td>
+                                        <td class="trend-up">+1.9%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>管理费用率</td>
+                                        <td>8.5%</td>
+                                        <td>8.2%</td>
+                                        <td>7.8%</td>
+                                        <td class="trend-down">-4.9%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>万元收入能耗支出</td>
+                                        <td>320元</td>
+                                        <td>305元</td>
+                                        <td>290元</td>
+                                        <td class="trend-down">-4.9%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 资源效益分析 -->
+                <div class="section">
+                    <h3 class="section-title">三、资源效益分析</h3>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <h3>人力资源配置</h3>
+                            <div id="humanResourceChart" class="chart-standard"></div>
+                        </div>
+                        <div class="dashboard-item">
+                            <h3>设备利用率分析</h3>
+                            <div id="equipmentUsageChart" class="chart-standard"></div>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <h3>科室运行效率</h3>
+                            <table class="summary-table">
+                                <thead>
+                                    <tr>
+                                        <th>科室名称</th>
+                                        <th>医生日均工作量</th>
+                                        <th>护士日均工作量</th>
+                                        <th>人均创收</th>
+                                        <th>病床周转次数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>心内科</td>
+                                        <td>12.5</td>
+                                        <td>18.2</td>
+                                        <td>¥138万</td>
+                                        <td>48.2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>骨科</td>
+                                        <td>11.8</td>
+                                        <td>17.5</td>
+                                        <td>¥145万</td>
+                                        <td>46.5</td>
+                                    </tr>
+                                    <tr>
+                                        <td>神经外科</td>
+                                        <td>10.2</td>
+                                        <td>16.8</td>
+                                        <td>¥152万</td>
+                                        <td>45.3</td>
+                                    </tr>
+                                    <tr>
+                                        <td>普外科</td>
+                                        <td>11.5</td>
+                                        <td>17.2</td>
+                                        <td>¥132万</td>
+                                        <td>47.8</td>
+                                    </tr>
+                                    <tr>
+                                        <td>消化内科</td>
+                                        <td>12.2</td>
+                                        <td>18.0</td>
+                                        <td>¥128万</td>
+                                        <td>49.2</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="dashboard-item">
+                            <h3>重点设备效益分析</h3>
+                            <table class="summary-table">
+                                <thead>
+                                    <tr>
+                                        <th>设备名称</th>
+                                        <th>年度检查人次</th>
+                                        <th>年度收入</th>
+                                        <th>使用率</th>
+                                        <th>投资回报率</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>3.0T MRI</td>
+                                        <td>12,580</td>
+                                        <td>¥1,860万</td>
+                                        <td>82.5%</td>
+                                        <td>125%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>64排CT</td>
+                                        <td>18,750</td>
+                                        <td>¥1,560万</td>
+                                        <td>88.2%</td>
+                                        <td>132%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>DSA</td>
+                                        <td>5,820</td>
+                                        <td>¥1,250万</td>
+                                        <td>78.5%</td>
+                                        <td>118%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>DR</td>
+                                        <td>32,580</td>
+                                        <td>¥860万</td>
+                                        <td>92.8%</td>
+                                        <td>145%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>彩超</td>
+                                        <td>28,650</td>
+                                        <td>¥780万</td>
+                                        <td>90.5%</td>
+                                        <td>138%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 总结与建议 -->
+                <div class="section">
+                    <h3 class="section-title">四、总结与建议</h3>
+                    <div class="key-findings">
+                        <h3>总体评价</h3>
+                        <ul>
+                            <li>医院2025年上半年运营状况良好，医疗服务量、医疗质量和经济收益均呈现稳定增长趋势。</li>
+                            <li>医疗服务效率持续提升，平均住院日、床位周转率等指标不断优化。</li>
+                            <li>成本控制成效显著，药占比、卫生材料占比等指标持续下降。</li>
+                            <li>资源利用效率较高，床位使用率和手术间使用率保持在合理水平。</li>
+                        </ul>
+                    </div>
+                    <div class="key-findings">
+                        <h3>改进建议</h3>
+                        <div class="improvement-item">
+                            <h4>优化医疗服务流程</h4>
+                            <p>进一步优化门诊预约挂号、检查预约等流程，缩短患者等候时间，提高患者满意度。</p>
+                        </div>
+                        <div class="improvement-item">
+                            <h4>加强资源配置管理</h4>
+                            <p>根据科室业务量变化，动态调整人力资源和设备配置，提高资源利用效率。</p>
+                        </div>
+                        <div class="improvement-item">
+                            <h4>推进精细化管理</h4>
+                            <p>深化成本核算，加强预算管理，进一步降低运行成本，提高经济效益。</p>
+                        </div>
+                        <div class="improvement-item">
+                            <h4>提升医疗技术水平</h4>
+                            <p>加强学科建设和人才培养，引进新技术、新项目，提高医院核心竞争力。</p>
+                        </div>
+                        <div class="improvement-item">
+                            <h4>强化信息化建设</h4>
+                            <p>继续推进智慧医院建设，提升信息化水平，为医疗服务和管理决策提供有力支撑。</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="./js/common.js"></script>
+    <script src="./js/operation-report.js?v=20250121-2"></script>
+
+    <!-- 加载统一导航组件 -->
+    <script src="./js/navigation-loader.js"></script>
+</body>
+</html>

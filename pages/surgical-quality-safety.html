@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手术质量安全监测 - 医疗质量安全监测系统</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/medical-quality-safety.css">
+    <script src="./js/common.js"></script>
+    <script src="./js/navigation-loader.js?v=20250125-fix3"></script>
+    <script src="./js/medical-quality-components.js"></script>
+    <script src="./js/medical-charts.js"></script>
+    <script src="./js/medical-data-simulator.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        /* 手术质量安全监测页面专用样式 */
+        .surgical-container {
+            padding: 20px;
+            background-color: #f5f7fa;
+            min-height: calc(100vh - 48px);
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+            padding: 0;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .page-header h2 {
+            color: #333;
+            font-size: 24px;
+            margin: 0 0 8px 0;
+            font-weight: 600;
+        }
+
+        .page-header .english-title {
+            color: #666;
+            font-size: 14px;
+            font-weight: 400;
+            margin-left: 8px;
+        }
+
+        .breadcrumb {
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .breadcrumb-list {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .breadcrumb-item {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb-item:last-child {
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .breadcrumb-separator {
+            margin: 0 10px;
+            color: #dee2e6;
+        }
+
+        /* 实时监控面板 */
+        .real-time-panel {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .real-time-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .real-time-title {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .real-time-status {
+            display: flex;
+            align-items: center;
+            color: #28a745;
+            font-size: 14px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: #28a745;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .real-time-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .real-time-card {
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #0078d4;
+            transition: transform 0.3s ease;
+        }
+
+        .real-time-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .real-time-card.surgery {
+            border-left-color: #0078d4;
+        }
+
+        .real-time-card.completed {
+            border-left-color: #28a745;
+        }
+
+        .real-time-card.risk {
+            border-left-color: #ffc107;
+        }
+
+        .real-time-card.emergency {
+            border-left-color: #dc3545;
+        }
+
+        .real-time-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #0078d4;
+        }
+
+        .real-time-card.completed .real-time-value {
+            color: #28a745;
+        }
+
+        .real-time-card.risk .real-time-value {
+            color: #ffc107;
+        }
+
+        .real-time-card.emergency .real-time-value {
+            color: #dc3545;
+        }
+
+        .real-time-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid #0078d4;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .stat-card.excellent {
+            border-left-color: #28a745;
+        }
+
+        .stat-card.good {
+            border-left-color: #0078d4;
+        }
+
+        .stat-card.warning {
+            border-left-color: #ffc107;
+        }
+
+        .stat-card.danger {
+            border-left-color: #dc3545;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .stat-title {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .stat-icon {
+            font-size: 20px;
+            opacity: 0.7;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .stat-change {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            color: #28a745;
+        }
+
+        .stat-change.negative {
+            color: #dc3545;
+        }
+
+        .stat-change.stable {
+            color: #6c757d;
+        }
+
+        /* 主要内容网格 */
+        .main-grid {
+            display: block;
+            margin-bottom: 30px;
+        }
+
+        /* 图表容器 */
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chart-control-btn {
+            padding: 8px 16px;
+            border: 1px solid #dee2e6;
+            background: white;
+            color: #666;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .chart-control-btn:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        .chart-control-btn.active {
+            background: #0078d4;
+            color: white;
+            border-color: #0078d4;
+        }
+
+        .chart-wrapper {
+            height: 400px;
+            width: 100%;
+        }
+
+
+
+        /* 指标监控区域 */
+        .indicators-section {
+            margin-bottom: 30px;
+        }
+
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .indicator-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .indicator-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .indicator-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .indicator-item:hover {
+            background: #e9ecef;
+        }
+
+        .indicator-name {
+            font-size: 0.9rem;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .indicator-value {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .indicator-number {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .indicator-number.excellent {
+            color: #28a745;
+        }
+
+        .indicator-number.good {
+            color: #17a2b8;
+        }
+
+        .indicator-number.warning {
+            color: #ffc107;
+        }
+
+        .indicator-number.danger {
+            color: #dc3545;
+        }
+
+        .indicator-trend {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .indicator-trend.up {
+            color: #28a745;
+        }
+
+        .indicator-trend.down {
+            color: #dc3545;
+        }
+
+        .indicator-trend.stable {
+            color: #6c757d;
+        }
+
+        /* 风险评估矩阵 */
+        .risk-matrix {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .risk-cell {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+        }
+
+        .risk-cell.low {
+            background: #28a745;
+        }
+
+        .risk-cell.medium {
+            background: #ffc107;
+        }
+
+        .risk-cell.high {
+            background: #fd7e14;
+        }
+
+        .risk-cell.critical {
+            background: #dc3545;
+        }
+
+        /* 手术时间线 */
+        .surgery-timeline {
+            margin-top: 15px;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .timeline-time {
+            font-size: 0.8rem;
+            color: #6c757d;
+            min-width: 60px;
+        }
+
+        .timeline-content {
+            flex: 1;
+            margin-left: 12px;
+        }
+
+        .timeline-surgery {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .timeline-status {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        /* 数据表格 */
+        .data-table {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .table-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 8px 35px 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 250px;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .quality-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .quality-table th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .quality-table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+            color: #666;
+        }
+
+        .quality-table tbody tr {
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .quality-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .quality-table tbody tr.selected {
+            background: #e3f2fd;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.excellent {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.good {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-badge.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .real-time-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .table-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+    
+    <div class="container">
+        <div class="main-content">
+            <div class="content-wrapper">
+                <main class="content">
+                    <div class="surgical-container">
+                        <!-- 页面标题 -->
+                        <div id="dashboard" class="page-header">
+                            <h2>手术质量安全监测 <span class="english-title">Surgical Quality and Safety Monitoring</span></h2>
+                            <div class="breadcrumb">
+                                <span>首页</span> / <span>医疗质量安全监测</span> / <span>手术质量安全监测</span>
+                            </div>
+                        </div>
+
+                        <!-- 实时监控面板 -->
+                        <div class="real-time-panel">
+                            <div class="real-time-header">
+                                <h3 class="real-time-title">实时手术监控</h3>
+                                <div class="real-time-status">
+                                    <div class="status-indicator"></div>
+                                    <span>系统正常运行</span>
+                                </div>
+                            </div>
+                            <div class="real-time-grid" id="realTimeGrid">
+                                <!-- 实时数据将通过JavaScript动态生成 -->
+                            </div>
+                        </div>
+
+                        <!-- 统计卡片区域 -->
+                        <div class="stats-grid" id="statsGrid">
+                            <!-- 统计卡片将通过JavaScript动态生成 -->
+                        </div>
+
+                        <!-- 主要内容网格 -->
+                        <div class="main-grid">
+                            <!-- 图表区域 -->
+                            <div class="chart-container">
+                                <div class="chart-header">
+                                    <h3 class="chart-title">手术质量安全趋势分析</h3>
+                                    <div class="chart-controls">
+                                        <button class="chart-control-btn active" data-type="trend">趋势图</button>
+                                        <button class="chart-control-btn" data-type="risk">风险分析</button>
+                                        <button class="chart-control-btn" data-type="comparison">科室对比</button>
+                                    </div>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <div id="surgicalChart" style="width: 100%; height: 100%;"></div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <!-- 核心指标监控区域 -->
+                        <div class="indicators-section">
+                            <div class="indicators-grid">
+                                <!-- 核心指标监测 -->
+                                <div class="indicator-card">
+                                    <h3 class="card-title">核心指标监测</h3>
+                                    <div class="indicator-list" id="indicatorList">
+                                        <!-- 指标列表将通过JavaScript动态生成 -->
+                                    </div>
+                                </div>
+
+                                <!-- 风险评估矩阵 -->
+                                <div class="indicator-card">
+                                    <h3 class="card-title">手术风险评估</h3>
+                                    <div class="risk-matrix" id="riskMatrix">
+                                        <!-- 风险矩阵将通过JavaScript动态生成 -->
+                                    </div>
+                                </div>
+
+                                <!-- 手术时间线 -->
+                                <div class="indicator-card">
+                                    <h3 class="card-title">今日手术安排</h3>
+                                    <div class="surgery-timeline" id="surgeryTimeline">
+                                        <!-- 手术时间线将通过JavaScript动态生成 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 详细数据表格 -->
+                        <div class="data-table">
+                            <div class="table-header">
+                                <h3 class="table-title">科室手术质量安全详情</h3>
+                                <div class="table-controls">
+                                    <div class="search-box">
+                                        <input type="text" placeholder="搜索科室或手术类型..." id="searchInput">
+                                        <span class="search-icon">🔍</span>
+                                    </div>
+                                    <select class="filter-select" id="departmentFilter">
+                                        <option value="all">全部科室</option>
+                                        <option value="surgery">外科系统</option>
+                                        <option value="orthopedics">骨科</option>
+                                        <option value="neurosurgery">神经外科</option>
+                                        <option value="cardiac">心胸外科</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="table-wrapper">
+                                <table class="quality-table" id="qualityTable">
+                                    <thead>
+                                        <tr>
+                                            <th>科室名称</th>
+                                            <th>手术安全核查率</th>
+                                            <th>手术分级管理率</th>
+                                            <th>术前讨论率</th>
+                                            <th>术后总结率</th>
+                                            <th>感染预防率</th>
+                                            <th>综合评级</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody">
+                                        <!-- 表格数据将通过JavaScript动态生成 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 手术质量安全监测页面控制器
+        class SurgicalQualityMonitor {
+            constructor() {
+                try {
+                    this.dataSimulator = typeof MedicalDataSimulator !== 'undefined' ? new MedicalDataSimulator() : null;
+                } catch (error) {
+                    console.warn('MedicalDataSimulator不可用:', error);
+                    this.dataSimulator = null;
+                }
+                this.charts = {};
+                this.currentChartType = 'trend';
+                this.init();
+            }
+
+            async init() {
+                try {
+                    // 等待ECharts加载完成
+                    await this.waitForEcharts();
+                    
+                    // 首先初始化数据
+                    this.initializeData();
+                    
+                    // 确保数据初始化完成后再渲染
+                    if (this.surgicalData && this.realTimeData) {
+                        this.renderRealTimePanel();
+                        this.renderStatCards();
+                        this.renderIndicatorList();
+                        this.renderRiskMatrix();
+                        this.renderSurgeryTimeline();
+                        this.renderDataTable();
+                        this.initializeCharts();
+                        this.bindEvents();
+                        this.startRealTimeUpdates();
+                        
+                        console.log('手术质量安全监测页面初始化完成');
+                    } else {
+                        console.error('数据初始化失败');
+                    }
+                } catch (error) {
+                    console.error('手术质量安全监测页面初始化失败:', error);
+                }
+            }
+
+            waitForEcharts() {
+                return new Promise((resolve, reject) => {
+                    if (typeof echarts !== 'undefined') {
+                        resolve();
+                        return;
+                    }
+                    
+                    let attempts = 0;
+                    const maxAttempts = 50; // 5秒超时
+                    const checkEcharts = () => {
+                        if (typeof echarts !== 'undefined') {
+                            resolve();
+                        } else if (attempts >= maxAttempts) {
+                            reject(new Error('ECharts加载超时'));
+                        } else {
+                            attempts++;
+                            setTimeout(checkEcharts, 100);
+                        }
+                    };
+                    checkEcharts();
+                });
+            }
+
+            initializeData() {
+                // 初始化手术质量数据
+                console.log('开始初始化数据...');
+                console.log('dataSimulator:', this.dataSimulator);
+                
+                try {
+                    if (this.dataSimulator && typeof this.dataSimulator.generateSurgeryData === 'function') {
+                        this.surgicalData = this.dataSimulator.generateSurgeryData();
+                        this.realTimeData = this.dataSimulator.getRealTimeData();
+                        console.log('使用数据生成器成功');
+                    } else {
+                        throw new Error('数据生成器不可用');
+                    }
+                } catch (error) {
+                    console.warn('数据生成器不可用，使用默认数据:', error);
+                    // 使用默认数据
+                    this.surgicalData = this.getDefaultSurgicalData();
+                    this.realTimeData = this.getDefaultRealTimeData();
+                    console.log('使用默认数据成功');
+                }
+                
+                console.log('surgicalData:', this.surgicalData);
+                console.log('realTimeData:', this.realTimeData);
+            }
+
+            getDefaultSurgicalData() {
+                return {
+                    departmentData: [
+                        {
+                            name: '心胸外科',
+                            safetyCheckRate: 99.8,
+                            levelManagementRate: 98.5,
+                            preOpDiscussionRate: 96.2,
+                            postOpSummaryRate: 94.8,
+                            infectionPreventionRate: 99.1,
+                            rating: 'excellent',
+                            ratingText: '优秀'
+                        },
+                        {
+                            name: '神经外科',
+                            safetyCheckRate: 98.9,
+                            levelManagementRate: 97.8,
+                            preOpDiscussionRate: 95.5,
+                            postOpSummaryRate: 93.2,
+                            infectionPreventionRate: 98.7,
+                            rating: 'good',
+                            ratingText: '良好'
+                        },
+                        {
+                            name: '骨科',
+                            safetyCheckRate: 97.5,
+                            levelManagementRate: 96.3,
+                            preOpDiscussionRate: 92.8,
+                            postOpSummaryRate: 91.5,
+                            infectionPreventionRate: 97.2,
+                            rating: 'good',
+                            ratingText: '良好'
+                        },
+                        {
+                            name: '普通外科',
+                            safetyCheckRate: 96.8,
+                            levelManagementRate: 95.1,
+                            preOpDiscussionRate: 89.7,
+                            postOpSummaryRate: 88.9,
+                            infectionPreventionRate: 96.5,
+                            rating: 'warning',
+                            ratingText: '警告'
+                        },
+                        {
+                            name: '泌尿外科',
+                            safetyCheckRate: 98.2,
+                            levelManagementRate: 97.0,
+                            preOpDiscussionRate: 94.3,
+                            postOpSummaryRate: 92.7,
+                            infectionPreventionRate: 98.0,
+                            rating: 'good',
+                            ratingText: '良好'
+                        }
+                    ]
+                };
+            }
+
+            getDefaultRealTimeData() {
+                return {
+                    activeSurgeries: 8,
+                    emergencyWaiting: 2,
+                    completedToday: 23,
+                    highRiskSurgeries: 3
+                };
+            }
+
+            renderRealTimePanel() {
+                const realTimeGrid = document.getElementById('realTimeGrid');
+                if (!realTimeGrid) {
+                    console.error('realTimeGrid元素未找到');
+                    return;
+                }
+                
+                const realTimeCards = [
+                    { label: '进行中手术', value: this.realTimeData.activeSurgeries || 0, type: 'surgery' },
+                    { label: '今日完成', value: Math.floor(Math.random() * 20) + 15, type: 'completed' },
+                    { label: '高风险手术', value: Math.floor(this.realTimeData.activeSurgeries * 0.3) || 2, type: 'risk' },
+                    { label: '急诊手术', value: this.realTimeData.emergencyWaiting || 0, type: 'emergency' }
+                ];
+
+                realTimeGrid.innerHTML = realTimeCards.map(card => `
+                    <div class="real-time-card ${card.type}">
+                        <div class="real-time-value">${card.value}</div>
+                        <div class="real-time-label">${card.label}</div>
+                    </div>
+                `).join('');
+            }
+
+            renderStatCards() {
+                const statsGrid = document.getElementById('statsGrid');
+                if (!statsGrid) {
+                    console.error('statsGrid元素未找到');
+                    return;
+                }
+                
+                const stats = [
+                    {
+                        title: '手术安全核查执行率',
+                        value: '99.8%',
+                        change: '↑ 0.3% 较上月',
+                        type: 'excellent',
+                        icon: '✅'
+                    },
+                    {
+                        title: '手术分级管理执行率',
+                        value: '97.5%',
+                        change: '↑ 1.2% 较上月',
+                        type: 'good',
+                        icon: '📊'
+                    },
+                    {
+                        title: '术前讨论执行率',
+                        value: '92.3%',
+                        change: '↓ 0.5% 较上月',
+                        type: 'warning',
+                        icon: '💬'
+                    },
+                    {
+                        title: '死亡病例讨论执行率',
+                        value: '88.9%',
+                        change: '↓ 2.1% 较上月',
+                        type: 'danger',
+                        icon: '⚠️'
+                    }
+                ];
+
+                statsGrid.innerHTML = stats.map(stat => `
+                    <div class="stat-card ${stat.type}" data-metric="${stat.title}">
+                        <div class="stat-header">
+                            <div class="stat-title">${stat.title}</div>
+                            <div class="stat-icon">${stat.icon}</div>
+                        </div>
+                        <div class="stat-value">${stat.value}</div>
+                        <div class="stat-change ${stat.change.includes('↑') ? 'positive' : 'negative'}">${stat.change}</div>
+                    </div>
+                `).join('');
+            }
+
+            renderIndicatorList() {
+                const indicatorList = document.getElementById('indicatorList');
+                const indicators = [
+                    { name: '手术安全核查执行率', current: 99.8, target: 100, trend: 'up' },
+                    { name: '手术并发症发生率', current: 1.2, target: 2.0, trend: 'down' },
+                    { name: '手术感染率', current: 0.8, target: 1.5, trend: 'stable' },
+                    { name: '手术死亡率', current: 0.3, target: 0.5, trend: 'down' },
+                    { name: '术前准备完成率', current: 98.5, target: 95, trend: 'up' }
+                ];
+
+                indicatorList.innerHTML = indicators.map(indicator => `
+                    <div class="indicator-item" data-indicator="${indicator.name}">
+                        <div class="indicator-name">${indicator.name}</div>
+                        <div class="indicator-value">
+                            <span class="indicator-number ${this.getIndicatorStatus(indicator.current, indicator.target)}">${indicator.current}%</span>
+                            <span class="indicator-trend ${indicator.trend}">${this.getTrendIcon(indicator.trend)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            renderRiskMatrix() {
+                const riskMatrix = document.getElementById('riskMatrix');
+                const riskLevels = ['低风险', '中风险', '高风险', '极高风险'];
+                const riskTypes = ['low', 'medium', 'high', 'critical'];
+                const riskCounts = [45, 23, 8, 2]; // 模拟数据
+
+                riskMatrix.innerHTML = riskLevels.map((level, index) => `
+                    <div class="risk-cell ${riskTypes[index]}" title="${level}: ${riskCounts[index]}台">
+                        ${level}<br>${riskCounts[index]}台
+                    </div>
+                `).join('');
+            }
+
+            renderSurgeryTimeline() {
+                const surgeryTimeline = document.getElementById('surgeryTimeline');
+                const surgeries = [
+                    { time: '08:00', surgery: '心脏搭桥手术', status: '进行中', room: '手术室1' },
+                    { time: '09:30', surgery: '脑肿瘤切除', status: '准备中', room: '手术室3' },
+                    { time: '10:00', surgery: '骨折内固定', status: '已完成', room: '手术室2' },
+                    { time: '14:00', surgery: '胆囊切除', status: '计划中', room: '手术室4' },
+                    { time: '15:30', surgery: '阑尾切除', status: '计划中', room: '手术室5' }
+                ];
+
+                surgeryTimeline.innerHTML = surgeries.map(surgery => `
+                    <div class="timeline-item">
+                        <div class="timeline-time">${surgery.time}</div>
+                        <div class="timeline-content">
+                            <div class="timeline-surgery">${surgery.surgery}</div>
+                            <div class="timeline-status">${surgery.status} - ${surgery.room}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            renderDataTable() {
+                const tableBody = document.getElementById('tableBody');
+                if (!tableBody) {
+                    console.error('tableBody元素未找到');
+                    return;
+                }
+                
+                if (!this.surgicalData || !this.surgicalData.departmentData) {
+                    console.error('surgicalData或departmentData未找到，使用默认数据');
+                    this.surgicalData = this.getDefaultSurgicalData();
+                }
+                
+                const departments = this.surgicalData.departmentData;
+
+                tableBody.innerHTML = departments.map(dept => `
+                    <tr data-department="${dept.name}">
+                        <td>${dept.name}</td>
+                        <td>${dept.safetyCheckRate}%</td>
+                        <td>${dept.levelManagementRate}%</td>
+                        <td>${dept.preOpDiscussionRate}%</td>
+                        <td>${dept.postOpSummaryRate}%</td>
+                        <td>${dept.infectionPreventionRate}%</td>
+                        <td><span class="status-badge ${dept.rating.toLowerCase()}">${dept.ratingText}</span></td>
+                    </tr>
+                `).join('');
+            }
+
+            initializeCharts() {
+                this.charts.surgical = echarts.init(document.getElementById('surgicalChart'));
+                this.updateChart('trend');
+            }
+
+            updateChart(type) {
+                this.currentChartType = type;
+                let option;
+
+                switch (type) {
+                    case 'trend':
+                        option = this.getTrendChartOption();
+                        break;
+                    case 'risk':
+                        option = this.getRiskChartOption();
+                        break;
+                    case 'comparison':
+                        option = this.getComparisonChartOption();
+                        break;
+                }
+
+                this.charts.surgical.setOption(option);
+            }
+
+            getTrendChartOption() {
+                return {
+                    title: {
+                        text: '手术质量安全指标月度趋势',
+                        left: 'center',
+                        textStyle: { fontSize: 16, fontWeight: 'normal' }
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: { type: 'cross' }
+                    },
+                    legend: {
+                        data: ['手术安全核查率', '手术分级管理率', '术前讨论率', '死亡病例讨论率'],
+                        bottom: 10
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '15%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+                    },
+                    yAxis: {
+                        type: 'value',
+                        min: 85,
+                        max: 100,
+                        axisLabel: { formatter: '{value}%' }
+                    },
+                    series: [
+                        {
+                            name: '手术安全核查率',
+                            type: 'line',
+                            smooth: true,
+                            data: [99.2, 99.3, 99.4, 99.5, 99.6, 99.7, 99.8, 99.7, 99.8, 99.8, 99.8, 99.8],
+                            itemStyle: { color: '#28a745' }
+                        },
+                        {
+                            name: '手术分级管理率',
+                            type: 'line',
+                            smooth: true,
+                            data: [96.2, 96.5, 96.8, 97.0, 97.2, 97.3, 97.5, 97.3, 97.4, 97.5, 97.5, 97.5],
+                            itemStyle: { color: '#17a2b8' }
+                        },
+                        {
+                            name: '术前讨论率',
+                            type: 'line',
+                            smooth: true,
+                            data: [91.5, 91.8, 92.0, 92.3, 92.5, 92.8, 93.0, 92.8, 92.6, 92.3, 92.3, 92.3],
+                            itemStyle: { color: '#ffc107' }
+                        },
+                        {
+                            name: '死亡病例讨论率',
+                            type: 'line',
+                            smooth: true,
+                            data: [89.2, 89.5, 90.1, 90.8, 91.2, 91.0, 90.8, 90.5, 90.2, 88.9, 88.9, 88.9],
+                            itemStyle: { color: '#dc3545' }
+                        }
+                    ]
+                };
+            }
+
+            getRiskChartOption() {
+                return {
+                    title: {
+                        text: '手术风险分布分析',
+                        left: 'center',
+                        textStyle: { fontSize: 16, fontWeight: 'normal' }
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{a} <br/>{b}: {c} ({d}%)'
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left',
+                        data: ['低风险', '中风险', '高风险', '极高风险']
+                    },
+                    series: [
+                        {
+                            name: '手术风险分布',
+                            type: 'pie',
+                            radius: '50%',
+                            data: [
+                                { value: 45, name: '低风险', itemStyle: { color: '#28a745' } },
+                                { value: 23, name: '中风险', itemStyle: { color: '#ffc107' } },
+                                { value: 8, name: '高风险', itemStyle: { color: '#fd7e14' } },
+                                { value: 2, name: '极高风险', itemStyle: { color: '#dc3545' } }
+                            ],
+                            emphasis: {
+                                itemStyle: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                };
+            }
+
+            getComparisonChartOption() {
+                return {
+                    title: {
+                        text: '各科室手术质量对比',
+                        left: 'center',
+                        textStyle: { fontSize: 16, fontWeight: 'normal' }
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: { type: 'shadow' }
+                    },
+                    legend: {
+                        data: ['安全核查率', '分级管理率', '术前讨论率'],
+                        bottom: 10
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '15%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: ['心胸外科', '神经外科', '骨科', '普通外科', '泌尿外科']
+                    },
+                    yAxis: {
+                        type: 'value',
+                        min: 85,
+                        max: 100,
+                        axisLabel: { formatter: '{value}%' }
+                    },
+                    series: [
+                        {
+                            name: '安全核查率',
+                            type: 'bar',
+                            data: [100.0, 99.8, 99.5, 99.2, 99.7],
+                            itemStyle: { color: '#28a745' }
+                        },
+                        {
+                            name: '分级管理率',
+                            type: 'bar',
+                            data: [99.2, 98.7, 97.1, 96.5, 98.1],
+                            itemStyle: { color: '#17a2b8' }
+                        },
+                        {
+                            name: '术前讨论率',
+                            type: 'bar',
+                            data: [98.5, 96.2, 93.8, 91.3, 94.6],
+                            itemStyle: { color: '#ffc107' }
+                        }
+                    ]
+                };
+            }
+
+            bindEvents() {
+                // 图表控制按钮事件
+                document.querySelectorAll('.chart-control-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.chart-control-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.updateChart(e.target.dataset.type);
+                    });
+                });
+
+                // 统计卡片点击事件
+                document.querySelectorAll('.stat-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const metric = e.currentTarget.dataset.metric;
+                        this.highlightMetric(metric);
+                    });
+                });
+
+                // 指标项点击事件
+                document.querySelectorAll('.indicator-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const indicator = e.currentTarget.dataset.indicator;
+                        this.showIndicatorDetail(indicator);
+                    });
+                });
+
+                // 表格行点击事件
+                document.querySelectorAll('#tableBody tr').forEach(row => {
+                    row.addEventListener('click', (e) => {
+                        document.querySelectorAll('#tableBody tr').forEach(r => r.classList.remove('selected'));
+                        e.currentTarget.classList.add('selected');
+                        const department = e.currentTarget.dataset.department;
+                        this.showDepartmentDetail(department);
+                    });
+                });
+
+                // 搜索和筛选事件
+                document.getElementById('searchInput').addEventListener('input', (e) => {
+                    this.filterTable(e.target.value);
+                });
+
+                document.getElementById('departmentFilter').addEventListener('change', (e) => {
+                    this.filterByDepartment(e.target.value);
+                });
+
+                // 窗口大小调整事件
+                window.addEventListener('resize', () => {
+                    Object.values(this.charts).forEach(chart => chart.resize());
+                });
+            }
+
+            startRealTimeUpdates() {
+                // 每30秒更新实时数据
+                setInterval(() => {
+                    this.updateRealTimeData();
+                }, 30000);
+            }
+
+            updateRealTimeData() {
+                this.realTimeData = this.dataSimulator.generateRealTimeSurgicalData();
+                this.renderRealTimePanel();
+            }
+
+            getIndicatorStatus(current, target) {
+                if (current >= target + 2) return 'excellent';
+                if (current >= target) return 'good';
+                if (current >= target - 2) return 'warning';
+                return 'danger';
+            }
+
+            getTrendIcon(trend) {
+                switch (trend) {
+                    case 'up': return '↑';
+                    case 'down': return '↓';
+                    case 'stable': return '→';
+                    default: return '→';
+                }
+            }
+
+            highlightMetric(metric) {
+                console.log(`高亮显示指标: ${metric}`);
+                // 在图表中高亮显示相关数据
+            }
+
+            showIndicatorDetail(indicator) {
+                console.log(`显示指标详情: ${indicator}`);
+                // 显示指标的详细信息和历史趋势
+            }
+
+            showDepartmentDetail(department) {
+                console.log(`显示科室详情: ${department}`);
+                // 显示科室的详细质量数据
+            }
+
+            filterTable(searchTerm) {
+                const rows = document.querySelectorAll('#tableBody tr');
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm.toLowerCase()) ? '' : 'none';
+                });
+            }
+
+            filterByDepartment(department) {
+                const rows = document.querySelectorAll('#tableBody tr');
+                rows.forEach(row => {
+                    if (department === 'all') {
+                        row.style.display = '';
+                    } else {
+                        const deptName = row.cells[0].textContent;
+                        const shouldShow = this.departmentMatches(deptName, department);
+                        row.style.display = shouldShow ? '' : 'none';
+                    }
+                });
+            }
+
+            departmentMatches(deptName, filter) {
+                const filterMap = {
+                    'surgery': ['外科', '心胸外科', '神经外科', '普通外科', '泌尿外科'],
+                    'orthopedics': ['骨科'],
+                    'neurosurgery': ['神经外科'],
+                    'cardiac': ['心胸外科']
+                };
+                return filterMap[filter]?.some(dept => deptName.includes(dept)) || false;
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 等待导航组件加载完成
+            const checkNavigation = setInterval(() => {
+                if (document.getElementById('navigation-container').innerHTML.trim() !== '') {
+                    clearInterval(checkNavigation);
+                    // 初始化手术质量安全监测页面
+                    new SurgicalQualityMonitor();
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>

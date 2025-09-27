@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组件库管理 - HMS医院管理系统</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/common.css">
+    <style>
+        .component-library {
+            width: 100%;
+            min-height: calc(100vh - 48px);
+            box-sizing: border-box;
+        }
+        .library-header {
+            text-align: left;
+            margin-bottom: clamp(8px, 1vh, 12px);
+            padding: clamp(6px, 0.8vh, 10px) clamp(10px, 1.2vw, 16px);
+            background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
+            color: white;
+            border-radius: clamp(3px, 0.25vw, 6px);
+            box-shadow: 0 2px 8px rgba(0, 120, 212, 0.2);
+        }
+        .library-header h1 {
+            margin: 0 0 clamp(1px, 0.2vh, 2px) 0;
+            font-size: clamp(1em, 1.5vw, 1.4em);
+            font-weight: 500;
+        }
+        .library-header p {
+            margin: 0;
+            font-size: clamp(0.8em, 1vw, 1em);
+            opacity: 0.9;
+        }
+        .library-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: clamp(12px, 1.5vw, 20px);
+            margin-bottom: clamp(16px, 2vh, 20px);
+        }
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: clamp(12px, 1.5vh, 16px) clamp(16px, 1.5vw, 20px);
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e1e5e9;
+            min-height: clamp(80px, 10vh, 100px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .stat-number {
+            font-size: clamp(1.5em, 2vw, 2.2em);
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: clamp(4px, 0.5vh, 8px);
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: clamp(0.85em, 1.2vw, 1.1em);
+            font-weight: 500;
+        }
+        .loading {
+            text-align: center;
+            padding: 30px 20px;
+            color: #6c757d;
+        }
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: clamp(12px, 1.5vw, 18px);
+        }
+        .component-card {
+            background: white;
+            border-radius: clamp(4px, 0.3vw, 8px);
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+            padding: clamp(16px, 2vh, 24px);
+            border: 1px solid #e9ecef;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+            box-sizing: border-box;
+            min-height: clamp(160px, 20vh, 220px);
+            display: flex;
+            flex-direction: column;
+        }
+        .component-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        /* 病种效益组件特殊样式 */
+        .component-card[data-component-id="disease-benefit-analysis"] {
+            /* 移除特殊宽度设置，使用默认网格布局 */
+        }
+        .component-card[data-component-id="disease-benefit-analysis"] .component-title {
+            font-size: clamp(1.1em, 1.5vw, 1.4em);
+            line-height: 1.2;
+        }
+        .component-card[data-component-id="disease-benefit-analysis"] .component-description {
+            font-size: clamp(13px, 1.5vh, 15px);
+            line-height: 1.6;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        .component-card[data-component-id="disease-benefit-analysis"] .component-actions {
+            margin-top: auto;
+            flex-wrap: nowrap;
+            gap: clamp(4px, 0.8vh, 8px);
+        }
+        .component-card[data-component-id="disease-benefit-analysis"] .action-btn {
+            padding: clamp(4px, 0.5vh, 6px) clamp(6px, 0.8vw, 10px);
+            font-size: clamp(0.65em, 0.8vw, 0.75em);
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .content-layout {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(16px, 2vh, 24px);
+        }
+        .controls-container {
+            width: 100%;
+            max-width: 600px;
+        }
+        .components-container {
+            width: 100%;
+        }
+        .controls-bar {
+            background: white;
+            padding: clamp(8px, 1vh, 12px);
+            border-radius: clamp(4px, 0.3vw, 6px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            margin-bottom: clamp(10px, 1.2vh, 16px);
+            border: 1px solid #e9ecef;
+            box-sizing: border-box;
+        }
+        .search-section {
+            display: flex;
+            align-items: center;
+            gap: clamp(6px, 0.8vw, 10px);
+            margin-bottom: clamp(6px, 0.8vh, 8px);
+            width: 100%;
+        }
+        .search-input {
+            flex: 1;
+            padding: clamp(6px, 0.8vh, 8px) clamp(8px, 0.8vw, 12px);
+            border: 1px solid #e9ecef;
+            border-radius: clamp(3px, 0.2vw, 5px);
+            font-size: clamp(12px, 0.9vw, 14px);
+            transition: border-color 0.2s ease;
+            min-width: 0;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            border-color: #667eea;
+        }
+        .clear-btn {
+            padding: 4px 8px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .clear-btn:hover {
+            background: #5a6268;
+        }
+        .filters-section {
+            display: flex;
+            gap: clamp(6px, 0.8vw, 10px);
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        .filter-select {
+            padding: clamp(4px, 0.6vh, 6px) clamp(8px, 0.8vw, 10px);
+            border: 1px solid #e9ecef;
+            border-radius: clamp(3px, 0.2vw, 5px);
+            background: white;
+            font-size: clamp(11px, 0.8vw, 13px);
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+            flex: 1;
+            min-width: min(100px, 100%);
+        }
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .component-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .component-title {
+            margin: 0;
+            color: #2c3e50;
+            font-size: clamp(1.1em, 1.5vw, 1.4em);
+            font-weight: 600;
+        }
+        .component-version {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+        .component-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        .status-stable {
+            background: #28a745;
+            color: white;
+        }
+        .status-beta {
+            background: #ffc107;
+            color: #212529;
+        }
+        .status-deprecated {
+            background: #dc3545;
+            color: white;
+        }
+        .component-description {
+            color: #6c757d;
+            margin-bottom: clamp(10px, 1.5vh, 16px);
+            line-height: 1.6;
+            font-size: clamp(13px, 1.5vh, 15px);
+            flex-grow: 1;
+        }
+        .component-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: clamp(12px, 1.5vh, 18px);
+            margin-top: auto;
+        }
+        .component-tag {
+            background: #f8f9fa;
+            color: #495057;
+            padding: clamp(4px, 0.5vh, 6px) clamp(8px, 1vh, 12px);
+            border-radius: 6px;
+            font-size: clamp(11px, 1.2vh, 13px);
+            border: 1px solid #e9ecef;
+        }
+        .component-actions {
+             display: flex;
+             gap: clamp(8px, 1vh, 12px);
+             margin-top: auto;
+             flex-wrap: wrap;
+         }
+         .component-meta {
+             background: #f8f9fa;
+             padding: 12px;
+             border-radius: 8px;
+             margin: 15px 0;
+             border: 1px solid #e9ecef;
+         }
+         .meta-item {
+             display: flex;
+             justify-content: space-between;
+             margin-bottom: 6px;
+         }
+         .meta-item:last-child {
+             margin-bottom: 0;
+         }
+         .meta-label {
+             font-weight: 500;
+             color: #6c757d;
+         }
+         .meta-value {
+             color: #495057;
+         }
+         .component-dependencies {
+             margin: 15px 0;
+             padding: 12px;
+             background: #fff3cd;
+             border: 1px solid #ffeaa7;
+             border-radius: 8px;
+         }
+         .component-dependencies h4 {
+             margin: 0 0 8px 0;
+             font-size: 0.9em;
+             color: #856404;
+         }
+         .component-dependencies ul {
+             margin: 0;
+             padding-left: 20px;
+         }
+         .component-dependencies li {
+             color: #856404;
+             font-size: 0.85em;
+             margin-bottom: 4px;
+         }
+         .component-api {
+             margin: 15px 0;
+             padding: 12px;
+             background: #d1ecf1;
+             border: 1px solid #bee5eb;
+             border-radius: 8px;
+         }
+         .component-api h4 {
+             margin: 0 0 8px 0;
+             font-size: 0.9em;
+             color: #0c5460;
+         }
+         .component-api p {
+             margin: 4px 0;
+             font-size: 0.85em;
+             color: #0c5460;
+         }
+        .action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.2s ease;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        .btn-outline {
+            background: transparent;
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        .no-results h3 {
+             margin-bottom: 10px;
+             color: #495057;
+         }
+         @keyframes slideIn {
+             from {
+                 transform: translateX(100%);
+                 opacity: 0;
+             }
+             to {
+                 transform: translateX(0);
+                 opacity: 1;
+             }
+         }
+         @keyframes slideOut {
+             from {
+                 transform: translateX(0);
+                 opacity: 1;
+             }
+             to {
+                 transform: translateX(100%);
+                 opacity: 0;
+             }
+         }
+
+         /* 模态窗口样式 */
+         .demo-modal {
+             position: fixed;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+             background: rgba(0, 0, 0, 0.5);
+             z-index: 10000;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             opacity: 0;
+             visibility: hidden;
+             transition: all 0.3s ease;
+         }
+
+         .demo-modal.show {
+             opacity: 1;
+             visibility: visible;
+         }
+
+         .demo-modal-content {
+             background: white;
+             border-radius: 8px;
+             width: 95%;
+             height: 90%;
+             max-width: 1400px;
+             max-height: 900px;
+             display: flex;
+             flex-direction: column;
+             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+             transform: scale(0.9);
+             transition: transform 0.3s ease;
+         }
+
+         .demo-modal.show .demo-modal-content {
+             transform: scale(1);
+         }
+
+         .demo-modal-header {
+             padding: 20px;
+             border-bottom: 1px solid #e9ecef;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             background: #f8f9fa;
+             border-radius: 8px 8px 0 0;
+         }
+
+         .demo-modal-header h3 {
+             margin: 0;
+             color: #333;
+             font-size: 1.25rem;
+         }
+
+         .demo-modal-close {
+             background: none;
+             border: none;
+             font-size: 24px;
+             cursor: pointer;
+             color: #6c757d;
+             padding: 0;
+             width: 30px;
+             height: 30px;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             border-radius: 50%;
+             transition: all 0.2s ease;
+         }
+
+         .demo-modal-close:hover {
+             background: #e9ecef;
+             color: #333;
+         }
+
+         .demo-modal-body {
+             flex: 1;
+             padding: 0;
+             overflow: hidden;
+         }
+
+         .demo-modal-body iframe {
+             border-radius: 0 0 8px 8px;
+         }
+
+         /* 教程内容样式 */
+         .tutorial-content {
+             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+             line-height: 1.6;
+             color: #333;
+             padding: 20px;
+             max-height: 70vh;
+             overflow-y: auto;
+         }
+
+         .tutorial-section {
+             margin-bottom: 30px;
+             padding-bottom: 20px;
+             border-bottom: 1px solid #eee;
+         }
+
+         .tutorial-section:last-child {
+             border-bottom: none;
+         }
+
+         .tutorial-section h4 {
+             color: #2c3e50;
+             margin-bottom: 15px;
+             font-size: 18px;
+             font-weight: 600;
+         }
+
+         .tutorial-section h5 {
+             color: #34495e;
+             margin: 15px 0 10px 0;
+             font-size: 14px;
+             font-weight: 600;
+         }
+
+         .tutorial-section p {
+             margin-bottom: 15px;
+             color: #555;
+         }
+
+         .code-block {
+             margin: 15px 0;
+             background: #f8f9fa;
+             border-radius: 6px;
+             overflow: hidden;
+         }
+
+         .code-block pre {
+             margin: 0;
+             padding: 15px;
+             background: #2d3748;
+             color: #e2e8f0;
+             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+             font-size: 13px;
+             line-height: 1.5;
+             overflow-x: auto;
+         }
+
+         .code-block code {
+             background: none;
+             color: inherit;
+             padding: 0;
+             font-size: inherit;
+         }
+
+         .config-table {
+             width: 100%;
+             border-collapse: collapse;
+             margin: 15px 0;
+             font-size: 14px;
+         }
+
+         .config-table th,
+         .config-table td {
+             padding: 12px;
+             text-align: left;
+             border-bottom: 1px solid #ddd;
+         }
+
+         .config-table th {
+             background-color: #f8f9fa;
+             font-weight: 600;
+             color: #2c3e50;
+         }
+
+         .config-table tr:hover {
+             background-color: #f8f9fa;
+         }
+
+         .feature-list {
+             list-style: none;
+             padding: 0;
+         }
+
+         .feature-list li {
+             padding: 8px 0;
+             border-bottom: 1px solid #f0f0f0;
+         }
+
+         .feature-list li:last-child {
+             border-bottom: none;
+         }
+
+         .feature-list strong {
+             color: #2c3e50;
+         }
+
+        /* 高分辨率屏幕优化布局 */
+        @media (min-width: 2560px) {
+            /* 4K及以上超高分辨率 */
+            .components-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: clamp(16px, 1.5vw, 24px);
+            }
+        }
+
+        @media (min-width: 1920px) and (max-width: 2559px) {
+            /* 2K高分辨率 */
+            .components-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: clamp(14px, 1.2vw, 20px);
+            }
+        }
+
+        @media (min-width: 1400px) and (max-width: 1919px) {
+            /* 大屏幕 */
+            .components-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) and (max-width: 1399px) {
+            .components-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1199px) {
+            .components-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 600px) and (max-width: 768px) {
+            .components-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 599px) {
+            .components-grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="navigation-container"></div>
+    
+    <div class="container">
+        <!-- 主要内容区域 -->
+        <div class="main-content">
+            <!-- 右侧内容区 -->
+            <div class="content-wrapper">
+                <!-- 主内容区域 -->
+                <main class="content">
+                    <div id="dashboard" class="page-header" style="margin-bottom: 16px; padding-bottom: 12px;">
+                        <h2>组件库管理 <span class="english-title">Component Library Management</span></h2>
+                        <div class="breadcrumb">
+                            <span>组件库</span>
+                        </div>
+                    </div>
+                    
+                    <div class="component-library">
+                        <div class="library-header">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h1>HMS医院管理系统组件库</h1>
+                                    <p>统一管理和使用系统组件</p>
+                                </div>
+                                <div style="display: flex; gap: 10px;">
+                                    <button onclick="uploadComponent()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; font-size: 14px;">
+                                        <i class="fas fa-upload"></i> 上传组件
+                                    </button>
+                                    <button onclick="createComponent()" style="background: #17a2b8; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; font-size: 14px;">
+                                        <i class="fas fa-plus"></i> 创建组件
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                <div class="library-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalComponents">0</div>
+                        <div class="stat-label">总组件数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stableComponents">0</div>
+                        <div class="stat-label">稳定版本</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="betaComponents">0</div>
+                        <div class="stat-label">测试版本</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="categoriesCount">0</div>
+                        <div class="stat-label">组件分类</div>
+                    </div>
+                </div>
+
+                <!-- 控制栏和组件网格容器 -->
+                <div class="content-layout">
+                    <!-- 搜索和筛选控制栏 -->
+                    <div class="controls-container">
+                        <div class="controls-bar">
+                            <div class="search-section">
+                                <input type="text" id="searchInput" placeholder="搜索组件名称、描述或标签..." class="search-input">
+                                <button id="clearSearch" class="clear-btn" style="display: none;">清除</button>
+                            </div>
+                            <div class="filters-section">
+                                <select id="categoryFilter" class="filter-select">
+                                    <option value="">所有分类</option>
+                                </select>
+                                <select id="statusFilter" class="filter-select">
+                                    <option value="">所有状态</option>
+                                    <option value="stable">稳定版本</option>
+                                    <option value="beta">测试版本</option>
+                                    <option value="deprecated">已废弃</option>
+                                </select>
+                                <select id="sortBy" class="filter-select">
+                                    <option value="name">按名称排序</option>
+                                    <option value="created">按创建时间</option>
+                                    <option value="updated">按更新时间</option>
+                                    <option value="category">按分类</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 组件展示区域 -->
+                    <div class="components-container">
+                        <div id="loadingState" class="loading">
+                            <p>正在加载组件库...</p>
+                        </div>
+
+                        <div id="componentsGrid" class="components-grid" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/echarts.min.js"></script>
+    <script src="./js/navigation-loader.js"></script>
+    <script>
+        class ComponentLibraryManager {
+            constructor() {
+                this.components = [];
+                this.filteredComponents = [];
+                this.currentFilters = {
+                    search: '',
+                    category: '',
+                    status: '',
+                    sortBy: 'name'
+                };
+                this.init();
+            }
+
+            async init() {
+                try {
+                    await this.loadComponentData();
+                    this.setupEventListeners();
+                    this.populateCategoryFilter();
+                    this.applyFilters();
+                    this.updateStatistics();
+                    document.getElementById('loadingState').style.display = 'none';
+                } catch (error) {
+                    console.error('初始化组件库失败:', error);
+                    this.showError('加载组件库数据失败');
+                }
+            }
+
+            async loadComponentData() {
+                try {
+                    const response = await fetch('../data/component-library.json');
+                    if (!response.ok) {
+                        throw new Error('HTTP error! status: ' + response.status);
+                    }
+                    const data = await response.json();
+                    this.components = data.components || [];
+                    this.filteredComponents = [...this.components];
+                } catch (error) {
+                    console.error('加载组件数据失败:', error);
+                    throw error;
+                }
+            }
+
+            setupEventListeners() {
+                const searchInput = document.getElementById('searchInput');
+                const clearSearch = document.getElementById('clearSearch');
+                const categoryFilter = document.getElementById('categoryFilter');
+                const statusFilter = document.getElementById('statusFilter');
+                const sortBy = document.getElementById('sortBy');
+
+                // 搜索功能
+                searchInput.addEventListener('input', (e) => {
+                    this.currentFilters.search = e.target.value.toLowerCase();
+                    clearSearch.style.display = e.target.value ? 'block' : 'none';
+                    this.applyFilters();
+                });
+
+                // 清除搜索
+                clearSearch.addEventListener('click', () => {
+                    searchInput.value = '';
+                    this.currentFilters.search = '';
+                    clearSearch.style.display = 'none';
+                    this.applyFilters();
+                });
+
+                // 筛选器
+                categoryFilter.addEventListener('change', (e) => {
+                    this.currentFilters.category = e.target.value;
+                    this.applyFilters();
+                });
+
+                statusFilter.addEventListener('change', (e) => {
+                    this.currentFilters.status = e.target.value;
+                    this.applyFilters();
+                });
+
+                sortBy.addEventListener('change', (e) => {
+                    this.currentFilters.sortBy = e.target.value;
+                    this.applyFilters();
+                });
+            }
+
+            populateCategoryFilter() {
+                const categories = [...new Set(this.components.map(c => c.category))];
+                const categoryFilter = document.getElementById('categoryFilter');
+                
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    categoryFilter.appendChild(option);
+                });
+            }
+
+            applyFilters() {
+                let filtered = [...this.components];
+
+                // 搜索过滤
+                if (this.currentFilters.search) {
+                    filtered = filtered.filter(component => {
+                        const searchTerm = this.currentFilters.search;
+                        return component.name.toLowerCase().includes(searchTerm) ||
+                               component.description.toLowerCase().includes(searchTerm) ||
+                               (component.tags && component.tags.some(tag => tag.toLowerCase().includes(searchTerm)));
+                    });
+                }
+
+                // 分类过滤
+                if (this.currentFilters.category) {
+                    filtered = filtered.filter(component => component.category === this.currentFilters.category);
+                }
+
+                // 状态过滤
+                if (this.currentFilters.status) {
+                    filtered = filtered.filter(component => component.status === this.currentFilters.status);
+                }
+
+                // 排序
+                filtered.sort((a, b) => {
+                    switch (this.currentFilters.sortBy) {
+                        case 'name':
+                            return a.name.localeCompare(b.name);
+                        case 'created':
+                            return new Date(b.created_date) - new Date(a.created_date);
+                        case 'updated':
+                            return new Date(b.updated_date) - new Date(a.updated_date);
+                        case 'category':
+                            return a.category.localeCompare(b.category);
+                        default:
+                            return 0;
+                    }
+                });
+
+                this.filteredComponents = filtered;
+                this.renderComponents();
+            }
+
+            renderComponents() {
+                const loadingState = document.getElementById('loadingState');
+                const componentsGrid = document.getElementById('componentsGrid');
+
+                loadingState.style.display = 'none';
+                componentsGrid.style.display = 'grid';
+                componentsGrid.innerHTML = '';
+
+                if (this.filteredComponents.length === 0) {
+                    componentsGrid.innerHTML = `
+                        <div class="no-results" style="grid-column: 1 / -1;">
+                            <h3>未找到匹配的组件</h3>
+                            <p>请尝试调整搜索条件或筛选器</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                this.filteredComponents.forEach(component => {
+                    const card = this.createComponentCard(component);
+                    componentsGrid.appendChild(card);
+                });
+            }
+
+            createComponentCard(component) {
+                 const card = document.createElement('div');
+                 card.className = 'component-card';
+                 card.setAttribute('data-component-id', component.id);
+                 
+                 const statusClass = `status-${component.status}`;
+                 const statusText = {
+                     'stable': '稳定版本',
+                     'beta': '测试版本',
+                     'deprecated': '已废弃'
+                 }[component.status] || component.status;
+
+                 const tagsHtml = component.tags ? 
+                     component.tags.map(tag => `<span class="component-tag">${tag}</span>`).join('') : '';
+
+                 // 依赖信息
+                 const dependenciesHtml = component.dependencies && component.dependencies.length > 0 ? 
+                     `<div class="component-dependencies">
+                         <h4>依赖项：</h4>
+                         <ul>
+                             ${component.dependencies.map(dep => 
+                                 `<li>${dep.name} v${dep.version} ${dep.required ? '(必需)' : '(可选)'}</li>`
+                             ).join('')}
+                         </ul>
+                     </div>` : '';
+
+                 // API信息
+                 const apiHtml = component.api ? 
+                     `<div class="component-api">
+                         <h4>API信息：</h4>
+                         <p><strong>类名：</strong>${component.api.className}</p>
+                         <p><strong>方法数：</strong>${component.api.methods ? component.api.methods.length : 0}</p>
+                     </div>` : '';
+
+                 // 作者和日期信息
+                 const metaHtml = `
+                     <div class="component-meta">
+                         <div class="meta-item">
+                             <span class="meta-label">作者：</span>
+                             <span class="meta-value">${component.author || '未知'}</span>
+                         </div>
+                         <div class="meta-item">
+                             <span class="meta-label">创建：</span>
+                             <span class="meta-value">${this.formatDate(component.createDate)}</span>
+                         </div>
+                         <div class="meta-item">
+                             <span class="meta-label">更新：</span>
+                             <span class="meta-value">${this.formatDate(component.updateDate)}</span>
+                         </div>
+                     </div>
+                 `;
+
+                 card.innerHTML = `
+                     <div class="component-header">
+                         <h3 class="component-title">${component.name}</h3>
+                         <div>
+                             <span class="component-version">v${component.version}</span>
+                             <span class="component-status ${statusClass}">${statusText}</span>
+                         </div>
+                     </div>
+                     <p class="component-description">${component.description}</p>
+                     <div class="component-tags">${tagsHtml}</div>
+                     ${metaHtml}
+                     ${dependenciesHtml}
+                     ${apiHtml}
+                     <div class="component-actions">
+                         <button class="action-btn btn-primary" onclick="viewDemo('${component.id}')">查看演示</button>
+                         <button class="action-btn btn-secondary" onclick="viewTutorial('${component.id}')">使用教程</button>
+                         <button class="action-btn btn-outline" onclick="copyUsage('${component.id}')">复制代码</button>
+                         <button class="action-btn btn-outline" onclick="viewDetails('${component.id}')">详细信息</button>
+                     </div>
+                 `;
+
+                 return card;
+             }
+
+             formatDate(dateString) {
+                 if (!dateString) return '未知';
+                 const date = new Date(dateString);
+                 return date.toLocaleDateString('zh-CN');
+             }
+
+            updateStatistics() {
+                const categories = [...new Set(this.components.map(c => c.category))];
+                const stats = {
+                    total: this.components.length,
+                    stable: this.components.filter(c => c.status === 'stable').length,
+                    beta: this.components.filter(c => c.status === 'beta').length,
+                    categories: categories.length
+                };
+
+                document.getElementById('totalComponents').textContent = stats.total;
+                document.getElementById('stableComponents').textContent = stats.stable;
+                document.getElementById('betaComponents').textContent = stats.beta;
+                document.getElementById('categoriesCount').textContent = stats.categories;
+            }
+
+            showError(message) {
+                const loadingState = document.getElementById('loadingState');
+                loadingState.innerHTML = `<div style="text-align: center; color: #dc3545;"><h3>加载失败</h3><p>${message}</p></div>`;
+            }
+
+            getComponentById(id) {
+                return this.components.find(c => c.id === id);
+            }
+        }
+
+        // 全局函数
+        function viewDemo(componentId) {
+            if (componentId === 'disease-benefit-analysis') {
+                showDiseaseBenefitDemo();
+            } else {
+                showNotification(`正在打开 ${componentId} 的演示页面...`);
+                // 跳转到演示页面
+                setTimeout(() => {
+                    window.open(`component-demo.html?id=${componentId}`, '_blank');
+                }, 500);
+            }
+        }
+
+        function showDiseaseBenefitDemo() {
+            // 创建模态窗口
+            const modal = document.createElement('div');
+            modal.className = 'demo-modal';
+            modal.innerHTML = `
+                <div class="demo-modal-content">
+                    <div class="demo-modal-header">
+                        <h3>病种效益分析组件演示</h3>
+                        <button class="demo-modal-close" onclick="closeDemoModal()">&times;</button>
+                    </div>
+                    <div class="demo-modal-body">
+                        <iframe id="demo-iframe" src="./components/disease-benefit/disease-benefit.html" 
+                                frameborder="0" width="100%" height="100%"></iframe>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 显示模态窗口
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+        }
+
+        function closeDemoModal() {
+            const modal = document.querySelector('.demo-modal');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(modal);
+                }, 300);
+            }
+        }
+
+        function viewTutorial(componentId) {
+            if (componentId === 'disease-benefit-analysis') {
+                showDiseaseBenefitTutorial();
+            } else {
+                showNotification(`正在打开 ${componentId} 的使用教程...`);
+                // 跳转到教程页面
+                setTimeout(() => {
+                    window.open(`component-tutorial.html?id=${componentId}`, '_blank');
+                }, 500);
+            }
+        }
+
+        function showDiseaseBenefitTutorial() {
+            // 创建教程模态窗口
+            const modal = document.createElement('div');
+            modal.className = 'demo-modal';
+            modal.innerHTML = `
+                <div class="demo-modal-content">
+                    <div class="demo-modal-header">
+                        <h3>病种效益分析组件 - 使用教程</h3>
+                        <button class="demo-modal-close" onclick="closeDemoModal()">&times;</button>
+                    </div>
+                    <div class="demo-modal-body tutorial-content">
+                        <div class="tutorial-section">
+                            <h4>📋 组件简介</h4>
+                            <p>病种效益分析组件是一个功能完整的数据可视化组件，用于展示和分析医院各病种的经济效益数据。</p>
+                        </div>
+                        
+                        <div class="tutorial-section">
+                            <h4>🚀 快速开始</h4>
+                            <div class="code-block">
+                                <h5>1. 引入文件</h5>
+                                <pre><code>&lt;!-- 引入ECharts (本地文件) --&gt;
+&lt;script src="./js/echarts.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- 引入组件文件 --&gt;
+&lt;link rel="stylesheet" href="./components/disease-benefit/disease-benefit.css"&gt;
+&lt;script src="./components/disease-benefit/disease-benefit.js"&gt;&lt;/script&gt;</code></pre>
+                            </div>
+                            
+                            <div class="code-block">
+                                <h5>2. 创建容器</h5>
+                                <pre><code>&lt;div id="disease-benefit-container"&gt;&lt;/div&gt;</code></pre>
+                            </div>
+                            
+                            <div class="code-block">
+                                <h5>3. 初始化组件</h5>
+                                <pre><code>const component = new DiseaseBenefitComponent('disease-benefit-container', {
+    apiUrl: '/api/disease-benefit',
+    autoInit: true,
+    autoLoad: true,
+    enableExport: true,
+    enableAIInsight: true
+});</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="tutorial-section">
+                            <h4>⚙️ 配置选项</h4>
+                            <table class="config-table">
+                                <thead>
+                                    <tr>
+                                        <th>参数</th>
+                                        <th>类型</th>
+                                        <th>默认值</th>
+                                        <th>说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>containerId</td>
+                                        <td>string</td>
+                                        <td>'disease-benefit-component'</td>
+                                        <td>容器ID</td>
+                                    </tr>
+                                    <tr>
+                                        <td>apiUrl</td>
+                                        <td>string</td>
+                                        <td>'/api/disease-benefit'</td>
+                                        <td>数据接口地址</td>
+                                    </tr>
+                                    <tr>
+                                        <td>autoInit</td>
+                                        <td>boolean</td>
+                                        <td>true</td>
+                                        <td>自动初始化</td>
+                                    </tr>
+                                    <tr>
+                                        <td>autoLoad</td>
+                                        <td>boolean</td>
+                                        <td>true</td>
+                                        <td>自动加载数据</td>
+                                    </tr>
+                                    <tr>
+                                        <td>enableExport</td>
+                                        <td>boolean</td>
+                                        <td>true</td>
+                                        <td>启用数据导出</td>
+                                    </tr>
+                                    <tr>
+                                        <td>enableAIInsight</td>
+                                        <td>boolean</td>
+                                        <td>true</td>
+                                        <td>启用AI洞察</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="tutorial-section">
+                            <h4>🎯 主要功能</h4>
+                            <ul class="feature-list">
+                                <li><strong>数据可视化</strong>：支持多种图表类型（柱状图、饼图、趋势图等）</li>
+                                <li><strong>智能筛选</strong>：支持按科室、病种、时间范围等多维度筛选</li>
+                                <li><strong>数据表格</strong>：可排序、可分页的数据表格展示</li>
+                                <li><strong>数据导出</strong>：支持Excel格式数据导出</li>
+                                <li><strong>详情查看</strong>：病种详情弹窗和医生画像功能</li>
+                                <li><strong>AI洞察</strong>：智能分析和建议功能</li>
+                                <li><strong>响应式设计</strong>：适配各种屏幕尺寸</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tutorial-section">
+                            <h4>📞 数据源配置</h4>
+                            
+                            <div class="code-block">
+                                <h5>1. API接口地址</h5>
+                                <pre><code>GET /api/disease-benefit
+参数：
+- department: 科室筛选 (可选)
+- dateRange: 时间范围 (可选，格式: YYYY-MM-DD,YYYY-MM-DD)
+- diseaseCode: 病种代码筛选 (可选)</code></pre>
+                            </div>
+                            
+                            <div class="code-block">
+                                <h5>2. 返回数据格式</h5>
+                                <pre><code>{
+  "success": true,
+  "data": {
+    "diseases": [
+      {
+        "code": "I21",           // 病种代码 (ICD-10)
+        "name": "急性心肌梗死",    // 病种名称
+        "department": "心内科",   // 所属科室
+        "revenue": 1250000,      // 总收入 (元)
+        "cost": 980000,          // 总成本 (元)
+        "profit": 270000,        // 净利润 (元)
+        "cases": 45,             // 病例数
+        "avgStay": 8.5,          // 平均住院天数
+        "avgCost": 21777.78,     // 平均费用
+        "profitRate": 0.216,     // 利润率
+        "doctors": [             // 主治医生列表
+          {
+            "id": "D001",
+            "name": "张医生",
+            "cases": 15,
+            "avgStay": 7.8
+          }
+        ]
+      }
+    ],
+    "summary": {               // 汇总数据
+      "totalRevenue": 5680000,
+      "totalCost": 4320000,
+      "totalProfit": 1360000,
+      "totalCases": 186,
+      "avgProfitRate": 0.239
+    },
+    "departments": [           // 科室列表 (用于筛选)
+      "心内科", "神经内科", "骨科", "普外科"
+    ]
+  }
+}</code></pre>
+                            </div>
+                            
+                            <div class="code-block">
+                                <h5>3. 模拟数据配置</h5>
+                                <pre><code>// 如果没有后端API，可以使用模拟数据
+const component = new DiseaseBenefitComponent('container', {
+    apiUrl: null,  // 设置为null使用模拟数据
+    mockData: {
+        diseases: [
+            {
+                id: 1,
+                code: "I21",
+                name: "急性心肌梗死",
+                department: "心内科",
+                revenue: 1250000,        // 总收入
+                cost: 980000,           // 总成本
+                profit: 270000,         // 总结余
+                cases: 45,              // 病例数
+                avgRevenue: 27777.78,   // 平均收入 (revenue/cases)
+                avgCost: 21777.78,      // 平均成本 (cost/cases)
+                avgProfit: 6000.00,     // 平均结余 (profit/cases)
+                profitRate: 21.6,       // 结余率 (profit/revenue*100)
+                breakevenCases: 38,     // 保本例数
+                avgStay: 8.5,           // 平均住院天数
+                recordDate: "2024-01-15",
+                doctorId: "DOC001"
+            },
+            {
+                id: 2,
+                code: "E11",
+                name: "2型糖尿病",
+                department: "内分泌科",
+                revenue: 890000,
+                cost: 720000,
+                profit: 170000,
+                cases: 120,
+                avgRevenue: 7416.67,
+                avgCost: 6000.00,
+                avgProfit: 1416.67,
+                profitRate: 19.1,
+                breakevenCases: 95,
+                avgStay: 6.2,
+                recordDate: "2024-01-15",
+                doctorId: "DOC002"
+            }
+            // ... 更多数据
+        ]
+    }
+});</code></pre>
+                            </div>
+                            
+                            <div class="code-block">
+                                <h5>4. 数据库表结构参考</h5>
+                                <pre><code>-- 病种效益分析表
+CREATE TABLE disease_benefit (
+    id INT PRIMARY KEY AUTO_INCREMENT,                    -- 主键ID
+    disease_code VARCHAR(10) NOT NULL,                    -- ICD-10病种代码
+    disease_name VARCHAR(100) NOT NULL,                   -- 病种名称
+    department VARCHAR(50) NOT NULL,                      -- 所属科室
+    revenue DECIMAL(12,2) NOT NULL,                       -- 总收入(元)
+    cost DECIMAL(12,2) NOT NULL,                          -- 总成本(元)
+    profit DECIMAL(12,2) NOT NULL,                        -- 总结余(元) revenue-cost
+    cases INT NOT NULL,                                   -- 病例数量
+    avg_revenue DECIMAL(12,2) GENERATED ALWAYS AS (revenue/cases) STORED,  -- 平均收入(元)
+    avg_cost DECIMAL(12,2) GENERATED ALWAYS AS (cost/cases) STORED,        -- 平均成本(元)
+    avg_profit DECIMAL(12,2) GENERATED ALWAYS AS (profit/cases) STORED,    -- 平均结余(元)
+    profit_rate DECIMAL(5,2) GENERATED ALWAYS AS (profit/revenue*100) STORED, -- 结余率(%)
+    breakeven_cases INT,                                  -- 保本例数(盈亏平衡点)
+    avg_stay DECIMAL(5,2),                               -- 平均住院天数
+    record_date DATE NOT NULL,                           -- 记录日期
+    doctor_id VARCHAR(20),                               -- 主治医生ID
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- 创建时间
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- 更新时间
+    
+    -- 索引优化
+    INDEX idx_department (department),                    -- 科室索引
+    INDEX idx_date (record_date),                        -- 日期索引
+    INDEX idx_disease (disease_code),                    -- 病种代码索引
+    INDEX idx_profit_rate (profit_rate),                 -- 结余率索引
+    INDEX idx_cases (cases),                             -- 病例数索引
+    
+    -- 约束条件
+    CONSTRAINT chk_revenue CHECK (revenue >= 0),         -- 收入非负
+    CONSTRAINT chk_cost CHECK (cost >= 0),               -- 成本非负
+    CONSTRAINT chk_cases CHECK (cases > 0),              -- 病例数大于0
+    CONSTRAINT chk_avg_stay CHECK (avg_stay > 0)         -- 平均住院天数大于0
+);</code></pre>
+                            </div>
+                            
+                            <div class="tutorial-section">
+                                <h5>📋 字段说明表</h5>
+                                <div class="table-container">
+                                    <table class="config-table">
+                                        <thead>
+                                            <tr>
+                                                <th>字段名</th>
+                                                <th>类型</th>
+                                                <th>说明</th>
+                                                <th>页面显示</th>
+                                                <th>计算方式</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>disease_code</code></td>
+                                                <td>VARCHAR(10)</td>
+                                                <td>ICD-10国际疾病分类代码</td>
+                                                <td>病种编码</td>
+                                                <td>直接显示</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>disease_name</code></td>
+                                                <td>VARCHAR(100)</td>
+                                                <td>病种的中文名称</td>
+                                                <td>病种名称</td>
+                                                <td>直接显示</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>cases</code></td>
+                                                <td>INT</td>
+                                                <td>该病种的总病例数量</td>
+                                                <td>病例数</td>
+                                                <td>直接显示</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>avg_revenue</code></td>
+                                                <td>DECIMAL(12,2)</td>
+                                                <td>每个病例的平均收入</td>
+                                                <td>平均收入</td>
+                                                <td>revenue ÷ cases</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>avg_cost</code></td>
+                                                <td>DECIMAL(12,2)</td>
+                                                <td>每个病例的平均成本</td>
+                                                <td>平均成本</td>
+                                                <td>cost ÷ cases</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>avg_profit</code></td>
+                                                <td>DECIMAL(12,2)</td>
+                                                <td>每个病例的平均结余</td>
+                                                <td>平均结余</td>
+                                                <td>profit ÷ cases</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>profit_rate</code></td>
+                                                <td>DECIMAL(5,2)</td>
+                                                <td>结余占收入的百分比</td>
+                                                <td>结余率</td>
+                                                <td>(profit ÷ revenue) × 100%</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>breakeven_cases</code></td>
+                                                <td>INT</td>
+                                                <td>达到盈亏平衡所需的最少病例数</td>
+                                                <td>保本例数</td>
+                                                <td>固定成本 ÷ (平均收入 - 变动成本)</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tutorial-section">
+                            <h4>🔧 数据对接示例</h4>
+                            
+                            <div class="code-block">
+                                <h5>后端API实现示例 (Node.js)</h5>
+                                <pre><code>// Express.js 路由示例
+app.get('/api/disease-benefit', async (req, res) => {
+    try {
+        const { department, dateRange, diseaseCode } = req.query;
+        
+        // 构建查询条件
+        let whereClause = '1=1';
+        const params = [];
+        
+        if (department) {
+            whereClause += ' AND department = ?';
+            params.push(department);
+        }
+        
+        if (dateRange) {
+            const [startDate, endDate] = dateRange.split(',');
+            whereClause += ' AND record_date BETWEEN ? AND ?';
+            params.push(startDate, endDate);
+        }
+        
+        // 查询数据
+        const sql = \`
+            SELECT 
+                disease_code as code,
+                disease_name as name,
+                department,
+                SUM(revenue) as revenue,
+                SUM(cost) as cost,
+                SUM(revenue - cost) as profit,
+                COUNT(*) as cases,
+                AVG(avg_stay) as avgStay
+            FROM disease_benefit 
+            WHERE \${whereClause}
+            GROUP BY disease_code, disease_name, department
+        \`;
+        
+        const diseases = await db.query(sql, params);
+        
+        res.json({
+            success: true,
+            data: { diseases }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});</code></pre>
+                            </div>
+                            
+                            <div class="code-block">
+                                <h5>前端数据处理示例</h5>
+                                <pre><code>// 自定义数据处理函数
+const component = new DiseaseBenefitComponent('container', {
+    apiUrl: '/api/disease-benefit',
+    dataProcessor: (rawData) => {
+        // 数据预处理
+        return rawData.data.diseases.map(item => ({
+            ...item,
+            profitRate: item.revenue > 0 ? item.profit / item.revenue : 0,
+            avgCost: item.cases > 0 ? item.cost / item.cases : 0
+        }));
+    },
+    onDataLoaded: (data) => {
+        console.log('数据加载完成:', data);
+    },
+    onError: (error) => {
+        console.error('数据加载失败:', error);
+        // 可以显示友好的错误提示
+    }
+});</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="tutorial-section">
+                            <h4>⚙️ 配置参数详解</h4>
+                            
+                            <div style="margin: 20px 0;">
+                                <h5 style="color: #2c5aa0; margin: 15px 0 10px 0;">基础配置</h5>
+                                <table style="width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px;">
+                                    <thead>
+                                        <tr style="background: #f5f5f5;">
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">参数名</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">类型</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">默认值</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">说明</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>containerId</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">string</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px; color: #d73a49;">必填</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">组件容器的DOM元素ID</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>apiUrl</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">string</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px; color: #d73a49;">必填</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">数据接口地址</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>title</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">string</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">'疾病效益分析'</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">组件标题</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>width</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">string</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">'100%'</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">组件宽度</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>height</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">string</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">'400px'</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">组件高度</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div style="margin: 20px 0;">
+                                <h5 style="color: #2c5aa0; margin: 15px 0 10px 0;">数据配置</h5>
+                                <table style="width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px;">
+                                    <thead>
+                                        <tr style="background: #f5f5f5;">
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">参数名</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">类型</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">默认值</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">说明</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>enablePagination</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">boolean</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">false</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">是否启用分页加载</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>pageSize</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">number</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">20</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">每页数据条数</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>autoRefresh</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">boolean</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">false</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">是否自动刷新数据</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>refreshInterval</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">number</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">300000</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">自动刷新间隔(毫秒)</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>enableCache</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">boolean</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">true</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">是否启用数据缓存</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>cacheTimeout</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">number</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">600000</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">缓存过期时间(毫秒)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div style="margin: 20px 0;">
+                                <h5 style="color: #2c5aa0; margin: 15px 0 10px 0;">图表配置</h5>
+                                <table style="width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px;">
+                                    <thead>
+                                        <tr style="background: #f5f5f5;">
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">参数名</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">类型</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">默认值</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">说明</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>chartType</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">string</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">'bar'</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">图表类型: bar/line/pie/scatter</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>chartOptions</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">object</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">{}</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">ECharts自定义配置</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>theme</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">string</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">'default'</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">图表主题: default/dark/light</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>animation</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">boolean</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">true</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">是否启用动画效果</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>responsive</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">boolean</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">true</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">是否响应式布局</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div style="margin: 20px 0;">
+                                <h5 style="color: #2c5aa0; margin: 15px 0 10px 0;">交互配置</h5>
+                                <table style="width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px;">
+                                    <thead>
+                                        <tr style="background: #f5f5f5;">
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">参数名</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">类型</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">默认值</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">说明</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>enableTooltip</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">boolean</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">true</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">是否显示提示框</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>enableLegend</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">boolean</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">true</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">是否显示图例</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>enableZoom</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">boolean</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">false</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">是否启用缩放功能</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>enableExport</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">boolean</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">true</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">是否显示导出按钮</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>exportFormats</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">array</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">['png','jpg','pdf']</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">支持的导出格式</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div style="margin: 20px 0;">
+                                <h5 style="color: #2c5aa0; margin: 15px 0 10px 0;">回调函数</h5>
+                                <table style="width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px;">
+                                    <thead>
+                                        <tr style="background: #f5f5f5;">
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">参数名</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">类型</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">说明</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>onDataLoad</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">function</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">数据加载完成回调</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>onError</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">function</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">错误处理回调</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>onClick</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">function</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">图表点击事件回调</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border: 1px solid #ddd; padding: 8px;"><code>onRefresh</code></td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">function</td>
+                                            <td style="border: 1px solid #ddd; padding: 8px;">数据刷新回调</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tutorial-section">
+                            <h4>💡 配置示例</h4>
+                            
+                            <div style="margin: 20px 0;">
+                                <h5 style="color: #2c5aa0; margin: 15px 0 10px 0;">基础使用示例</h5>
+                                <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #2c5aa0; overflow-x: auto; font-size: 13px;"><code>// 最简单的配置
+const component = new DiseaseBenefitComponent({
+    containerId: 'disease-benefit-container',
+    apiUrl: '/api/disease-benefit'
+});
+
+// 初始化组件
+component.init();</code></pre>
+                            </div>
+
+                            <div style="margin: 20px 0;">
+                                <h5 style="color: #2c5aa0; margin: 15px 0 10px 0;">完整配置示例</h5>
+                                <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #2c5aa0; overflow-x: auto; font-size: 13px;"><code>// 完整配置示例
+const component = new DiseaseBenefitComponent({
+    // 基础配置
+    containerId: 'disease-benefit-container',
+    apiUrl: '/api/disease-benefit',
+    title: '疾病效益分析报告',
+    width: '100%',
+    height: '500px',
+    
+    // 数据配置
+    enablePagination: true,
+    pageSize: 50,
+    autoRefresh: true,
+    refreshInterval: 300000, // 5分钟
+    enableCache: true,
+    cacheTimeout: 600000, // 10分钟
+    
+    // 图表配置
+    chartType: 'bar',
+    theme: 'default',
+    animation: true,
+    responsive: true,
+    chartOptions: {
+        color: ['#3398DB', '#FF6B6B', '#4ECDC4'],
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        }
+    },
+    
+    // 交互配置
+    enableTooltip: true,
+    enableLegend: true,
+    enableZoom: false,
+    enableExport: true,
+    exportFormats: ['png', 'jpg', 'pdf'],
+    
+    // 回调函数
+    onDataLoad: function(data) {
+        console.log('数据加载完成:', data);
+    },
+    onError: function(error) {
+        console.error('组件错误:', error);
+        alert('数据加载失败，请稍后重试');
+    },
+    onClick: function(params) {
+        console.log('图表点击:', params);
+        // 可以在这里处理点击事件，如跳转到详情页
+    },
+    onRefresh: function() {
+        console.log('数据刷新中...');
+    }
+});
+
+// 初始化组件
+component.init();</code></pre>
+                            </div>
+
+                            <div style="margin: 20px 0;">
+                                <h5 style="color: #2c5aa0; margin: 15px 0 10px 0;">不同场景的配置</h5>
+                                
+                                <div style="margin: 15px 0;">
+                                    <strong>📊 大数据量场景</strong>
+                                    <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin: 5px 0; font-size: 12px;"><code>// 适用于数据量较大的场景
+{
+    enablePagination: true,
+    pageSize: 100,
+    enableCache: true,
+    cacheTimeout: 1800000, // 30分钟缓存
+    chartOptions: {
+        dataZoom: [
+            {
+                type: 'slider',
+                show: true,
+                xAxisIndex: [0],
+                start: 0,
+                end: 50
+            }
+        ]
+    }
+}</code></pre>
+                                </div>
+
+                                <div style="margin: 15px 0;">
+                                    <strong>🔄 实时监控场景</strong>
+                                    <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin: 5px 0; font-size: 12px;"><code>// 适用于需要实时更新的监控场景
+{
+    autoRefresh: true,
+    refreshInterval: 60000, // 1分钟刷新
+    enableCache: false, // 禁用缓存确保数据实时性
+    animation: false, // 关闭动画提升性能
+    onRefresh: function() {
+        // 显示刷新状态
+        document.getElementById('status').textContent = '数据更新中...';
+    }
+}</code></pre>
+                                </div>
+
+                                <div style="margin: 15px 0;">
+                                    <strong>📱 移动端适配场景</strong>
+                                    <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin: 5px 0; font-size: 12px;"><code>// 适用于移动端显示
+{
+    responsive: true,
+    height: '300px',
+    chartOptions: {
+        grid: {
+            left: '5%',
+            right: '5%',
+            top: '15%',
+            bottom: '15%'
+        },
+        legend: {
+            orient: 'horizontal',
+            bottom: 0
+        }
+    },
+    enableZoom: true // 移动端启用缩放
+}</code></pre>
+                                </div>
+
+                                <div style="margin: 15px 0;">
+                                    <strong>🎨 自定义主题场景</strong>
+                                    <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin: 5px 0; font-size: 12px;"><code>// 深色主题配置
+{
+    theme: 'dark',
+    chartOptions: {
+        backgroundColor: '#2c3e50',
+        color: ['#e74c3c', '#3498db', '#2ecc71', '#f39c12'],
+        textStyle: {
+            color: '#ecf0f1'
+        },
+        grid: {
+            borderColor: '#34495e'
+        }
+    }
+}</code></pre>
+                                </div>
+                            </div>
+
+                            <div style="margin: 20px 0;">
+                                <h5 style="color: #2c5aa0; margin: 15px 0 10px 0;">动态配置更新</h5>
+                                <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #2c5aa0; overflow-x: auto; font-size: 13px;"><code>// 动态更新配置
+const component = new DiseaseBenefitComponent(config);
+component.init();
+
+// 更新图表类型
+component.updateConfig({
+    chartType: 'line'
+});
+
+// 更新数据源
+component.updateConfig({
+    apiUrl: '/api/disease-benefit-new'
+});
+
+// 手动刷新数据
+component.refresh();
+
+// 导出图表
+component.export('png');
+
+// 销毁组件
+component.destroy();</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="tutorial-section">
+                            <h4>❓ 常见问题</h4>
+                            
+                            <div style="margin: 15px 0;">
+                                <strong>Q: 如何处理大量数据的性能问题？</strong><br>
+                                A: 组件支持分页加载和虚拟滚动，建议后端实现分页接口，前端设置 <code>enablePagination: true</code>
+                            </div>
+                            
+                            <div style="margin: 15px 0;">
+                                <strong>Q: 数据更新频率如何控制？</strong><br>
+                                A: 可以设置 <code>autoRefresh: true</code> 和 <code>refreshInterval: 300000</code> (5分钟) 实现自动刷新
+                            </div>
+                            
+                            <div style="margin: 15px 0;">
+                                <strong>Q: 如何自定义图表样式？</strong><br>
+                                A: 通过 <code>chartOptions</code> 参数传入ECharts配置，或修改CSS变量覆盖默认样式
+                            </div>
+                            
+                            <div style="margin: 15px 0;">
+                                <strong>Q: 支持哪些数据库？</strong><br>
+                                A: 组件与数据库无关，只要后端API返回指定格式的JSON数据即可，支持MySQL、PostgreSQL、Oracle等
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 显示模态窗口
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+        }
+
+        function copyUsage(componentId) {
+            const component = componentLibrary.getComponentById(componentId);
+            if (component && component.usage_example) {
+                navigator.clipboard.writeText(component.usage_example).then(() => {
+                    showNotification('代码已复制到剪贴板', 'success');
+                }).catch(() => {
+                    showNotification('复制失败，请手动复制', 'error');
+                });
+            } else {
+                showNotification('使用示例暂未提供', 'warning');
+            }
+        }
+
+        function uploadComponent() {
+            showNotification('正在跳转到上传页面...');
+            setTimeout(() => {
+                window.open('component-upload.html', '_blank');
+            }, 500);
+        }
+
+        function manageVersions() {
+            showNotification('正在跳转到版本管理页面...');
+            setTimeout(() => {
+                window.open('component-version.html', '_blank');
+            }, 500);
+        }
+
+        function viewAnalytics() {
+            showNotification('正在跳转到使用分析页面...');
+            setTimeout(() => {
+                window.open('component-analytics.html', '_blank');
+            }, 500);
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : type === 'warning' ? '#ffc107' : '#17a2b8'};
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        let componentLibrary;
+        document.addEventListener('DOMContentLoaded', function() {
+            componentLibrary = new ComponentLibraryManager();
+        });
+    </script>
+</body>
+</html>

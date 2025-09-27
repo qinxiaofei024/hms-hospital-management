@@ -1,0 +1,278 @@
+/* 科主任驾驶舱样式 */
+
+.department-cockpit {
+    background: #f5f7fa;
+    min-height: 100vh;
+}
+
+.cockpit-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.cockpit-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.cockpit-subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* 指标卡片 */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.metric-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.metric-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.metric-label {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 8px;
+}
+
+.metric-change {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.metric-change.positive {
+    background: #d4edda;
+    color: #155724;
+}
+
+.metric-change.negative {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* 图表容器 */
+.chart-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.chart-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    background: #fafafa;
+}
+
+.chart-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.chart-body {
+    padding: 20px;
+}
+
+.chart-wrapper {
+    width: 100%;
+    height: 400px;
+}
+
+/* 表格样式 */
+.data-table {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.table-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    background: #fafafa;
+}
+
+.table-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.data-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.data-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+}
+
+.data-table tr:hover {
+    background: #f8f9fa;
+}
+
+/* 状态标签 */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-excellent {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-good {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.status-normal {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-poor {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* 筛选器 */
+.filter-bar {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-label {
+    font-size: 14px;
+    color: #495057;
+    white-space: nowrap;
+}
+
+.filter-select {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    min-width: 120px;
+}
+
+.filter-button {
+    padding: 6px 16px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.filter-button:hover {
+    background: #0056b3;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .department-cockpit {
+        padding: 15px;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .chart-wrapper {
+        height: 300px;
+    }
+    
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group {
+        justify-content: space-between;
+    }
+    
+    .filter-select {
+        min-width: auto;
+        flex: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .cockpit-title {
+        font-size: 20px;
+    }
+    
+    .metric-value {
+        font-size: 24px;
+    }
+    
+    .chart-wrapper {
+        height: 250px;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+}

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医学检验运营分析 Medical Laboratory Analysis - 佛山市南海区中医院数据中心管理平台</title>
+    
+    <!-- 开发环境缓存控制 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- 预加载关键CSS -->
+    <link rel="preload" href="./css/style.css" as="style">
+    <link rel="preload" href="./css/common.css" as="style">
+    
+    <!-- CSS文件引用 - 必须按此顺序 -->
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/department-cockpit.css">
+    
+    <!-- ECharts库 -->
+    <script src="./js/echarts.min.js"></script>
+    <style>
+        /* 覆盖全局main-content的flex布局，确保内容垂直排列 */
+        .main-content {
+            display: block !important;
+            flex-direction: column !important;
+            padding: 24px !important;
+        }
+
+        .main-content > * {
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        .main-content > *:last-child {
+            margin-bottom: 0;
+        }
+        
+        .medical-laboratory {
+            padding: 20px;
+            background: #f5f5f5;
+            min-height: calc(100vh - 48px);
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="medical-laboratory">
+            <!-- 页面头部 -->
+            <div class="page-header">
+                <div class="breadcrumb">
+                    科主任运营分析 > 医学检验运营分析 <span style="font-size: 12px; color: #999;">Medical Laboratory Analysis</span>
+                </div>
+                <h1 class="page-title">
+                    医学检验运营分析 <span style="font-size: 18px; color: #666; font-weight: 400;">Medical Laboratory Analysis</span>
+                </h1>
+            </div>
+            
+            <!-- 筛选控件 -->
+            <div class="filters" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px;">
+                <div class="filter-row" style="display: flex; align-items: center; gap: 30px; flex-wrap: wrap;">
+                    <div class="filter-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="font-weight: 500; color: #333; white-space: nowrap;">时间范围:</label>
+                        <select id="time-period" style="padding: 8px 12px; border: 1px solid #d9d9d9; border-radius: 4px; background: white; min-width: 120px;">
+                            <option value="7">近7天</option>
+                            <option value="30" selected>近30天</option>
+                            <option value="90">近3个月</option>
+                            <option value="quarter">按季度</option>
+                            <option value="365">近1年</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="font-weight: 500; color: #333; white-space: nowrap;">年份:</label>
+                        <select id="year-select" style="padding: 8px 12px; border: 1px solid #d9d9d9; border-radius: 4px; background: white; min-width: 100px;">
+                            <option value="2024" selected>2024年</option>
+                            <option value="2023">2023年</option>
+                            <option value="2022">2022年</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="font-weight: 500; color: #333; white-space: nowrap;">季度:</label>
+                        <select id="quarter-select" style="padding: 8px 12px; border: 1px solid #d9d9d9; border-radius: 4px; background: white; min-width: 100px; display: none;">
+                            <option value="1">第一季度</option>
+                            <option value="2">第二季度</option>
+                            <option value="3">第三季度</option>
+                            <option value="4" selected>第四季度</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group" style="display: flex; align-items: center; gap: 8px;">
+                        <label style="font-weight: 500; color: #333; white-space: nowrap;">检验类型:</label>
+                        <select id="test-type" style="padding: 8px 12px; border: 1px solid #d9d9d9; border-radius: 4px; background: white; min-width: 120px;">
+                            <option value="">全部类型</option>
+                            <option value="biochemistry">生化检验</option>
+                            <option value="hematology">血液检验</option>
+                            <option value="immunology">免疫检验</option>
+                            <option value="microbiology">微生物检验</option>
+                            <option value="molecular">分子检验</option>
+                        </select>
+                    </div>
+                    
+                    <div class="action-buttons" style="display: flex; gap: 12px; margin-left: auto;">
+                        <button class="btn btn-secondary" id="refresh-btn" style="padding: 8px 16px; border: 1px solid #d9d9d9; background: white; color: #666; border-radius: 4px; cursor: pointer;">刷新</button>
+                        <button class="btn btn-primary" id="export-btn" style="padding: 8px 16px; border: none; background: #1890ff; color: white; border-radius: 4px; cursor: pointer;">导出报告</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 关键指标 - 统一首页样式 -->
+            <div class="overview-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                <div class="card" data-status="up" style="padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: transform 0.3s, box-shadow 0.3s; position: relative; overflow: hidden; border: 1px solid rgba(0, 120, 212, 0.1);">
+                    <div style="content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background-color: #1890ff; opacity: 0.8;"></div>
+                    <div class="card-title" style="font-size: 14px; color: #666; margin-bottom: 8px;">总检验人次</div>
+                    <div class="card-value" style="font-size: 28px; font-weight: 600; color: #333; margin-bottom: 8px;">12,456</div>
+                    <div class="card-trend" style="font-size: 12px; color: #52c41a;">
+                        <span class="up">+12.5%</span>
+                        <span>较上月</span>
+                    </div>
+                </div>
+                
+                <div class="card" data-status="up" style="padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: transform 0.3s, box-shadow 0.3s; position: relative; overflow: hidden; border: 1px solid rgba(0, 120, 212, 0.1);">
+                    <div style="content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background-color: #52c41a; opacity: 0.8;"></div>
+                    <div class="card-title" style="font-size: 14px; color: #666; margin-bottom: 8px;">总收入</div>
+                    <div class="card-value" style="font-size: 28px; font-weight: 600; color: #333; margin-bottom: 8px;">¥186.8万</div>
+                    <div class="card-trend" style="font-size: 12px; color: #52c41a;">
+                        <span class="up">+8.3%</span>
+                        <span>较上月</span>
+                    </div>
+                </div>
+                
+                <div class="card" data-status="up" style="padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: transform 0.3s, box-shadow 0.3s; position: relative; overflow: hidden; border: 1px solid rgba(0, 120, 212, 0.1);">
+                    <div style="content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background-color: #fa8c16; opacity: 0.8;"></div>
+                    <div class="card-title" style="font-size: 14px; color: #666; margin-bottom: 8px;">设备使用率</div>
+                    <div class="card-value" style="font-size: 28px; font-weight: 600; color: #333; margin-bottom: 8px;">87.3%</div>
+                    <div class="card-trend" style="font-size: 12px; color: #52c41a;">
+                        <span class="up">+2.1%</span>
+                        <span>较上月</span>
+                    </div>
+                </div>
+                
+                <div class="card" data-status="up" style="padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: transform 0.3s, box-shadow 0.3s; position: relative; overflow: hidden; border: 1px solid rgba(0, 120, 212, 0.1);">
+                    <div style="content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background-color: #722ed1; opacity: 0.8;"></div>
+                    <div class="card-title" style="font-size: 14px; color: #666; margin-bottom: 8px;">报告及时率</div>
+                    <div class="card-value" style="font-size: 28px; font-weight: 600; color: #333; margin-bottom: 8px;">96.8%</div>
+                    <div class="card-trend" style="font-size: 12px; color: #52c41a;">
+                        <span class="up">+1.8%</span>
+                        <span>较上月</span>
+                    </div>
+                </div>
+                
+                <div class="card" data-status="up" style="padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: transform 0.3s, box-shadow 0.3s; position: relative; overflow: hidden; border: 1px solid rgba(0, 120, 212, 0.1);">
+                    <div style="content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background-color: #13c2c2; opacity: 0.8;"></div>
+                    <div class="card-title" style="font-size: 14px; color: #666; margin-bottom: 8px;">质量合格率</div>
+                    <div class="card-value" style="font-size: 28px; font-weight: 600; color: #333; margin-bottom: 8px;">98.5%</div>
+                    <div class="card-trend" style="font-size: 12px; color: #52c41a;">
+                        <span class="up">+0.3%</span>
+                        <span>较上月</span>
+                    </div>
+                </div>
+                
+                <div class="card" data-status="up" style="padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: transform 0.3s, box-shadow 0.3s; position: relative; overflow: hidden; border: 1px solid rgba(0, 120, 212, 0.1);">
+                    <div style="content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background-color: #eb2f96; opacity: 0.8;"></div>
+                    <div class="card-title" style="font-size: 14px; color: #666; margin-bottom: 8px;">平均周转时间</div>
+                    <div class="card-value" style="font-size: 28px; font-weight: 600; color: #333; margin-bottom: 8px;">3.2h</div>
+                    <div class="card-trend" style="font-size: 12px; color: #52c41a;">
+                        <span class="up">-0.5h</span>
+                        <span>较上月</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 关键绩效指标分析 - 卡片形式 -->
+            <div class="kpi-cards-section" style="margin-bottom: 30px;">
+                <h3 style="margin-bottom: 20px; color: #333; font-size: 18px;">关键绩效指标分析</h3>
+                <div class="kpi-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div class="card" style="padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); border: 1px solid rgba(0, 120, 212, 0.1);">
+                        <div style="content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background-color: #1890ff; opacity: 0.8;"></div>
+                        <div class="kpi-name" style="font-size: 14px; color: #666; margin-bottom: 12px;">报告及时率</div>
+                        <div class="kpi-value" style="font-size: 32px; font-weight: 600; color: #333; margin-bottom: 12px;">96.8%</div>
+                        <div class="kpi-progress" style="margin-bottom: 8px;">
+                            <div class="progress-bar" style="width: 100%; height: 6px; background: #f0f0f0; border-radius: 3px; overflow: hidden;">
+                                <div class="progress-fill" style="width: 96.8%; height: 100%; background: #52c41a; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+                        <span class="kpi-target" style="font-size: 12px; color: #999;">目标: 95%</span>
+                    </div>
+                    
+                    <div class="card" style="padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); border: 1px solid rgba(0, 120, 212, 0.1);">
+                        <div style="content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background-color: #52c41a; opacity: 0.8;"></div>
+                        <div class="kpi-name" style="font-size: 14px; color: #666; margin-bottom: 12px;">检验准确率</div>
+                        <div class="kpi-value" style="font-size: 32px; font-weight: 600; color: #333; margin-bottom: 12px;">99.7%</div>
+                        <div class="kpi-progress" style="margin-bottom: 8px;">
+                            <div class="progress-bar" style="width: 100%; height: 6px; background: #f0f0f0; border-radius: 3px; overflow: hidden;">
+                                <div class="progress-fill" style="width: 99.7%; height: 100%; background: #52c41a; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+                        <span class="kpi-target" style="font-size: 12px; color: #999;">目标: 99.5%</span>
+                    </div>
+                    
+                    <div class="card" style="padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); border: 1px solid rgba(0, 120, 212, 0.1);">
+                        <div style="content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background-color: #fa8c16; opacity: 0.8;"></div>
+                        <div class="kpi-name" style="font-size: 14px; color: #666; margin-bottom: 12px;">设备利用率</div>
+                        <div class="kpi-value" style="font-size: 32px; font-weight: 600; color: #333; margin-bottom: 12px;">87.3%</div>
+                        <div class="kpi-progress" style="margin-bottom: 8px;">
+                            <div class="progress-bar" style="width: 100%; height: 6px; background: #f0f0f0; border-radius: 3px; overflow: hidden;">
+                                <div class="progress-fill" style="width: 87.3%; height: 100%; background: #fa8c16; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+                        <span class="kpi-target" style="font-size: 12px; color: #999;">目标: 85%</span>
+                    </div>
+                    
+                    <div class="card" style="padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); border: 1px solid rgba(0, 120, 212, 0.1);">
+                        <div style="content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background-color: #722ed1; opacity: 0.8;"></div>
+                        <div class="kpi-name" style="font-size: 14px; color: #666; margin-bottom: 12px;">试剂使用率</div>
+                        <div class="kpi-value" style="font-size: 32px; font-weight: 600; color: #333; margin-bottom: 12px;">92.5%</div>
+                        <div class="kpi-progress" style="margin-bottom: 8px;">
+                            <div class="progress-bar" style="width: 100%; height: 6px; background: #f0f0f0; border-radius: 3px; overflow: hidden;">
+                                <div class="progress-fill" style="width: 92.5%; height: 100%; background: #722ed1; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+                        <span class="kpi-target" style="font-size: 12px; color: #999;">目标: 90%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 图表区域 Charts Section -->
+            <div class="charts-section">
+                <!-- 第一行：三个图表 First Row - Three Charts -->
+                <div class="chart-row" style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <div class="chart-container" style="flex: 1; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div class="chart-header">
+                            <h3>检验量趋势分析 <span class="en-subtitle">Test Volume Trend Analysis</span></h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-type="volume">检验量</button>
+                                <button class="chart-btn" data-type="revenue">收入</button>
+                                <button class="chart-btn" data-type="both">综合</button>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <div id="test-volume-chart" style="height: 350px;"></div>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="flex: 1; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div class="chart-header">
+                            <h3>检验类型分布 <span class="en-subtitle">Test Type Distribution</span></h3>
+                            <div class="chart-summary">
+                                <span class="summary-item">主要类型: <strong>生化检验</strong></span>
+                                <span class="summary-item">占比: <strong>35.2%</strong></span>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <div id="test-type-chart" style="height: 350px;"></div>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="flex: 1; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div class="chart-header">
+                            <h3>设备运行效率分析 <span class="en-subtitle">Equipment Efficiency Analysis</span></h3>
+                            <div class="chart-summary">
+                                <span class="summary-item">平均使用率: <strong>78.5%</strong></span>
+                                <span class="summary-item">最高: <strong>生化分析仪A</strong></span>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <div id="equipment-efficiency-chart" style="height: 350px;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第二行：三个图表 Second Row - Three Charts -->
+                <div class="chart-row" style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <div class="chart-container" style="flex: 1; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div class="chart-header">
+                            <h3>临床科室申请量排名 <span class="en-subtitle">Department Request Ranking</span></h3>
+                            <div class="chart-summary">
+                                <span class="summary-item">最高: <strong>内科</strong></span>
+                                <span class="summary-item">增长最快: <strong>急诊科</strong></span>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <div id="department-ranking-chart" style="height: 350px;"></div>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="flex: 1; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div class="chart-header">
+                            <h3>质量指标监控 <span class="en-subtitle">Quality Monitoring</span></h3>
+                        </div>
+                        <div class="chart-content">
+                            <div id="quality-monitor-chart" style="height: 350px;"></div>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="flex: 1; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div class="chart-header">
+                            <h3>检验周转时间分析 <span class="en-subtitle">Turnaround Time Analysis</span></h3>
+                            <div class="chart-summary">
+                                <span class="summary-item">平均时间: <strong>3.2小时</strong></span>
+                                <span class="summary-item">目标: <strong>≤4小时</strong></span>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <div id="turnaround-time-chart" style="height: 350px;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第三行：一个图表 Third Row - One Chart -->
+                <div class="chart-row" style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <div class="chart-container" style="flex: 1; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div class="chart-header">
+                            <h3>异常结果分析 <span class="en-subtitle">Abnormal Results Analysis</span></h3>
+                            <div class="chart-summary">
+                                <span class="summary-item">异常率: <strong>26.8%</strong></span>
+                                <span class="summary-item">趋势: <strong>稳定</strong></span>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <div id="abnormal-results-chart" style="height: 350px;"></div>
+                        </div>
+                    </div>
+                    <!-- 空白占位，保持布局一致 -->
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 1;"></div>
+                </div>
+            </div>
+            
+            <!-- 数据表格 Data Table Section -->
+            <div class="data-table-section" style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px;">
+                <div class="table-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                    <h3 style="margin: 0; color: #333; font-size: 18px;">医学检验项目明细数据 <span class="en-subtitle" style="font-size: 14px; color: #666; font-weight: 400;">Laboratory Test Details</span></h3>
+                    <div class="table-actions" style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" placeholder="搜索检验项目..." class="search-input" style="padding: 8px 12px; border: 1px solid #d9d9d9; border-radius: 4px; width: 200px; min-width: 150px;">
+                        <button class="btn btn-secondary" style="padding: 8px 16px; border: 1px solid #d9d9d9; background: white; color: #666; border-radius: 4px; cursor: pointer; white-space: nowrap;">
+                            <i class="icon-search"></i> 搜索
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container" style="overflow-x: auto; border: 1px solid #e8e8e8; border-radius: 6px;">
+                    <table class="data-table" style="width: 100%; min-width: 800px; border-collapse: collapse; background: white;">
+                        <thead>
+                            <tr style="background: #fafafa; border-bottom: 1px solid #e8e8e8;">
+                                <th style="padding: 12px 16px; text-align: left; font-weight: 500; color: #333; border-right: 1px solid #e8e8e8; white-space: nowrap;">检验项目</th>
+                                <th style="padding: 12px 16px; text-align: center; font-weight: 500; color: #333; border-right: 1px solid #e8e8e8; white-space: nowrap;">检验量</th>
+                                <th style="padding: 12px 16px; text-align: center; font-weight: 500; color: #333; border-right: 1px solid #e8e8e8; white-space: nowrap;">收入(万元)</th>
+                                <th style="padding: 12px 16px; text-align: center; font-weight: 500; color: #333; border-right: 1px solid #e8e8e8; white-space: nowrap;">平均报告时长(小时)</th>
+                                <th style="padding: 12px 16px; text-align: center; font-weight: 500; color: #333; border-right: 1px solid #e8e8e8; white-space: nowrap;">异常率(%)</th>
+                                <th style="padding: 12px 16px; text-align: center; font-weight: 500; color: #333; border-right: 1px solid #e8e8e8; white-space: nowrap;">试剂消耗</th>
+                                <th style="padding: 12px 16px; text-align: center; font-weight: 500; color: #333; white-space: nowrap;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="test-detail-table">
+                            <!-- 数据通过JavaScript动态填充 -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 20px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" style="padding: 8px 16px; border: 1px solid #d9d9d9; background: white; color: #666; border-radius: 4px; cursor: pointer; min-width: 60px;">上一页</button>
+                    <button class="btn btn-primary" style="padding: 8px 16px; border: none; background: #1890ff; color: white; border-radius: 4px; cursor: pointer; min-width: 40px;">1</button>
+                    <button class="btn btn-secondary" style="padding: 8px 16px; border: 1px solid #d9d9d9; background: white; color: #666; border-radius: 4px; cursor: pointer; min-width: 40px;">2</button>
+                    <button class="btn btn-secondary" style="padding: 8px 16px; border: 1px solid #d9d9d9; background: white; color: #666; border-radius: 4px; cursor: pointer; min-width: 40px;">3</button>
+                    <button class="btn btn-secondary" style="padding: 8px 16px; border: 1px solid #d9d9d9; background: white; color: #666; border-radius: 4px; cursor: pointer; min-width: 60px;">下一页</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 加载统一导航组件 -->
+    <script src="./js/common.js"></script>
+    <script src="./js/medical-laboratory.js"></script>
+    <script src="./js/navigation-loader.js?v=20250125-fix3"></script>
+    
+
+</body>
+</html>

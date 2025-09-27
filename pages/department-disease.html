@@ -1,0 +1,2619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科室病种管理 - 佛山市南海区中医院数据中心管理平台</title>
+    <!-- 引入外部CSS -->
+    <link rel="stylesheet" href="./css/style.css">
+    
+    <!-- 引入外部JS -->
+    <script src="./js/echarts.min.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    
+    <!-- 自定义样式 -->
+    <style>
+        /* 科室病种管理页面特定样式 */
+        .main-content {
+            padding: 0 2px !important; /* 大幅减少左右内边距，几乎贴边 */
+            max-width: none !important; /* 移除最大宽度限制 */
+            margin-left: 160px !important; /* 极大幅度减少左边距，从240px减少到160px */
+        }
+        
+        .disease-container {
+            padding: 20px 8px; /* 大幅减少左右内边距 */
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            width: 100%; /* 确保容器占满可用宽度 */
+            max-width: none; /* 移除最大宽度限制 */
+        }
+        
+        .disease-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f5f5f5;
+        }
+        
+        .disease-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #2c3e50;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        
+        .filter-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .filter-item label {
+            margin-right: 8px;
+            color: #595959;
+            font-size: 14px;
+        }
+        
+        .filter-item select,
+        .filter-item input {
+            width: 180px;
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: #1890ff;
+            border-color: #1890ff;
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #40a9ff;
+            border-color: #40a9ff;
+        }
+        
+        .btn-default {
+            background-color: #fff;
+            border-color: #d9d9d9;
+            color: #595959;
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-default:hover {
+            color: #1890ff;
+            border-color: #40a9ff;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: 450px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+            width: 100%;
+        }
+        
+        /* 使用系统标准的卡片样式 */
+        .disease-card {
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 120, 212, 0.1);
+        }
+
+        /* 添加Azure风格的卡片装饰元素 */
+        .disease-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #0078d4;
+            opacity: 0.8;
+        }
+
+        .disease-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 120, 212, 0.15);
+            border-color: rgba(0, 120, 212, 0.2);
+        }
+
+        .disease-card:hover::before {
+            opacity: 1;
+        }
+        
+        .card-title {
+            font-size: 10px; /* 从14px再缩小30%到10px */
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #333;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .card-stats {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 16px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background: #f0f7ff;
+        }
+        
+        .stat-value {
+            font-size: 11px; /* 从16px再缩小30%到11px */
+            font-weight: 600;
+            color: #0078d4;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+        
+        .stat-label {
+            font-size: 7px; /* 从10px再缩小30%到7px */
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .stat-change {
+            font-size: 8px; /* 从11px再缩小30%到8px */
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        
+        .highlight {
+            background-color: #e6f7ff;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .card-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 14px;
+            }
+            
+            .charts-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .chart-container {
+                height: 280px;
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 12px;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .disease-card {
+                padding: 16px;
+            }
+            
+            .card-title {
+                font-size: 8px; /* 从12px再缩小30%到8px */
+                margin-bottom: 12px;
+            }
+            
+            .stat-item {
+                padding: 12px 8px;
+                min-width: 70px;
+            }
+            
+            .stat-value {
+                font-size: 8px; /* 从14px再缩小30%到10px */
+            }
+            
+            .stat-label {
+                font-size: 8px; /* 从9px再缩小30%到6px */
+            }
+            
+            .chart-container {
+                height: 250px;
+                padding: 12px;
+            }
+            
+            .chart-item {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .card-stats {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .stat-item {
+                min-width: auto;
+                padding: 10px;
+            }
+            
+            .chart-container {
+                height: 220px;
+                padding: 10px;
+            }
+            
+            .chart-item {
+                padding: 12px;
+            }
+            
+            .chart-title {
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+        }
+        
+        /* 图表样式 */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 24px;
+            width: 100%;
+        }
+        
+        .chart-item {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0, 120, 212, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        /* 添加Azure风格的图表项装饰元素 */
+        .chart-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #0078d4;
+            opacity: 0.8;
+        }
+        
+        .chart-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 120, 212, 0.15);
+            border-color: rgba(0, 120, 212, 0.2);
+        }
+        
+        .chart-item:hover::before {
+            opacity: 1;
+        }
+        
+        .chart-title {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 8px; /* 从12px再缩小30%到8px */
+            font-weight: 600;
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            position: relative;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 24px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        th,
+        td {
+            padding: 16px 14px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 10px; /* 从14px缩小30%到10px */
+            line-height: 1.5;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 9px; /* 从13px缩小30%到9px */
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        tr {
+            transition: all 0.2s ease;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.001);
+        }
+        
+        tr:nth-child(even) {
+            background-color: #fdfdfd;
+        }
+        
+        .positive {
+            color: #52c41a;
+        }
+        
+        .negative {
+            color: #ff4d4f;
+        }
+        
+        .warning {
+            color: #faad14;
+        }
+        
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 8px; /* 从12px缩小30%到8px */
+        }
+        
+        .status-high {
+            background-color: #fff2e8;
+            color: #fa8c16;
+        }
+        
+        .status-medium {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .status-low {
+            background-color: #f0f2f5;
+            color: #8c8c8c;
+        }
+        
+        .pathway-status {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 8px; /* 从11px缩小30%到8px */
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .pathway-status.active {
+            background: #e0f2fe;
+            color: #0277bd;
+        }
+        
+        .pathway-status.pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .pathway-status.completed {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        /* 标签页样式 */
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 3px solid #f5f5f5;
+            margin-bottom: 24px;
+            background: #fafafa;
+            border-radius: 8px 8px 0 0;
+            padding: 4px;
+        }
+        
+        .tab-btn {
+            padding: 14px 28px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            font-weight: 500;
+            color: #6c757d;
+            margin-right: 4px;
+            position: relative;
+        }
+        
+        .tab-btn.active {
+            color: #2c3e50;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transform: translateY(-1px);
+        }
+        
+        .tab-btn:hover:not(.active) {
+            color: #495057;
+            background-color: #e9ecef;
+            transform: translateY(-1px);
+        }
+        
+        .action-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #1f5f8b);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+        
+        .tab-panel {
+            display: none;
+        }
+        
+        .tab-panel.active {
+            display: block;
+        }
+        
+        /* 加载状态 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1890ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 响应式调整 */
+        /* 大屏幕优化 (1920px+) */
+        @media (min-width: 1920px) {
+            .disease-container {
+                padding: 32px;
+                margin-bottom: 32px;
+            }
+            
+            .card-grid {
+                grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+                gap: 32px;
+            }
+            
+            .stat-value {
+                font-size: 32px;
+            }
+            
+            .chart-container {
+                height: 500px;
+            }
+            
+            /* 表格大屏幕优化 */
+            table {
+                font-size: 16px;
+                min-width: 1200px;
+            }
+            
+            table th,
+            table td {
+                padding: 16px 12px;
+            }
+            
+            .table-container {
+                margin-bottom: 30px;
+            }
+        }
+        
+        /* 中等屏幕优化 (1200px - 1919px) */
+        @media (min-width: 1200px) and (max-width: 1919px) {
+            .card-grid {
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 28px;
+            }
+            
+            .chart-container {
+                height: 450px;
+            }
+            
+            /* 表格中等屏幕优化 */
+            table {
+                font-size: 15px;
+                min-width: 900px;
+            }
+            
+            table th,
+            table td {
+                padding: 14px 10px;
+            }
+            
+            .table-container {
+                margin-bottom: 25px;
+            }
+        }
+        
+        /* 小屏幕优化 (768px - 1199px) */
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .disease-container {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .filter-bar {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .filter-item {
+                flex: 1;
+                min-width: 200px;
+            }
+            
+            .filter-item select,
+            .filter-item input {
+                width: 100%;
+                min-width: 180px;
+            }
+            
+            .card-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 20px;
+            }
+            
+            .stat-value {
+                font-size: 24px;
+            }
+            
+            .chart-container {
+                height: 350px;
+            }
+            
+            .disease-header h2 {
+                font-size: 20px;
+            }
+            
+            /* 表格小屏幕优化 */
+            table {
+                font-size: 13px;
+                min-width: 700px;
+            }
+            
+            table th,
+            table td {
+                padding: 10px 6px;
+            }
+            
+            .table-container {
+                margin-bottom: 20px;
+            }
+        }
+        
+        /* 移动端优化 (最大768px) */
+        @media (max-width: 768px) {
+            .disease-container {
+                padding: 16px;
+                margin-bottom: 16px;
+                border-radius: 8px;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px;
+            }
+            
+            .filter-item {
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .filter-item label {
+                margin-bottom: 4px;
+                margin-right: 0;
+                font-weight: 500;
+            }
+            
+            .filter-item select,
+            .filter-item input {
+                width: 100%;
+                padding: 8px 12px;
+                font-size: 16px; /* 防止iOS缩放 */
+            }
+            
+            .btn-group {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+            
+            .btn-primary {
+                width: 100%;
+                padding: 10px 16px;
+                font-size: 16px;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .disease-card {
+                padding: 16px;
+            }
+            
+            .stat-item {
+                padding: 16px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+            
+            .stat-label {
+                font-size: 13px;
+            }
+            
+            .chart-container {
+                height: 280px;
+                margin-bottom: 16px;
+            }
+            
+            .disease-header {
+                margin-bottom: 16px;
+                padding-bottom: 12px;
+            }
+            
+            .disease-header h2 {
+                font-size: 16px;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .tab {
+                flex: 1;
+                min-width: 80px;
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+        
+        /* 超小屏幕优化 (最大480px) */
+        @media (max-width: 480px) {
+            .disease-container {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+            
+            .disease-card {
+                padding: 12px;
+            }
+            
+            .stat-item {
+                padding: 12px;
+            }
+            
+            .stat-value {
+                font-size: 18px;
+            }
+            
+            .stat-label {
+                font-size: 12px;
+            }
+            
+            .chart-container {
+                height: 240px;
+            }
+            
+            .disease-header h2 {
+                font-size: 15px;
+            }
+            
+            .card-stats {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .tab {
+                font-size: 13px;
+                padding: 6px 10px;
+            }
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 2% auto;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease-out;
+            width: 90%;
+            max-width: 1200px;
+        }
+        
+        /* 弹窗响应式设计 */
+        @media (min-width: 1920px) {
+            .modal-content {
+                width: 80%;
+                max-width: 1400px;
+            }
+        }
+        
+        @media (min-width: 1200px) and (max-width: 1919px) {
+            .modal-content {
+                width: 85%;
+                max-width: 1200px;
+            }
+        }
+        
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .modal-content {
+                width: 90%;
+                max-width: 900px;
+                margin: 3% auto;
+            }
+            
+            .modal-header {
+                padding: 16px 20px;
+            }
+            
+            .modal-header h3 {
+                font-size: 16px;
+            }
+            
+            .modal-body {
+                padding: 20px;
+            }
+            
+            .patient-filters {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+                max-height: 85vh;
+                border-radius: 6px;
+            }
+            
+            .modal-header {
+                padding: 12px 16px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .modal-header h3 {
+                font-size: 15px;
+                margin-bottom: 0;
+            }
+            
+            .close {
+                position: absolute;
+                top: 12px;
+                right: 16px;
+                font-size: 24px;
+            }
+            
+            .modal-body {
+                padding: 16px;
+            }
+            
+            .patient-filters {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 12px;
+            }
+            
+            .patient-filters select,
+            .patient-filters input {
+                width: 100%;
+                padding: 10px 12px;
+                font-size: 16px; /* 防止iOS缩放 */
+            }
+            
+            .patient-filters label {
+                font-weight: 500;
+                margin-bottom: 4px;
+                display: block;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 98%;
+                margin: 2% auto;
+                max-height: 90vh;
+                border-radius: 4px;
+            }
+            
+            .modal-header {
+                padding: 10px 12px;
+            }
+            
+            .modal-header h3 {
+                font-size: 14px;
+            }
+            
+            .close {
+                top: 10px;
+                right: 12px;
+                font-size: 22px;
+            }
+            
+            .modal-body {
+                padding: 12px;
+            }
+            
+            .patient-filters {
+                padding: 10px;
+            }
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .close:hover {
+            opacity: 1;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .patient-filters {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .patient-filters select,
+        .patient-filters input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #005a9e 0%, #004578 100%);
+            transform: translateY(-1px);
+        }
+
+        .pathway-section {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 20px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .pathway-content {
+            background: white;
+            border-radius: 4px;
+            padding: 15px;
+            border: 1px solid #e8e8e8;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .pathway-step {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-left: 3px solid #0078d4;
+            background: #f8f9fa;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .pathway-step.completed {
+            border-left-color: #28a745;
+            background: #f8fff9;
+        }
+
+        .pathway-step.variance {
+            border-left-color: #dc3545;
+            background: #fff8f8;
+        }
+
+        .patient-name-link {
+            color: #0078d4;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .patient-name-link:hover {
+            color: #005a9e;
+        }
+
+        /* 表格响应式设计 */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border: 1px solid #e8e8e8;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1000px;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        table th,
+        table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+            color: #333;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        table tr:hover {
+            background: #f8f9fa;
+        }
+
+        table .btn-default {
+            padding: 4px 8px;
+            font-size: 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        table .btn-default:hover {
+            background: #0078d4;
+            color: white;
+            border-color: #0078d4;
+        }
+
+        .status-badge {
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-badge.status-high {
+            background: #fff2f0;
+            color: #d73527;
+            border: 1px solid #ffccc7;
+        }
+
+        .status-badge.status-medium {
+            background: #fff7e6;
+            color: #d46b08;
+            border: 1px solid #ffd591;
+        }
+
+        .status-badge.status-low {
+            background: #f6ffed;
+            color: #389e0d;
+            border: 1px solid #b7eb8f;
+        }
+
+        /* 移动端卡片式表格布局 */
+        .table-card-view {
+            display: none;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e8e8e8;
+        }
+
+        .table-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .table-card-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .table-card-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .table-card-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+        }
+
+        .table-card-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .table-card-value {
+            color: #333;
+            font-weight: 400;
+        }
+
+        .table-card-actions {
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid #e8e8e8;
+            text-align: right;
+        }
+
+        /* 响应式设计 - 确保卡片在不同屏幕尺寸下正确显示 */
+        @media (max-width: 1400px) {
+            .card-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                padding: 0 4px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .card-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 12px;
+            }
+            .disease-container {
+                padding: 20px 12px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 16px;
+                padding: 0;
+            }
+            .disease-container {
+                padding: 16px 8px;
+            }
+        }
+
+        /* 大屏幕优化 */
+        @media (min-width: 1400px) {
+            .main-content {
+                padding: 0 3px !important; /* 大屏幕上也大幅减少左右间距 */
+            }
+            .card-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .main-content {
+                padding: 0 2px !important; /* 中等屏幕大幅减少左右间距 */
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .main-content {
+                padding: 0 1px !important; /* 小屏幕几乎贴边 */
+            }
+            .card-grid {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 12px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                padding: 0 1px !important; /* 最小屏幕几乎贴边 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <div class="breadcrumb">
+                <span>首页</span>
+                <span class="breadcrumb-separator">/</span>
+                <span>科主任运营分析</span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">科室病种管理</span>
+            </div>
+        </div>
+        
+        <!-- 科室病种管理容器 -->
+        <div class="disease-container">
+            <div class="disease-header">
+                <h2>科室病种管理<span class="english-title">Department Disease Management</span></h2>
+                <div class="btn-group">
+                    <button id="exportBtn" class="btn-default">导出报告</button>
+                    <button id="customReportBtn" class="btn-default">自定义报告</button>
+                </div>
+            </div>
+            
+            <!-- 筛选条件 -->
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <label for="departmentSelect">选择科室：</label>
+                    <select id="departmentSelect">
+                        <option value="all">全部科室</option>
+                        <option value="internal" selected>内科</option>
+                        <option value="surgery">外科</option>
+                        <option value="pediatrics">儿科</option>
+                        <option value="gynecology">妇产科</option>
+                        <option value="neurology">神经内科</option>
+                        <option value="cardiology">心内科</option>
+                        <option value="orthopedics">骨科</option>
+                        <option value="ophthalmology">眼科</option>
+                        <option value="dermatology">皮肤科</option>
+                        <option value="ent">耳鼻喉科</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="diseaseTypeSelect">病种类型：</label>
+                    <select id="diseaseTypeSelect">
+                        <option value="all">全部病种</option>
+                        <option value="high">高发病种</option>
+                        <option value="critical">危急重症</option>
+                        <option value="specialty">专科病种</option>
+                        <option value="chronic">慢性病种</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="dateRangePicker">时间范围：</label>
+                    <input type="text" id="dateRangePicker" placeholder="选择日期范围" value="2023-01-01 - 2023-10-31">
+                </div>
+                
+                <div class="filter-item">
+                    <label for="dataTypeSelect">数据类型：</label>
+                    <select id="dataTypeSelect">
+                        <option value="count">病例数</option>
+                        <option value="cost">费用</option>
+                        <option value="quality">质量</option>
+                    </select>
+                </div>
+                
+                <div class="btn-group" style="margin-left: auto;">
+                    <button id="refreshBtn" class="btn-primary">刷新数据</button>
+                </div>
+            </div>
+            
+            <!-- 总体统计概览 -->
+            <div class="disease-header">
+                <h2>临床路径管理总体概览</h2>
+            </div>
+            <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-bottom: 40px;">
+                <div class="disease-card" style="text-align: center; background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%); color: white; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);">
+                    <div class="stat-value" style="font-size: 28px; color: white; margin-bottom: 8px; font-weight: 600;">15</div>
+                    <div class="stat-label" style="color: rgba(255,255,255,0.9); font-size: 13px;">管理病种总数</div>
+                </div>
+                <div class="disease-card" style="text-align: center; background: linear-gradient(135deg, #0078d4 0%, #40e0d0 100%); color: white; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);">
+                    <div class="stat-value" style="font-size: 28px; color: white; margin-bottom: 8px; font-weight: 600;">87.2%</div>
+                    <div class="stat-label" style="color: rgba(255,255,255,0.9); font-size: 13px;">平均入径率</div>
+                </div>
+                <div class="disease-card" style="text-align: center; background: linear-gradient(135deg, #005a9e 0%, #0078d4 100%); color: white; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);">
+                    <div class="stat-value" style="font-size: 28px; color: white; margin-bottom: 8px; font-weight: 600;">82.5%</div>
+                    <div class="stat-label" style="color: rgba(255,255,255,0.9); font-size: 13px;">平均完成率</div>
+                </div>
+                <div class="disease-card" style="text-align: center; background: linear-gradient(135deg, #40e0d0 0%, #0078d4 100%); color: white; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);">
+                    <div class="stat-value" style="font-size: 28px; color: white; margin-bottom: 8px; font-weight: 600;">17.5%</div>
+                    <div class="stat-label" style="color: rgba(255,255,255,0.9); font-size: 13px;">平均变异率</div>
+                </div>
+                <div class="disease-card" style="text-align: center; background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%); color: white; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);">
+                    <div class="stat-value" style="font-size: 28px; color: white; margin-bottom: 8px; font-weight: 600;">9.8天</div>
+                    <div class="stat-label" style="color: rgba(255,255,255,0.9); font-size: 13px;">平均住院日</div>
+                </div>
+                <div class="disease-card" style="text-align: center; background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%); color: #333; border: 1px solid #e8e8e8; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    <div class="stat-value" style="font-size: 28px; color: #0078d4; margin-bottom: 8px; font-weight: 600;">¥16,890</div>
+                    <div class="stat-label" style="color: #666; font-size: 13px;">平均例均费用</div>
+                </div>
+            </div>
+            
+            <!-- 重点病种概览卡片 -->
+            <div class="disease-header">
+                <h2>重点病种临床路径管理详情</h2>
+            </div>
+            <div class="card-grid">
+                <div class="disease-card">
+                    <div class="card-title">脑梗死 <span style="font-size: 12px; color: #666;">(I63)</span> <span class="status-badge status-medium">路径中</span></div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">85.6%</div>
+                            <div class="stat-label">入径率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">78.9%</div>
+                            <div class="stat-label">完成率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">21.1%</div>
+                            <div class="stat-label">变异率</div>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">12.5天</div>
+                            <div class="stat-label">平均住院日</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">¥18,650</div>
+                            <div class="stat-label">例均费用</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">92.3%</div>
+                            <div class="stat-label">治愈好转率</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="disease-card" onclick="showPatientModal()" style="cursor: pointer;">
+                    <div class="card-title">肺炎 <span style="font-size: 12px; color: #666;">(J18)</span> <span class="status-badge status-medium">路径中</span></div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">91.2%</div>
+                            <div class="stat-label">入径率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">88.5%</div>
+                            <div class="stat-label">完成率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">11.5%</div>
+                            <div class="stat-label">变异率</div>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">8.2天</div>
+                            <div class="stat-label">平均住院日</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">¥12,340</div>
+                            <div class="stat-label">例均费用</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">95.8%</div>
+                            <div class="stat-label">治愈好转率</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="disease-card" onclick="showMIPatientModal()" style="cursor: pointer;">
+                    <div class="card-title">急性心梗 <span style="font-size: 12px; color: #666;">(I21)</span> <span class="status-badge status-high">路径中</span></div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">76.3%</div>
+                            <div class="stat-label">入径率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">68.4%</div>
+                            <div class="stat-label">完成率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">31.6%</div>
+                            <div class="stat-label">变异率</div>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">15.8天</div>
+                            <div class="stat-label">平均住院日</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">¥45,890</div>
+                            <div class="stat-label">例均费用</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">89.7%</div>
+                            <div class="stat-label">治愈好转率</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="disease-card">
+                    <div class="card-title">糖尿病 <span style="font-size: 12px; color: #666;">(E11)</span> <span class="status-badge status-medium">路径中</span></div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">93.7%</div>
+                            <div class="stat-label">入径率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">89.1%</div>
+                            <div class="stat-label">完成率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">10.9%</div>
+                            <div class="stat-label">变异率</div>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">6.5天</div>
+                            <div class="stat-label">平均住院日</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">¥8,950</div>
+                            <div class="stat-label">例均费用</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">91.2%</div>
+                            <div class="stat-label">治愈好转率</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="disease-card">
+                    <div class="card-title">胆囊炎 <span style="font-size: 12px; color: #666;">(K80)</span> <span class="status-badge status-medium">路径中</span></div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">88.4%</div>
+                            <div class="stat-label">入径率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">82.7%</div>
+                            <div class="stat-label">完成率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">17.3%</div>
+                            <div class="stat-label">变异率</div>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">7.8天</div>
+                            <div class="stat-label">平均住院日</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">¥15,680</div>
+                            <div class="stat-label">例均费用</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">96.5%</div>
+                            <div class="stat-label">治愈好转率</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="disease-card">
+                    <div class="card-title">白内障 <span style="font-size: 12px; color: #666;">(H25)</span> <span class="status-badge status-medium">路径中</span></div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">95.8%</div>
+                            <div class="stat-label">入径率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">94.2%</div>
+                            <div class="stat-label">完成率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">5.8%</div>
+                            <div class="stat-label">变异率</div>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">3.2天</div>
+                            <div class="stat-label">平均住院日</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">¥6,890</div>
+                            <div class="stat-label">例均费用</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">98.7%</div>
+                            <div class="stat-label">治愈好转率</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="disease-card">
+                    <div class="card-title">阑尾炎 <span style="font-size: 12px; color: #666;">(K35)</span> <span class="status-badge status-medium">路径中</span></div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">89.3%</div>
+                            <div class="stat-label">入径率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">85.7%</div>
+                            <div class="stat-label">完成率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">14.3%</div>
+                            <div class="stat-label">变异率</div>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">5.6天</div>
+                            <div class="stat-label">平均住院日</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">¥11,250</div>
+                            <div class="stat-label">例均费用</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">97.8%</div>
+                            <div class="stat-label">治愈好转率</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="disease-card">
+                    <div class="card-title">高血压 <span style="font-size: 12px; color: #666;">(I10)</span> <span class="status-badge status-medium">路径中</span></div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">92.1%</div>
+                            <div class="stat-label">入径率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">87.9%</div>
+                            <div class="stat-label">完成率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">12.1%</div>
+                            <div class="stat-label">变异率</div>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">7.3天</div>
+                            <div class="stat-label">平均住院日</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">¥9,680</div>
+                            <div class="stat-label">例均费用</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">94.5%</div>
+                            <div class="stat-label">治愈好转率</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="disease-card">
+                    <div class="card-title">冠心病 <span style="font-size: 12px; color: #666;">(I25)</span> <span class="status-badge status-high">路径中</span></div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">81.4%</div>
+                            <div class="stat-label">入径率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">74.6%</div>
+                            <div class="stat-label">完成率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">25.4%</div>
+                            <div class="stat-label">变异率</div>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">11.8天</div>
+                            <div class="stat-label">平均住院日</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">¥28,450</div>
+                            <div class="stat-label">例均费用</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">91.3%</div>
+                            <div class="stat-label">治愈好转率</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="disease-card">
+                    <div class="card-title">骨折 <span style="font-size: 12px; color: #666;">(S72)</span> <span class="status-badge status-medium">路径中</span></div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">86.7%</div>
+                            <div class="stat-label">入径率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">79.2%</div>
+                            <div class="stat-label">完成率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">20.8%</div>
+                            <div class="stat-label">变异率</div>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">14.2天</div>
+                            <div class="stat-label">平均住院日</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">¥22,340</div>
+                            <div class="stat-label">例均费用</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">93.8%</div>
+                            <div class="stat-label">治愈好转率</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="disease-card">
+                    <div class="card-title">慢性肾病 <span style="font-size: 12px; color: #666;">(N18)</span> <span class="status-badge status-high">路径中</span></div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">77.9%</div>
+                            <div class="stat-label">入径率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">71.3%</div>
+                            <div class="stat-label">完成率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">28.7%</div>
+                            <div class="stat-label">变异率</div>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">16.5天</div>
+                            <div class="stat-label">平均住院日</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">¥35,680</div>
+                            <div class="stat-label">例均费用</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">88.4%</div>
+                            <div class="stat-label">治愈好转率</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 图表分析区域 -->
+            <div class="disease-header">
+                <h2>病种数据分析</h2>
+            </div>
+            
+            <!-- 图表展示区域 -->
+            <div class="charts-grid">
+                <!-- 病种分布分析 -->
+                <div class="chart-item">
+                    <div class="chart-title">病种分布分析</div>
+                    <div class="chart-container" id="diseaseDistributionChart"></div>
+                </div>
+                
+                <!-- 病种趋势分析 -->
+                <div class="chart-item">
+                    <div class="chart-title">病种趋势分析</div>
+                    <div class="chart-container" id="diseaseTrendChart"></div>
+                </div>
+                
+                <!-- 病种费用分析 -->
+                <div class="chart-item">
+                    <div class="chart-title">病种费用分析</div>
+                    <div class="chart-container" id="diseaseCostChart"></div>
+                </div>
+                
+                <!-- DRGs分析 -->
+                <div class="chart-item">
+                    <div class="chart-title">DRGs分析</div>
+                    <div class="chart-container" id="drgsChart"></div>
+                </div>
+                
+                <!-- 质量趋势分析 -->
+                <div class="chart-item">
+                    <div class="chart-title">质量趋势分析</div>
+                    <div class="chart-container" id="qualityTrendChart"></div>
+                </div>
+                
+                <!-- 风险雷达图 -->
+                <div class="chart-item">
+                    <div class="chart-title">风险评估雷达图</div>
+                    <div class="chart-container" id="riskRadarChart"></div>
+                </div>
+            </div>
+            
+            <!-- 详细分析标签页 -->
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab-btn active" data-tab="pathwayDetail">临床路径详情</div>
+                    <div class="tab-btn" data-tab="pathwayExecution">路径执行分析</div>
+                    <div class="tab-btn" data-tab="qualityControl">质量控制指标</div>
+                    <div class="tab-btn" data-tab="varianceAnalysis">变异分析</div>
+                    <div class="tab-btn" data-tab="costAnalysis">成本效益分析</div>
+                </div>
+                
+                <!-- 临床路径详情 -->
+                <div class="tab-panel active" id="pathwayDetail">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>病种名称</th>
+                                    <th>ICD编码</th>
+                                    <th>路径状态</th>
+                                    <th>入径率</th>
+                                    <th>完成率</th>
+                                    <th>变异率</th>
+                                    <th>平均住院日</th>
+                                    <th>标准住院日</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>脑梗死</td>
+                                    <td>I63</td>
+                                    <td><span class="status-badge status-medium">路径中</span></td>
+                                    <td>85.6%</td>
+                                    <td>78.9%</td>
+                                    <td>21.1%</td>
+                                    <td>12.5天</td>
+                                    <td>14天</td>
+                                    <td><button class="btn-default">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>肺炎</td>
+                                    <td>J18</td>
+                                    <td><span class="status-badge status-medium">路径中</span></td>
+                                    <td>91.2%</td>
+                                    <td>88.5%</td>
+                                    <td>11.5%</td>
+                                    <td>8.2天</td>
+                                    <td>9天</td>
+                                    <td><button class="btn-default">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>急性心梗</td>
+                                    <td>I21</td>
+                                    <td><span class="status-badge status-high">路径中</span></td>
+                                    <td>76.3%</td>
+                                    <td>68.4%</td>
+                                    <td>31.6%</td>
+                                    <td>15.8天</td>
+                                    <td>18天</td>
+                                    <td><button class="btn-default">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>糖尿病</td>
+                                    <td>E11</td>
+                                    <td><span class="status-badge status-medium">路径中</span></td>
+                                    <td>93.7%</td>
+                                    <td>89.1%</td>
+                                    <td>10.9%</td>
+                                    <td>6.5天</td>
+                                    <td>7天</td>
+                                    <td><button class="btn-default">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>胆囊炎</td>
+                                    <td>K80</td>
+                                    <td><span class="status-badge status-medium">路径中</span></td>
+                                    <td>88.4%</td>
+                                    <td>82.7%</td>
+                                    <td>17.3%</td>
+                                    <td>7.8天</td>
+                                    <td>9天</td>
+                                    <td><button class="btn-default">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>白内障</td>
+                                    <td>H25</td>
+                                    <td><span class="status-badge status-low">路径中</span></td>
+                                    <td>95.8%</td>
+                                    <td>94.2%</td>
+                                    <td>5.8%</td>
+                                    <td>3.2天</td>
+                                    <td>3天</td>
+                                    <td><button class="btn-default">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>阑尾炎</td>
+                                    <td>K35</td>
+                                    <td><span class="status-badge status-medium">路径中</span></td>
+                                    <td>89.3%</td>
+                                    <td>85.7%</td>
+                                    <td>14.3%</td>
+                                    <td>5.6天</td>
+                                    <td>6天</td>
+                                    <td><button class="btn-default">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>高血压</td>
+                                    <td>I10</td>
+                                    <td><span class="status-badge status-medium">路径中</span></td>
+                                    <td>92.1%</td>
+                                    <td>87.9%</td>
+                                    <td>12.1%</td>
+                                    <td>7.3天</td>
+                                    <td>8天</td>
+                                    <td><button class="btn-default">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>冠心病</td>
+                                    <td>I25</td>
+                                    <td><span class="status-badge status-high">路径中</span></td>
+                                    <td>81.4%</td>
+                                    <td>74.6%</td>
+                                    <td>25.4%</td>
+                                    <td>11.8天</td>
+                                    <td>14天</td>
+                                    <td><button class="btn-default">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>骨折</td>
+                                    <td>S72</td>
+                                    <td><span class="status-badge status-medium">路径中</span></td>
+                                    <td>86.7%</td>
+                                    <td>79.2%</td>
+                                    <td>20.8%</td>
+                                    <td>14.2天</td>
+                                    <td>16天</td>
+                                    <td><button class="btn-default">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>慢性肾病</td>
+                                    <td>N18</td>
+                                    <td><span class="status-badge status-high">路径中</span></td>
+                                    <td>77.9%</td>
+                                    <td>71.3%</td>
+                                    <td>28.7%</td>
+                                    <td>16.5天</td>
+                                    <td>19天</td>
+                                    <td><button class="btn-default">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>慢性阻塞性肺病</td>
+                                    <td>J44</td>
+                                    <td><span class="status-badge status-medium">路径中</span></td>
+                                    <td>84.2%</td>
+                                    <td>78.6%</td>
+                                    <td>21.4%</td>
+                                    <td>10.3天</td>
+                                    <td>12天</td>
+                                    <td><button class="btn-default">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>胃溃疡</td>
+                                    <td>K25</td>
+                                    <td><span class="status-badge status-medium">路径中</span></td>
+                                    <td>90.5%</td>
+                                    <td>86.3%</td>
+                                    <td>13.7%</td>
+                                    <td>8.7天</td>
+                                    <td>10天</td>
+                                    <td><button class="btn-default">查看详情</button></td>
+                                </tr>
+                                <tr>
+                                    <td>甲状腺结节</td>
+                                    <td>E04</td>
+                                    <td><span class="status-badge status-low">路径中</span></td>
+                                    <td>93.1%</td>
+                                    <td>90.8%</td>
+                                    <td>9.2%</td>
+                                    <td>4.5天</td>
+                                    <td>5天</td>
+                                    <td><button class="btn-default">查看详情</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 路径执行分析 -->
+                <div class="tab-panel" id="pathwayExecution">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>病种</th>
+                                    <th>总病例数</th>
+                                    <th>入径病例数</th>
+                                    <th>完成病例数</th>
+                                    <th>退出病例数</th>
+                                    <th>主要退出原因</th>
+                                    <th>关键节点达标率</th>
+                                    <th>医生满意度</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>脑梗死</td>
+                                    <td>1,245</td>
+                                    <td>1,066</td>
+                                    <td>841</td>
+                                    <td>225</td>
+                                    <td>并发症(45%), 患者要求(30%)</td>
+                                    <td>82.3%</td>
+                                    <td>4.2/5.0</td>
+                                </tr>
+                                <tr>
+                                    <td>肺炎</td>
+                                    <td>2,156</td>
+                                    <td>1,966</td>
+                                    <td>1,739</td>
+                                    <td>227</td>
+                                    <td>病情变化(52%), 检查异常(28%)</td>
+                                    <td>89.1%</td>
+                                    <td>4.5/5.0</td>
+                                </tr>
+                                <tr>
+                                    <td>急性心梗</td>
+                                    <td>456</td>
+                                    <td>348</td>
+                                    <td>238</td>
+                                    <td>110</td>
+                                    <td>并发症(68%), 手术并发症(22%)</td>
+                                    <td>71.8%</td>
+                                    <td>3.9/5.0</td>
+                                </tr>
+                                <tr>
+                                    <td>糖尿病</td>
+                                    <td>1,789</td>
+                                    <td>1,677</td>
+                                    <td>1,494</td>
+                                    <td>183</td>
+                                    <td>血糖控制不佳(41%), 并发症(35%)</td>
+                                    <td>91.5%</td>
+                                    <td>4.6/5.0</td>
+                                </tr>
+                                <tr>
+                                    <td>胆囊炎</td>
+                                    <td>892</td>
+                                    <td>789</td>
+                                    <td>652</td>
+                                    <td>137</td>
+                                    <td>手术方式改变(38%), 炎症严重(32%)</td>
+                                    <td>85.7%</td>
+                                    <td>4.3/5.0</td>
+                                </tr>
+                                <tr>
+                                    <td>白内障</td>
+                                    <td>1,234</td>
+                                    <td>1,182</td>
+                                    <td>1,113</td>
+                                    <td>69</td>
+                                    <td>眼底病变(45%), 患者要求(28%)</td>
+                                    <td>96.2%</td>
+                                    <td>4.8/5.0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 质量控制指标 -->
+                <div class="tab-panel" id="qualityControl">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>质量指标</th>
+                                    <th>目标值</th>
+                                    <th>实际值</th>
+                                    <th>达标率</th>
+                                    <th>同比变化</th>
+                                    <th>风险等级</th>
+                                    <th>改进措施</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>病死率</td>
+                                    <td>≤2.5%</td>
+                                    <td>1.8%</td>
+                                    <td>达标</td>
+                                    <td>-0.3%</td>
+                                    <td><span class="status-badge status-low">低风险</span></td>
+                                    <td>持续监控</td>
+                                </tr>
+                                <tr>
+                                    <td>医院感染率</td>
+                                    <td>≤3.0%</td>
+                                    <td>2.1%</td>
+                                    <td>达标</td>
+                                    <td>-0.4%</td>
+                                    <td><span class="status-badge status-low">低风险</span></td>
+                                    <td>加强感控</td>
+                                </tr>
+                                <tr>
+                                    <td>非计划再手术率</td>
+                                    <td>≤1.0%</td>
+                                    <td>0.7%</td>
+                                    <td>达标</td>
+                                    <td>-0.1%</td>
+                                    <td><span class="status-badge status-low">低风险</span></td>
+                                    <td>术前评估优化</td>
+                                </tr>
+                                <tr>
+                                    <td>药物不良反应率</td>
+                                    <td>≤2.0%</td>
+                                    <td>1.5%</td>
+                                    <td>达标</td>
+                                    <td>-0.2%</td>
+                                    <td><span class="status-badge status-low">低风险</span></td>
+                                    <td>用药监测</td>
+                                </tr>
+                                <tr>
+                                    <td>患者满意度</td>
+                                    <td>≥95%</td>
+                                    <td>96.8%</td>
+                                    <td>达标</td>
+                                    <td>+1.2%</td>
+                                    <td><span class="status-badge status-low">低风险</span></td>
+                                    <td>服务提升</td>
+                                </tr>
+                                <tr>
+                                    <td>平均住院日控制率</td>
+                                    <td>≥85%</td>
+                                    <td>82.3%</td>
+                                    <td>未达标</td>
+                                    <td>+2.1%</td>
+                                    <td><span class="status-badge status-medium">中风险</span></td>
+                                    <td>流程优化</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 变异分析 -->
+                <div class="tab-panel" id="varianceAnalysis">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>变异类型</th>
+                                    <th>病种</th>
+                                    <th>发生频次</th>
+                                    <th>变异率</th>
+                                    <th>主要原因</th>
+                                    <th>影响程度</th>
+                                    <th>处理建议</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>诊断变异</td>
+                                    <td>脑梗死</td>
+                                    <td>89</td>
+                                    <td>7.1%</td>
+                                    <td>影像学检查发现新病灶</td>
+                                    <td><span class="status-badge status-medium">中等</span></td>
+                                    <td>完善术前检查</td>
+                                </tr>
+                                <tr>
+                                    <td>治疗变异</td>
+                                    <td>急性心梗</td>
+                                    <td>156</td>
+                                    <td>34.2%</td>
+                                    <td>血管条件不适合介入</td>
+                                    <td><span class="status-badge status-high">高</span></td>
+                                    <td>术前评估优化</td>
+                                </tr>
+                                <tr>
+                                    <td>时间变异</td>
+                                    <td>胆囊炎</td>
+                                    <td>67</td>
+                                    <td>7.5%</td>
+                                    <td>手术室安排延迟</td>
+                                    <td><span class="status-badge status-medium">中等</span></td>
+                                    <td>手术室调度优化</td>
+                                </tr>
+                                <tr>
+                                    <td>药物变异</td>
+                                    <td>肺炎</td>
+                                    <td>124</td>
+                                    <td>5.8%</td>
+                                    <td>药敏试验结果调整</td>
+                                    <td><span class="status-badge status-low">低</span></td>
+                                    <td>快速检测推广</td>
+                                </tr>
+                                <tr>
+                                    <td>检查变异</td>
+                                    <td>糖尿病</td>
+                                    <td>98</td>
+                                    <td>5.5%</td>
+                                    <td>并发症筛查需要</td>
+                                    <td><span class="status-badge status-low">低</span></td>
+                                    <td>标准化筛查流程</td>
+                                </tr>
+                                <tr>
+                                    <td>护理变异</td>
+                                    <td>白内障</td>
+                                    <td>23</td>
+                                    <td>1.9%</td>
+                                    <td>患者依从性问题</td>
+                                    <td><span class="status-badge status-low">低</span></td>
+                                    <td>健康教育加强</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 成本效益分析 -->
+                <div class="tab-panel" id="costAnalysis">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>病种</th>
+                                    <th>路径内平均费用</th>
+                                    <th>路径外平均费用</th>
+                                    <th>费用节约</th>
+                                    <th>节约率</th>
+                                    <th>药占比</th>
+                                    <th>耗材占比</th>
+                                    <th>成本效益比</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>脑梗死</td>
+                                    <td>¥18,650</td>
+                                    <td>¥22,340</td>
+                                    <td>¥3,690</td>
+                                    <td>16.5%</td>
+                                    <td>32.1%</td>
+                                    <td>18.5%</td>
+                                    <td>1:3.2</td>
+                                </tr>
+                                <tr>
+                                    <td>肺炎</td>
+                                    <td>¥12,340</td>
+                                    <td>¥14,890</td>
+                                    <td>¥2,550</td>
+                                    <td>17.1%</td>
+                                    <td>38.7%</td>
+                                    <td>12.3%</td>
+                                    <td>1:4.1</td>
+                                </tr>
+                                <tr>
+                                    <td>急性心梗</td>
+                                    <td>¥45,890</td>
+                                    <td>¥58,760</td>
+                                    <td>¥12,870</td>
+                                    <td>21.9%</td>
+                                    <td>25.4%</td>
+                                    <td>35.2%</td>
+                                    <td>1:2.8</td>
+                                </tr>
+                                <tr>
+                                    <td>糖尿病</td>
+                                    <td>¥8,950</td>
+                                    <td>¥11,230</td>
+                                    <td>¥2,280</td>
+                                    <td>20.3%</td>
+                                    <td>42.6%</td>
+                                    <td>8.9%</td>
+                                    <td>1:5.2</td>
+                                </tr>
+                                <tr>
+                                    <td>胆囊炎</td>
+                                    <td>¥15,680</td>
+                                    <td>¥19,450</td>
+                                    <td>¥3,770</td>
+                                    <td>19.4%</td>
+                                    <td>28.9%</td>
+                                    <td>22.1%</td>
+                                    <td>1:3.6</td>
+                                </tr>
+                                <tr>
+                                    <td>白内障</td>
+                                    <td>¥6,890</td>
+                                    <td>¥8,120</td>
+                                    <td>¥1,230</td>
+                                    <td>15.1%</td>
+                                    <td>15.2%</td>
+                                    <td>45.8%</td>
+                                    <td>1:6.8</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+    </div>
+    
+    <!-- 加载状态遮罩 -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- 引入页面特定JS -->
+    <script src="./js/common.js"></script>
+    <!-- 患者明细弹窗 -->
+    <div id="patientModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 1400px; width: 95%; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; position: sticky; top: 0; z-index: 10;">
+                <h3 style="margin: 0; font-size: 18px; font-weight: 600;">肺炎患者明细数据</h3>
+                <span class="close" onclick="closePatientModal()" style="color: white; font-size: 24px; cursor: pointer; position: absolute; right: 20px; top: 20px;">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 20px; background: #f8f9fa;">
+                <div class="patient-filters" style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 15px;">
+                    <select id="pathwayStatus" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; min-width: 120px;">
+                        <option value="all">全部状态</option>
+                        <option value="in">已入径</option>
+                        <option value="out">已出径</option>
+                        <option value="variance">变异</option>
+                    </select>
+                    <input type="text" id="patientSearch" placeholder="搜索患者姓名或住院号" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; min-width: 200px; flex: 1;">
+                    <button onclick="filterPatients()" class="btn-primary" style="padding: 8px 20px; background: #0078d4; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;">筛选</button>
+                </div>
+                <div class="table-container" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden;">
+                    <table id="patientTable" style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                                <th style="padding: 12px 8px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #0078d4; font-size: 13px;">住院号</th>
+                                <th style="padding: 12px 8px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #0078d4; font-size: 13px;">患者姓名</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-bottom: 2px solid #0078d4; font-size: 13px;">性别</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-bottom: 2px solid #0078d4; font-size: 13px;">年龄</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-bottom: 2px solid #0078d4; font-size: 13px;">入院日期</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-bottom: 2px solid #0078d4; font-size: 13px;">出院日期</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-bottom: 2px solid #0078d4; font-size: 13px;">住院天数</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-bottom: 2px solid #0078d4; font-size: 13px;">路径状态</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-bottom: 2px solid #0078d4; font-size: 13px;">入径时间</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-bottom: 2px solid #0078d4; font-size: 13px;">完成情况</th>
+                                <th style="padding: 12px 8px; text-align: right; font-weight: 600; color: #333; border-bottom: 2px solid #0078d4; font-size: 13px;">费用</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-bottom: 2px solid #0078d4; font-size: 13px;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientTableBody">
+                            <!-- 患者数据将通过JavaScript动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 临床路径对比弹窗 -->
+    <div id="pathwayModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 1400px; width: 95%; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; position: sticky; top: 0; z-index: 10;">
+                <h3 id="pathwayModalTitle" style="margin: 0; font-size: 18px; font-weight: 600;">临床路径对比分析</h3>
+                <span class="close" onclick="closePathwayModal()" style="color: white; font-size: 24px; cursor: pointer; position: absolute; right: 20px; top: 20px;">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 20px; background: #f8f9fa;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- 左侧：患者实际路径 -->
+                    <div class="pathway-section" style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h4 style="color: #0078d4; margin-bottom: 15px; font-size: 16px; font-weight: 600; padding-bottom: 10px; border-bottom: 2px solid #0078d4;">患者实际路径</h4>
+                        <div id="actualPathway" class="pathway-content" style="font-size: 14px; line-height: 1.6;">
+                            <!-- 实际路径内容 -->
+                        </div>
+                    </div>
+                    <!-- 右侧：国家标准路径 -->
+                    <div class="pathway-section" style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h4 style="color: #107c10; margin-bottom: 15px; font-size: 16px; font-weight: 600; padding-bottom: 10px; border-bottom: 2px solid #107c10;">国家标准路径</h4>
+                        <div id="standardPathway" class="pathway-content" style="font-size: 14px; line-height: 1.6;">
+                            <!-- 标准路径内容 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 患者详细信息弹窗 -->
+        <div id="patientDetailModal" class="modal" style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6);" onclick="if (event.target == this) { closePatientDetailModal(); }">
+        <div class="modal-content" style="max-width: 1200px; width: 95%; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; position: sticky; top: 0; z-index: 10;">
+                <h3 id="patientDetailTitle" style="margin: 0; font-size: 18px; font-weight: 600;">患者详细信息</h3>
+                <span class="close" onclick="closePatientDetailModal()" style="color: white; font-size: 24px; cursor: pointer; position: absolute; right: 20px; top: 20px;">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 20px; background: #f8f9fa;">
+                <!-- 患者基本信息 -->
+                <div class="patient-basic-info" style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <h4 style="color: #0078d4; margin-bottom: 15px; font-size: 16px; font-weight: 600; padding-bottom: 10px; border-bottom: 2px solid #0078d4;">基本信息</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; font-size: 14px;">
+                        <div><strong>住院号：</strong><span id="detailHospitalNo">-</span></div>
+                        <div><strong>患者姓名：</strong><span id="detailPatientName">-</span></div>
+                        <div><strong>性别：</strong><span id="detailGender">-</span></div>
+                        <div><strong>年龄：</strong><span id="detailAge">-</span></div>
+                        <div><strong>入院日期：</strong><span id="detailAdmissionDate">-</span></div>
+                        <div><strong>出院日期：</strong><span id="detailDischargeDate">-</span></div>
+                        <div><strong>住院天数：</strong><span id="detailStayDays">-</span></div>
+                        <div><strong>主治医师：</strong><span id="detailDoctor">-</span></div>
+                        <div><strong>科室：</strong><span id="detailDepartment">-</span></div>
+                        <div><strong>床位号：</strong><span id="detailBedNo">-</span></div>
+                        <div><strong>联系电话：</strong><span id="detailPhone">-</span></div>
+                        <div><strong>身份证号：</strong><span id="detailIdCard">-</span></div>
+                    </div>
+                </div>
+
+                <!-- 诊断信息 -->
+                <div class="patient-diagnosis-info" style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <h4 style="color: #0078d4; margin-bottom: 15px; font-size: 16px; font-weight: 600; padding-bottom: 10px; border-bottom: 2px solid #0078d4;">诊断信息</h4>
+                    <div style="font-size: 14px;">
+                        <div style="margin-bottom: 10px;"><strong>主要诊断：</strong><span id="detailMainDiagnosis">-</span></div>
+                        <div style="margin-bottom: 10px;"><strong>次要诊断：</strong><span id="detailSecondaryDiagnosis">-</span></div>
+                        <div><strong>诊断编码：</strong><span id="detailDiagnosisCode">-</span></div>
+                    </div>
+                </div>
+
+                <!-- 临床路径信息 -->
+                <div class="patient-pathway-info" style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <h4 style="color: #0078d4; margin-bottom: 15px; font-size: 16px; font-weight: 600; padding-bottom: 10px; border-bottom: 2px solid #0078d4;">临床路径信息</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; font-size: 14px;">
+                        <div><strong>路径状态：</strong><span id="detailPathwayStatus">-</span></div>
+                        <div><strong>路径名称：</strong><span id="detailPathwayName">-</span></div>
+                        <div><strong>完成进度：</strong><span id="detailPathwayProgress">-</span></div>
+                        <div><strong>变异原因：</strong><span id="detailVarianceReason">-</span></div>
+                    </div>
+                </div>
+
+                <!-- 费用信息 -->
+                <div class="patient-cost-info" style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <h4 style="color: #0078d4; margin-bottom: 15px; font-size: 16px; font-weight: 600; padding-bottom: 10px; border-bottom: 2px solid #0078d4;">费用信息</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; font-size: 14px;">
+                        <div><strong>总费用：</strong><span id="detailTotalCost">-</span></div>
+                        <div><strong>药品费用：</strong><span id="detailDrugCost">-</span></div>
+                        <div><strong>材料费用：</strong><span id="detailMaterialCost">-</span></div>
+                        <div><strong>检查费用：</strong><span id="detailExamCost">-</span></div>
+                        <div><strong>治疗费用：</strong><span id="detailTreatmentCost">-</span></div>
+                    </div>
+                </div>
+                        <div style="margin-bottom: 10px;"><strong>次要诊断：</strong><span id="detailSecondaryDiagnosis">-</span></div>
+                        <div style="margin-bottom: 10px;"><strong>ICD编码：</strong><span id="detailIcdCode">-</span></div>
+                        <div style="margin-bottom: 10px;"><strong>病情严重程度：</strong><span id="detailSeverity">-</span></div>
+                    </div>
+                </div>
+
+                <!-- 临床路径信息 -->
+                <div class="patient-pathway-info" style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <h4 style="color: #0078d4; margin-bottom: 15px; font-size: 16px; font-weight: 600; padding-bottom: 10px; border-bottom: 2px solid #0078d4;">临床路径信息</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; font-size: 14px;">
+                        <div><strong>路径状态：</strong><span id="detailPathwayStatus">-</span></div>
+                        <div><strong>入径时间：</strong><span id="detailPathwayEntryTime">-</span></div>
+                        <div><strong>出径时间：</strong><span id="detailPathwayExitTime">-</span></div>
+                        <div><strong>完成情况：</strong><span id="detailCompletionStatus">-</span></div>
+                        <div><strong>变异原因：</strong><span id="detailVarianceReason">-</span></div>
+                        <div><strong>路径版本：</strong><span id="detailPathwayVersion">-</span></div>
+                    </div>
+                </div>
+
+                <!-- 费用信息 -->
+                <div class="patient-cost-info" style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <h4 style="color: #0078d4; margin-bottom: 15px; font-size: 16px; font-weight: 600; padding-bottom: 10px; border-bottom: 2px solid #0078d4;">费用信息</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; font-size: 14px;">
+                        <div><strong>总费用：</strong><span id="detailTotalCost" style="color: #d83b01; font-weight: 600;">-</span></div>
+                        <div><strong>药品费：</strong><span id="detailMedicineCost">-</span></div>
+                        <div><strong>检查费：</strong><span id="detailExamCost">-</span></div>
+                        <div><strong>治疗费：</strong><span id="detailTreatmentCost">-</span></div>
+                        <div><strong>手术费：</strong><span id="detailSurgeryCost">-</span></div>
+                        <div><strong>护理费：</strong><span id="detailNursingCost">-</span></div>
+                        <div><strong>材料费：</strong><span id="detailMaterialCost">-</span></div>
+                        <div><strong>其他费用：</strong><span id="detailOtherCost">-</span></div>
+                    </div>
+                </div>
+
+                <!-- 治疗记录 -->
+                <div class="patient-treatment-info" style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <h4 style="color: #0078d4; margin-bottom: 15px; font-size: 16px; font-weight: 600; padding-bottom: 10px; border-bottom: 2px solid #0078d4;">治疗记录</h4>
+                    <div id="detailTreatmentRecords" style="font-size: 14px; line-height: 1.6;">
+                        <!-- 治疗记录将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 心梗患者明细弹窗 -->
+    <div id="miPatientModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);" onclick="if (event.target == this) { closeMIPatientModal(); }">
+        <div class="modal-content" style="background-color: #fefefe; margin: 2% auto; padding: 0; border: none; border-radius: 12px; width: 95%; max-width: 1400px; height: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.2); overflow: hidden;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%); color: white; padding: 20px 30px; border-radius: 12px 12px 0 0; position: relative;">
+                <h3 style="margin: 0; font-size: 18px; font-weight: 600;">急性心梗患者明细数据</h3>
+                <span class="close" onclick="closeMIPatientModal()" style="color: white; font-size: 24px; cursor: pointer; position: absolute; right: 20px; top: 20px;">&times;</span>
+            </div>
+            
+            <div class="modal-body" style="padding: 20px 30px; height: calc(100% - 80px); overflow-y: auto;">
+                <!-- 筛选栏 -->
+                <div class="filter-bar" style="background: #f8f9fa; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <label style="font-size: 14px; color: #666; font-weight: 500;">路径状态:</label>
+                        <select id="miPathwayStatus" onchange="filterMIPatients()" style="padding: 6px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; background: white;">
+                            <option value="all">全部</option>
+                            <option value="in">已入径</option>
+                            <option value="out">已出径</option>
+                            <option value="variance">变异</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <label style="font-size: 14px; color: #666; font-weight: 500;">搜索:</label>
+                        <input type="text" id="miPatientSearch" placeholder="输入患者姓名或住院号" onkeyup="filterMIPatients()" style="padding: 6px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; width: 200px;">
+                    </div>
+                    <div style="margin-left: auto; font-size: 14px; color: #666;">
+                        共 <span id="miPatientCount">5</span> 名患者
+                    </div>
+                </div>
+
+                <!-- 患者表格 -->
+                <div class="table-container" style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                        <thead>
+                            <tr style="background: #f8f9fa; border-bottom: 2px solid #e9ecef;">
+                                <th style="padding: 12px 8px; text-align: left; font-weight: 600; color: #333; border-right: 1px solid #e9ecef; font-size: 13px;">住院号</th>
+                                <th style="padding: 12px 8px; text-align: left; font-weight: 600; color: #333; border-right: 1px solid #e9ecef; font-size: 13px;">患者姓名</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-right: 1px solid #e9ecef; font-size: 13px;">性别</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-right: 1px solid #e9ecef; font-size: 13px;">年龄</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-right: 1px solid #e9ecef; font-size: 13px;">入院日期</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-right: 1px solid #e9ecef; font-size: 13px;">出院日期</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-right: 1px solid #e9ecef; font-size: 13px;">住院天数</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-right: 1px solid #e9ecef; font-size: 13px;">路径状态</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-right: 1px solid #e9ecef; font-size: 13px;">入径时间</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; border-right: 1px solid #e9ecef; font-size: 13px;">完成情况</th>
+                                <th style="padding: 12px 8px; text-align: right; font-weight: 600; color: #333; border-right: 1px solid #e9ecef; font-size: 13px;">医疗费用</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #333; font-size: 13px;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="miPatientTableBody">
+                            <!-- 患者数据将通过JavaScript动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 心梗临床路径对比弹窗 -->
+    <div id="miPathwayModal" class="modal" style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6);" onclick="if (event.target == this) { closeMIPathwayModal(); }">
+        <div class="modal-content" style="background-color: #fefefe; margin: 1% auto; padding: 0; border: none; border-radius: 12px; width: 95%; max-width: 1600px; height: 95%; box-shadow: 0 8px 32px rgba(0,0,0,0.3); overflow: hidden;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%); color: white; padding: 20px 30px; border-radius: 12px 12px 0 0; position: relative;">
+                <h3 id="miPathwayModalTitle" style="margin: 0; font-size: 18px; font-weight: 600;">临床路径对比分析</h3>
+                <span class="close" onclick="closeMIPathwayModal()" style="color: white; font-size: 24px; cursor: pointer; position: absolute; right: 20px; top: 20px;">&times;</span>
+            </div>
+            
+            <div class="modal-body" style="padding: 20px 30px; height: calc(100% - 80px); overflow-y: auto;">
+                <div id="miPathwayContent">
+                    <!-- 路径对比内容将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 心梗患者详细信息弹窗 -->
+    <div id="miPatientDetailModal" class="modal" style="display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6);" onclick="if (event.target == this) { closeMIPatientDetailModal(); }">
+        <div class="modal-content" style="background-color: #fefefe; margin: 1% auto; padding: 0; border: none; border-radius: 12px; width: 95%; max-width: 1400px; height: 95%; box-shadow: 0 8px 32px rgba(0,0,0,0.3); overflow: hidden;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%); color: white; padding: 20px 30px; border-radius: 12px 12px 0 0; position: relative;">
+                <h3 id="miPatientDetailTitle" style="margin: 0; font-size: 18px; font-weight: 600;">患者详细信息</h3>
+                <span class="close" onclick="closeMIPatientDetailModal()" style="color: white; font-size: 24px; cursor: pointer; position: absolute; right: 20px; top: 20px;">&times;</span>
+            </div>
+            
+            <div class="modal-body" style="padding: 20px 30px; height: calc(100% - 80px); overflow-y: auto;">
+                <div id="miPatientDetailContent">
+                    <!-- 患者详细信息将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 结束主要内容区域 -->
+    </div>
+
+    <script src="./js/department-disease.js"></script>
+    
+    <!-- 加载统一导航组件 -->
+    <script src="./js/navigation-loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科室医疗服务分析 - 佛山市南海区中医院数据中心管理平台</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+    
+    <div class="container">
+        <!-- 主要内容区域 -->
+        <div class="main-content">
+            <!-- 右侧内容区 -->
+            <div class="content-wrapper">
+                <!-- 主内容区域 -->
+                <main class="content">
+                    <div id="dashboard" class="page-header">
+                        <h2>科室医疗服务分析 <span class="english-title">Department Medical Service Analysis</span></h2>
+                        <div class="breadcrumb">
+                            <span>首页</span> / <span>科室医疗服务分析</span>
+                        </div>
+                    </div>
+
+                    <!-- 筛选控件 -->
+                    <div class="filter-controls">
+                        <div class="filter-group">
+                            <label for="department">科室选择：</label>
+                            <select id="department">
+                                <option value="all">全部科室</option>
+                                <option value="internal">内科</option>
+                                <option value="surgery">外科</option>
+                                <option value="pediatrics">儿科</option>
+                                <option value="gynecology">妇科</option>
+                                <option value="orthopedics">骨科</option>
+                            </select>
+                            
+                            <label for="timeRange">时间范围：</label>
+                            <select id="timeRange">
+                                <option value="month">本月</option>
+                                <option value="quarter">本季度</option>
+                                <option value="year">本年度</option>
+                                <option value="custom">自定义</option>
+                            </select>
+                        </div>
+                        
+                        <div class="export-options">
+                            <button class="export-btn" id="exportExcel">导出Excel</button>
+                            <button class="export-btn" id="exportPdf">导出PDF</button>
+                        </div>
+                    </div>
+
+                    <!-- 关键服务指标 -->
+                    <div class="overview-cards">
+                        <div class="card" data-status="up">
+                            <div class="card-title">门急诊人次</div>
+                            <div class="card-value">12,580</div>
+                            <div class="card-trend">
+                                <span class="up">+8.2%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="card" data-status="up">
+                            <div class="card-title">出院人次</div>
+                            <div class="card-value">2,856</div>
+                            <div class="card-trend">
+                                <span class="up">+3.5%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="card" data-status="down">
+                            <div class="card-title">手术人次</div>
+                            <div class="card-value">1,423</div>
+                            <div class="card-trend">
+                                <span class="down">-1.2%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="card" data-status="up">
+                            <div class="card-title">平均住院日</div>
+                            <div class="card-value">8.5天</div>
+                            <div class="card-trend">
+                                <span class="down">-0.3天</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="card" data-status="up">
+                            <div class="card-title">病床使用率</div>
+                            <div class="card-value">92.3%</div>
+                            <div class="card-trend">
+                                <span class="up">+2.1%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="card" data-status="up">
+                            <div class="card-title">CMI值</div>
+                            <div class="card-value">1.25</div>
+                            <div class="card-trend">
+                                <span class="up">+0.05</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="card" data-status="up">
+                            <div class="card-title">患者满意度</div>
+                            <div class="card-value">96.8%</div>
+                            <div class="card-trend">
+                                <span class="up">+1.2%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="card" data-status="normal">
+                            <div class="card-title">医疗安全指标</div>
+                            <div class="card-value">99.2%</div>
+                            <div class="card-trend">
+                                <span class="up">+0.3%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 图表区域 -->
+                    <div class="charts-container">
+                        <div class="chart-item">
+                            <h3>门急诊人次趋势</h3>
+                            <div id="outpatientTrendChart" class="chart"></div>
+                        </div>
+                        <div class="chart-item">
+                            <h3>出院人次趋势</h3>
+                            <div id="dischargeTrendChart" class="chart"></div>
+                        </div>
+                        <div class="chart-item">
+                            <h3>手术人次趋势</h3>
+                            <div id="surgeryTrendChart" class="chart"></div>
+                        </div>
+                        <div class="chart-item">
+                            <h3>平均住院日趋势</h3>
+                            <div id="avgStayTrendChart" class="chart"></div>
+                        </div>
+                        <div class="chart-item">
+                            <h3>病床使用率趋势</h3>
+                            <div id="bedUsageTrendChart" class="chart"></div>
+                        </div>
+                        <div class="chart-item">
+                            <h3>CMI值趋势</h3>
+                            <div id="cmiTrendChart" class="chart"></div>
+                        </div>
+                        <div class="chart-item">
+                            <h3>患者满意度趋势</h3>
+                            <div id="satisfactionTrendChart" class="chart"></div>
+                        </div>
+                        <div class="chart-item">
+                            <h3>医疗质量指标对比</h3>
+                            <div id="qualityComparisonChart" class="chart"></div>
+                        </div>
+                        <div class="chart-item">
+                            <h3>专科技术能力雷达图</h3>
+                            <div id="specialtyRadarChart" class="chart"></div>
+                        </div>
+                    </div>
+
+                    <!-- 科室数据列表 -->
+                    <div class="department-data-list">
+                        <h3>各科室详细数据</h3>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>科室</th>
+                                        <th>门急诊人次</th>
+                                        <th>出院人次</th>
+                                        <th>手术人次</th>
+                                        <th>平均住院日</th>
+                                        <th>病床使用率</th>
+                                        <th>CMI值</th>
+                                        <th>患者满意度</th>
+                                        <th>治愈好转率</th>
+                                        <th>危重患者抢救成功率</th>
+                                        <th>院内感染率</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="departmentTableBody">
+                                    <!-- 数据将通过JavaScript动态填充 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/common.js"></script>
+    <script src="./js/department-service.js"></script>
+    <!-- 加载统一导航组件 -->
+    <script src="./js/navigation-loader.js"></script>
+</body>
+</html>

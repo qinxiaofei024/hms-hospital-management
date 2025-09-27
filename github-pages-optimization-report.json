@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-09-27T04:32:18.177Z",
+  "summary": {
+    "totalFiles": 192,
+    "modifiedFiles": 74,
+    "successRate": "38.5%"
+  },
+  "pathMappings": {
+    "../css/": "./css/",
+    "../js/": "./js/",
+    "../images/": "./images/",
+    "../components/": "./components/",
+    "../data/": "./data/",
+    "../index.html": "./index.html",
+    "css/": "./css/",
+    "js/": "./js/",
+    "images/": "./images/",
+    "components/": "./components/",
+    "data/": "./data/"
+  },
+  "excludedDirs": [
+    "node_modules",
+    ".git",
+    "_site",
+    ".jekyll-cache",
+    "tools",
+    "mirrors",
+    ".github"
+  ],
+  "excludedFiles": [
+    "fix_responsive_batch.js",
+    "fix_inline_styles.js",
+    "test_responsive_pages.js",
+    "optimize-for-github-pages.js",
+    "responsive-test-report.json"
+  ]
+}

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>内镜分析运营分析 - 佛山市南海区中医院数据中心管理平台</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/medical-analysis.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="./js/common.js"></script>
+    <script src="./js/endoscopy.js"></script>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content" style="margin-left: 0;">
+        <div class="content-wrapper responsive-wrapper">
+            <!-- 右侧内容区 -->
+        <div class="content-area">
+            <div class="page-header">
+                <h1>内镜分析运营分析</h1>
+                <div class="header-actions">
+                    <div class="date-filter">
+                        <select id="time-period">
+                            <option value="year">年度</option>
+                            <option value="quarter">季度</option>
+                            <option value="month" selected>月度</option>
+                        </select>
+                        <select id="year-select">
+                            <option value="2023">2023年</option>
+                            <option value="2024">2024年</option>
+                            <option value="2025" selected>2025年</option>
+                        </select>
+                        <select id="quarter-select">
+                            <option value="1">第一季度</option>
+                            <option value="2">第二季度</option>
+                            <option value="3">第三季度</option>
+                            <option value="4">第四季度</option>
+                        </select>
+                    </div>
+                    <button id="refresh-btn" class="btn btn-primary">
+                        <i class="icon-refresh"></i> 刷新
+                    </button>
+                    <button id="export-btn" class="btn btn-secondary">
+                        <i class="icon-export"></i> 导出
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 数据概览卡片 -->
+            <div class="overview-cards">
+                <div class="overview-card">
+                    <div class="card-icon">
+                        <i class="icon-medical"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">总检查人次</div>
+                        <div class="card-value" id="total-exams">0<span class="card-unit">人次</span></div>
+                        <div class="card-trend">
+                            <button class="trend-btn" onclick="showTrendModal('examinations')">
+                                <span class="trend-up">+9.3%</span>
+                                <span class="trend-text">较上月</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <div class="card-icon">
+                        <i class="icon-revenue"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">总收入</div>
+                        <div class="card-value" id="total-revenue">0<span class="card-unit">万元</span></div>
+                        <div class="card-trend">
+                            <button class="trend-btn" onclick="showTrendModal('revenue')">
+                                <span class="trend-up">+12.8%</span>
+                                <span class="trend-text">较上月</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <div class="card-icon">
+                        <i class="icon-equipment"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">设备使用率</div>
+                        <div class="card-value" id="equipment-usage">0<span class="card-unit">%</span></div>
+                        <div class="card-trend">
+                            <button class="trend-btn" onclick="showTrendModal('equipment')">
+                                <span class="trend-up">+2.7%</span>
+                                <span class="trend-text">较上月</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <div class="card-icon">
+                        <i class="icon-time"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">平均检查时长</div>
+                        <div class="card-value" id="avg-exam-time">0<span class="card-unit">分钟</span></div>
+                        <div class="card-trend">
+                            <button class="trend-btn" onclick="showTrendModal('time')">
+                                <span class="trend-down">-2.4%</span>
+                                <span class="trend-text">较上月</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 图表区域 -->
+            <div class="charts-section">
+                <!-- 检查量趋势图 -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title-group">
+                            <h3 class="chart-title">检查量趋势分析</h3>
+                            <p class="chart-subtitle">内镜检查人次月度变化趋势</p>
+                        </div>
+                        <div class="chart-controls">
+                            <select class="chart-filter">
+                                <option value="month">按月</option>
+                                <option value="quarter">按季度</option>
+                                <option value="year">按年</option>
+                            </select>
+                            <button class="chart-refresh-btn" onclick="refreshChart('exam-volume-chart')">
+                                <i class="icon-refresh"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper" id="exam-volume-chart"></div>
+                </div>
+                
+                <!-- 内镜类型分布图 -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title-group">
+                            <h3 class="chart-title">内镜类型分布</h3>
+                            <p class="chart-subtitle">各类内镜检查项目占比分析</p>
+                        </div>
+                        <div class="chart-controls">
+                            <select class="chart-filter">
+                                <option value="type">按类型</option>
+                                <option value="procedure">按操作</option>
+                            </select>
+                            <button class="chart-refresh-btn" onclick="refreshChart('endoscopy-type-chart')">
+                                <i class="icon-refresh"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper" id="endoscopy-type-chart"></div>
+                </div>
+                
+                <!-- 设备运行效率分析 -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title-group">
+                            <h3 class="chart-title">设备运行效率分析</h3>
+                            <p class="chart-subtitle">内镜设备使用率对比分析</p>
+                        </div>
+                        <div class="chart-controls">
+                            <select class="chart-filter">
+                                <option value="day">日运行</option>
+                                <option value="week">周运行</option>
+                                <option value="month">月运行</option>
+                            </select>
+                            <button class="chart-refresh-btn" onclick="refreshChart('equipment-efficiency-chart')">
+                                <i class="icon-refresh"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper" id="equipment-efficiency-chart"></div>
+                </div>
+                
+                <!-- 科室申请量排名 -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title-group">
+                            <h3 class="chart-title">临床科室申请量排名</h3>
+                            <p class="chart-subtitle">各科室内镜检查申请量排名</p>
+                        </div>
+                        <div class="chart-controls">
+                            <select class="chart-filter">
+                                <option value="volume">按申请量</option>
+                                <option value="revenue">按收入</option>
+                            </select>
+                            <button class="chart-refresh-btn" onclick="refreshChart('department-ranking-chart')">
+                                <i class="icon-refresh"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper" id="department-ranking-chart"></div>
+                </div>
+            </div>
+            
+            <!-- 数据表格 -->
+            <div class="data-table-section">
+                <div class="table-header">
+                    <h3>内镜检查明细数据</h3>
+                    <div class="table-actions">
+                        <input type="text" placeholder="搜索内镜项目..." class="search-input">
+                        <button class="btn btn-secondary">
+                            <i class="icon-search"></i> 搜索
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>检查项目</th>
+                                <th>检查量</th>
+                                <th>收入(万元)</th>
+                                <th>平均时长(分钟)</th>
+                                <th>检出率(%)</th>
+                                <th>并发症率(%)</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="exam-detail-table">
+                            <!-- 数据通过JavaScript动态填充 -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button class="btn btn-secondary">上一页</button>
+                    <button class="btn btn-primary">1</button>
+                    <button class="btn btn-secondary">2</button>
+                    <button class="btn btn-secondary">3</button>
+                    <button class="btn btn-secondary">下一页</button>
+                </div>
+            </div>
+            
+            <!-- 关键指标分析 -->
+            <div class="kpi-section">
+                <h3>关键绩效指标分析</h3>
+                <div class="kpi-cards">
+                    <div class="kpi-card">
+                        <div class="kpi-name">病变检出率</div>
+                        <div class="kpi-value">68.9%</div>
+                        <div class="kpi-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 68.9%"></div>
+                            </div>
+                            <span class="kpi-target">目标: 65%</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-name">操作成功率</div>
+                        <div class="kpi-value">98.7%</div>
+                        <div class="kpi-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 98.7%"></div>
+                            </div>
+                            <span class="kpi-target">目标: 98%</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-name">诊断准确率</div>
+                        <div class="kpi-value">96.7%</div>
+                        <div class="kpi-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 96.7%"></div>
+                            </div>
+                            <span class="kpi-target">目标: 95%</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-name">患者满意度</div>
+                        <div class="kpi-value">94.5%</div>
+                        <div class="kpi-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 94.5%"></div>
+                            </div>
+                            <span class="kpi-target">目标: 93%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载统一导航组件 -->
+    <script src="./js/navigation-loader.js"></script>
+</body>
+</html>

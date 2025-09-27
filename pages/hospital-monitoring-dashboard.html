@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实时监控大屏 - 医院管理系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #0c1426 0%, #1a2332 50%, #0c1426 100%);
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .dashboard-container {
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            grid-template-rows: auto 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px 0;
+            background: linear-gradient(90deg, rgba(0,150,255,0.1) 0%, rgba(0,200,255,0.2) 50%, rgba(0,150,255,0.1) 100%);
+            border-radius: 10px;
+            border: 2px solid rgba(0,200,255,0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00c8ff, #0096ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0,200,255,0.5);
+        }
+
+        .header .time {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            color: #00c8ff;
+        }
+
+        .chart-container {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(0,200,255,0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(0,200,255,0.1) 0%, transparent 50%, rgba(0,200,255,0.1) 100%);
+            pointer-events: none;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #00c8ff;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0,200,255,0.5);
+        }
+
+        .chart {
+            width: 100%;
+            height: calc(100% - 50px);
+            min-height: 300px;
+        }
+
+        .revenue-chart {
+            grid-row: 1 / 3;
+        }
+
+        .outpatient-chart {
+            grid-row: 1;
+        }
+
+        .inpatient-chart {
+            grid-row: 2;
+        }
+
+        .surgery-status {
+            grid-column: 1 / -1;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(0,200,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .surgery-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .surgery-table th,
+        .surgery-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0,200,255,0.2);
+        }
+
+        .surgery-table th {
+            background: rgba(0,200,255,0.2);
+            color: #00c8ff;
+            font-weight: bold;
+        }
+
+        .surgery-table tr:hover {
+            background: rgba(0,200,255,0.1);
+        }
+
+        .status-active {
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .status-waiting {
+            color: #ffaa00;
+            font-weight: bold;
+        }
+
+        .status-completed {
+            color: #888;
+        }
+
+        .kpi-container {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .kpi-item {
+            background: rgba(0,200,255,0.1);
+            border: 1px solid rgba(0,200,255,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            min-width: 150px;
+            backdrop-filter: blur(10px);
+        }
+
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00c8ff;
+            text-shadow: 0 0 10px rgba(0,200,255,0.5);
+        }
+
+        .kpi-label {
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-top: 5px;
+        }
+
+        .data-flow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .flow-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00c8ff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00c8ff;
+            animation: flow 3s linear infinite;
+        }
+
+        @keyframes flow {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            10% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            90% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,200,255,0.2);
+            border: 1px solid rgba(0,200,255,0.5);
+            border-radius: 25px;
+            padding: 10px 20px;
+            color: #00c8ff;
+            font-size: 0.9rem;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto repeat(4, 1fr);
+            }
+            
+            .revenue-chart {
+                grid-row: 2;
+            }
+            
+            .outpatient-chart {
+                grid-row: 3;
+            }
+            
+            .inpatient-chart {
+                grid-row: 4;
+            }
+            
+            .surgery-status {
+                grid-row: 5;
+                grid-column: 1;
+            }
+            
+            .kpi-container {
+                position: relative;
+                top: auto;
+                right: auto;
+                flex-direction: row;
+                justify-content: space-around;
+                margin: 20px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>实时监控大屏 - 医院管理系统</h1>
+            <div class="time" id="currentTime"></div>
+        </div>
+
+        <div class="chart-container revenue-chart">
+            <div class="chart-title">营收趋势分析</div>
+            <div class="chart" id="revenueChart"></div>
+        </div>
+
+        <div class="chart-container outpatient-chart">
+            <div class="chart-title">门诊患者统计</div>
+            <div class="chart" id="outpatientChart"></div>
+        </div>
+
+        <div class="chart-container inpatient-chart">
+            <div class="chart-title">住院患者统计</div>
+            <div class="chart" id="inpatientChart"></div>
+        </div>
+
+        <div class="surgery-status">
+            <div class="chart-title">手术室状态</div>
+            <table class="surgery-table">
+                <thead>
+                    <tr>
+                        <th>手术室</th>
+                        <th>手术类型</th>
+                        <th>主治医生</th>
+                        <th>状态</th>
+                        <th>预计结束时间</th>
+                    </tr>
+                </thead>
+                <tbody id="surgeryTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="kpi-container">
+        <div class="kpi-item">
+            <div class="kpi-value" id="totalRevenue">0</div>
+            <div class="kpi-label">总营收 (万元)</div>
+        </div>
+        <div class="kpi-item">
+            <div class="kpi-value" id="outpatientCount">0</div>
+            <div class="kpi-label">门诊人数</div>
+        </div>
+        <div class="kpi-item">
+            <div class="kpi-value" id="inpatientCount">0</div>
+            <div class="kpi-label">住院人数</div>
+        </div>
+        <div class="kpi-item">
+            <div class="kpi-value" id="surgeryCount">0</div>
+            <div class="kpi-label">手术台次</div>
+        </div>
+    </div>
+
+    <div class="data-flow" id="dataFlow"></div>
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Azure色彩方案
+        const azureColors = {
+            primary: '#0078d4',
+            secondary: '#106ebe',
+            accent: '#005a9e',
+            light: '#40e0d0',
+            gradient: ['#0078d4', '#106ebe', '#005a9e', '#40e0d0']
+        };
+
+        // 全局变量
+        let revenueChart, outpatientChart, inpatientChart;
+        let dataPoints = {
+            revenue: [],
+            outpatient: [],
+            inpatient: []
+        };
+
+        // 初始化数据点
+        function initializeDataPoints() {
+            const now = new Date();
+            for (let i = 29; i >= 0; i--) {
+                const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+                const dateStr = date.toISOString().split('T')[0];
+                
+                dataPoints.revenue.push({
+                    date: dateStr,
+                    value: Math.floor(Math.random() * 500 + 800)
+                });
+                
+                dataPoints.outpatient.push({
+                    date: dateStr,
+                    value: Math.floor(Math.random() * 200 + 300)
+                });
+                
+                dataPoints.inpatient.push({
+                    date: dateStr,
+                    value: Math.floor(Math.random() * 50 + 80)
+                });
+            }
+        }
+
+        // 更新时间显示
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeStr;
+        }
+
+        // 动态更新历史数据
+        function updateHistoricalData(dataArray, baseValue, trend = 0.02) {
+            const timeMultiplier = Math.sin(Date.now() / 10000) * 0.1 + 1;
+            const periodicFactor = Math.sin(Date.now() / 5000) * 0.05 + 1;
+            const randomNoise = (Math.random() - 0.5) * 0.1;
+            
+            dataArray.forEach((point, index) => {
+                const trendFactor = 1 + trend * index;
+                const newValue = baseValue * trendFactor * timeMultiplier * periodicFactor * (1 + randomNoise);
+                point.value = Math.max(0, Math.floor(newValue));
+            });
+        }
+
+        // 生成营收趋势数据
+        function generateRevenueData() {
+            updateHistoricalData(dataPoints.revenue, 1000, 0.015);
+            
+            const dates = dataPoints.revenue.map(d => d.date);
+            const values = dataPoints.revenue.map(d => d.value);
+            
+            // 生成预测数据
+            const predictedValues = [];
+            const upperBound = [];
+            const lowerBound = [];
+            
+            for (let i = 0; i < 7; i++) {
+                const lastValue = values[values.length - 1];
+                const trend = (values[values.length - 1] - values[values.length - 8]) / 7;
+                const predicted = lastValue + trend * (i + 1) + (Math.random() - 0.5) * 50;
+                const confidence = 50 + i * 10;
+                
+                predictedValues.push(Math.floor(predicted));
+                upperBound.push(Math.floor(predicted + confidence));
+                lowerBound.push(Math.floor(predicted - confidence));
+            }
+            
+            return {
+                dates,
+                actual: values,
+                predicted: predictedValues,
+                upperBound,
+                lowerBound
+            };
+        }
+
+        // 生成患者趋势数据
+        function generatePatientData(type) {
+            const dataArray = type === 'outpatient' ? dataPoints.outpatient : dataPoints.inpatient;
+            const baseValue = type === 'outpatient' ? 400 : 100;
+            
+            updateHistoricalData(dataArray, baseValue, 0.01);
+            
+            const dates = dataArray.map(d => d.date);
+            const values = dataArray.map(d => d.value);
+            
+            // 生成预测数据
+            const predictedValues = [];
+            const upperBound = [];
+            const lowerBound = [];
+            
+            for (let i = 0; i < 7; i++) {
+                const lastValue = values[values.length - 1];
+                const trend = (values[values.length - 1] - values[values.length - 8]) / 7;
+                const predicted = lastValue + trend * (i + 1) + (Math.random() - 0.5) * 20;
+                const confidence = 20 + i * 5;
+                
+                predictedValues.push(Math.floor(predicted));
+                upperBound.push(Math.floor(predicted + confidence));
+                lowerBound.push(Math.floor(predicted - confidence));
+            }
+            
+            return {
+                dates,
+                actual: values,
+                predicted: predictedValues,
+                upperBound,
+                lowerBound
+            };
+        }
+
+        // 营收图表配置
+        function getRevenueChartOption(data) {
+            const allDates = [...data.dates];
+            for (let i = 1; i <= 7; i++) {
+                const futureDate = new Date();
+                futureDate.setDate(futureDate.getDate() + i);
+                allDates.push(futureDate.toISOString().split('T')[0]);
+            }
+
+            return {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: '#00c8ff',
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#ffffff'
+                    },
+                    formatter: function(params) {
+                        let result = params[0].axisValue + '<br/>';
+                        params.forEach(param => {
+                            if (param.seriesName === '实际营收') {
+                                result += `${param.marker}${param.seriesName}: ${param.value}万元<br/>`;
+                            } else if (param.seriesName === '预测营收') {
+                                result += `${param.marker}${param.seriesName}: ${param.value}万元<br/>`;
+                            }
+                        });
+                        return result;
+                    }
+                },
+                legend: {
+                    data: ['实际营收', '预测营收', '置信区间'],
+                    textStyle: {
+                        color: '#ffffff'
+                    },
+                    top: 10
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    top: '15%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: allDates,
+                    axisLine: {
+                        lineStyle: {
+                            color: '#00c8ff'
+                        }
+                    },
+                    axisLabel: {
+                        color: '#ffffff',
+                        formatter: function(value) {
+                            return value.split('-').slice(1).join('/');
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: {
+                        lineStyle: {
+                            color: '#00c8ff'
+                        }
+                    },
+                    axisLabel: {
+                        color: '#ffffff',
+                        formatter: '{value}万'
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: 'rgba(0, 200, 255, 0.2)'
+                        }
+                    }
+                },
+                series: [
+                    {
+                        name: '置信区间',
+                        type: 'line',
+                        data: [...Array(data.dates.length).fill(null), ...data.upperBound],
+                        lineStyle: {
+                            opacity: 0
+                        },
+                        stack: 'confidence-band',
+                        symbol: 'none'
+                    },
+                    {
+                        name: '置信区间下界',
+                        type: 'line',
+                        data: [...Array(data.dates.length).fill(null), ...data.lowerBound],
+                        lineStyle: {
+                            opacity: 0
+                        },
+                        areaStyle: {
+                            color: 'rgba(0, 200, 255, 0.2)'
+                        },
+                        stack: 'confidence-band',
+                        symbol: 'none'
+                    },
+                    {
+                        name: '实际营收',
+                        type: 'line',
+                        data: [...data.actual, ...Array(7).fill(null)],
+                        lineStyle: {
+                            color: '#00c8ff',
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: '#00c8ff'
+                        },
+                        symbol: 'circle',
+                        symbolSize: 6
+                    },
+                    {
+                        name: '预测营收',
+                        type: 'line',
+                        data: [...Array(data.dates.length).fill(null), ...data.predicted],
+                        lineStyle: {
+                            color: '#ff6b6b',
+                            width: 3,
+                            type: 'dashed'
+                        },
+                        itemStyle: {
+                            color: '#ff6b6b'
+                        },
+                        symbol: 'diamond',
+                        symbolSize: 6
+                    }
+                ]
+            };
+        }
+
+        // 患者图表配置
+        function getPatientChartOption(data, title, color) {
+            const allDates = [...data.dates];
+            for (let i = 1; i <= 7; i++) {
+                const futureDate = new Date();
+                futureDate.setDate(futureDate.getDate() + i);
+                allDates.push(futureDate.toISOString().split('T')[0]);
+            }
+
+            return {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: color,
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#ffffff'
+                    }
+                },
+                legend: {
+                    data: ['实际数据', '预测数据'],
+                    textStyle: {
+                        color: '#ffffff'
+                    },
+                    top: 10
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    top: '15%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: allDates,
+                    axisLine: {
+                        lineStyle: {
+                            color: color
+                        }
+                    },
+                    axisLabel: {
+                        color: '#ffffff',
+                        formatter: function(value) {
+                            return value.split('-').slice(1).join('/');
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: {
+                        lineStyle: {
+                            color: color
+                        }
+                    },
+                    axisLabel: {
+                        color: '#ffffff'
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: `rgba(${color.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(', ')}, 0.2)`
+                        }
+                    }
+                },
+                series: [
+                    {
+                        name: '置信区间',
+                        type: 'line',
+                        data: [...Array(data.dates.length).fill(null), ...data.upperBound],
+                        lineStyle: {
+                            opacity: 0
+                        },
+                        stack: 'confidence-band',
+                        symbol: 'none'
+                    },
+                    {
+                        name: '置信区间下界',
+                        type: 'line',
+                        data: [...Array(data.dates.length).fill(null), ...data.lowerBound],
+                        lineStyle: {
+                            opacity: 0
+                        },
+                        areaStyle: {
+                            color: `rgba(${color.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(', ')}, 0.2)`
+                        },
+                        stack: 'confidence-band',
+                        symbol: 'none'
+                    },
+                    {
+                        name: '实际数据',
+                        type: 'line',
+                        data: [...data.actual, ...Array(7).fill(null)],
+                        lineStyle: {
+                            color: color,
+                            width: 3
+                        },
+                        itemStyle: {
+                            color: color
+                        },
+                        symbol: 'circle',
+                        symbolSize: 6
+                    },
+                    {
+                        name: '预测数据',
+                        type: 'line',
+                        data: [...Array(data.dates.length).fill(null), ...data.predicted],
+                        lineStyle: {
+                            color: '#ff6b6b',
+                            width: 3,
+                            type: 'dashed'
+                        },
+                        itemStyle: {
+                            color: '#ff6b6b'
+                        },
+                        symbol: 'diamond',
+                        symbolSize: 6
+                    }
+                ]
+            };
+        }
+
+        // 更新手术室状态
+        function updateSurgeryStatus() {
+            const surgeryData = [
+                { room: '手术室1', type: '心脏手术', doctor: '张主任', status: 'active', endTime: '14:30' },
+                { room: '手术室2', type: '骨科手术', doctor: '李医生', status: 'waiting', endTime: '15:45' },
+                { room: '手术室3', type: '神经外科', doctor: '王教授', status: 'active', endTime: '16:20' },
+                { room: '手术室4', type: '普外科', doctor: '赵医生', status: 'completed', endTime: '已完成' },
+                { room: '手术室5', type: '妇产科', doctor: '陈主任', status: 'waiting', endTime: '17:00' }
+            ];
+
+            const tbody = document.getElementById('surgeryTableBody');
+            tbody.innerHTML = '';
+
+            surgeryData.forEach(surgery => {
+                const row = document.createElement('tr');
+                const statusClass = surgery.status === 'active' ? 'status-active' : 
+                                  surgery.status === 'waiting' ? 'status-waiting' : 'status-completed';
+                const statusText = surgery.status === 'active' ? '进行中' : 
+                                 surgery.status === 'waiting' ? '等待中' : '已完成';
+
+                row.innerHTML = `
+                    <td>${surgery.room}</td>
+                    <td>${surgery.type}</td>
+                    <td>${surgery.doctor}</td>
+                    <td class="${statusClass}">${statusText}</td>
+                    <td>${surgery.endTime}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // 更新KPI数据
+        function updateKPIData() {
+            const timeMultiplier = Math.sin(Date.now() / 10000) * 0.1 + 1;
+            
+            const totalRevenue = Math.floor(1200 * timeMultiplier);
+            const outpatientCount = Math.floor(450 * timeMultiplier);
+            const inpatientCount = Math.floor(120 * timeMultiplier);
+            const surgeryCount = Math.floor(25 * timeMultiplier);
+
+            document.getElementById('totalRevenue').textContent = totalRevenue;
+            document.getElementById('outpatientCount').textContent = outpatientCount;
+            document.getElementById('inpatientCount').textContent = inpatientCount;
+            document.getElementById('surgeryCount').textContent = surgeryCount;
+        }
+
+        // 初始化所有图表
+        function initializeCharts() {
+            revenueChart = echarts.init(document.getElementById('revenueChart'));
+            outpatientChart = echarts.init(document.getElementById('outpatientChart'));
+            inpatientChart = echarts.init(document.getElementById('inpatientChart'));
+
+            updateAllData();
+        }
+
+        // 显示更新通知
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // 更新所有数据
+        function updateAllData() {
+            const revenueData = generateRevenueData();
+            const outpatientData = generatePatientData('outpatient');
+            const inpatientData = generatePatientData('inpatient');
+
+            revenueChart.setOption(getRevenueChartOption(revenueData));
+            outpatientChart.setOption(getPatientChartOption(outpatientData, '门诊患者', '#00ff88'));
+            inpatientChart.setOption(getPatientChartOption(inpatientData, '住院患者', '#ffaa00'));
+
+            updateSurgeryStatus();
+            updateKPIData();
+            
+            showNotification('数据已更新 - ' + new Date().toLocaleTimeString());
+        }
+
+        // 防抖函数
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // 响应式处理
+        const handleResize = debounce(() => {
+            if (revenueChart) revenueChart.resize();
+            if (outpatientChart) outpatientChart.resize();
+            if (inpatientChart) inpatientChart.resize();
+        }, 250);
+
+        // 事件监听器
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDataPoints();
+            initializeCharts();
+            updateTime();
+            
+            // 定时更新
+            setInterval(updateTime, 1000);
+            setInterval(updateAllData, 30000); // 30秒更新一次数据
+        });
+
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('orientationchange', handleResize);
+
+        // 页面卸载前清理
+        window.addEventListener('beforeunload', function() {
+            if (revenueChart) revenueChart.dispose();
+            if (outpatientChart) outpatientChart.dispose();
+            if (inpatientChart) inpatientChart.dispose();
+        });
+    </script>
+</body>
+</html>

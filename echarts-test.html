@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECharts测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .chart-container {
+            width: 600px;
+            height: 400px;
+            border: 1px solid #ccc;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>ECharts测试页面</h1>
+    
+    <h2>测试图表1</h2>
+    <div id="testChart1" class="chart-container"></div>
+    
+    <h2>测试图表2</h2>
+    <div id="testChart2" class="chart-container"></div>
+    
+    <script src="./js/echarts.min.js"></script>
+    <script>
+        console.log('开始测试ECharts...');
+        
+        // 检查ECharts是否加载
+        if (typeof echarts === 'undefined') {
+            console.error('ECharts未加载');
+            document.body.innerHTML += '<p style="color: red;">ECharts未加载！</p>';
+        } else {
+            console.log('ECharts已加载，版本:', echarts.version);
+            document.body.innerHTML += '<p style="color: green;">ECharts已加载，版本: ' + echarts.version + '</p>';
+            
+            // 测试图表1
+            try {
+                const chart1 = echarts.init(document.getElementById('testChart1'));
+                const option1 = {
+                    title: {
+                        text: '测试柱状图'
+                    },
+                    tooltip: {},
+                    xAxis: {
+                        data: ['A', 'B', 'C', 'D', 'E']
+                    },
+                    yAxis: {},
+                    series: [{
+                        name: '数据',
+                        type: 'bar',
+                        data: [10, 20, 30, 40, 50]
+                    }]
+                };
+                chart1.setOption(option1);
+                console.log('图表1创建成功');
+            } catch (error) {
+                console.error('图表1创建失败:', error);
+                document.body.innerHTML += '<p style="color: red;">图表1创建失败: ' + error.message + '</p>';
+            }
+            
+            // 测试图表2
+            try {
+                const chart2 = echarts.init(document.getElementById('testChart2'));
+                const option2 = {
+                    title: {
+                        text: '测试饼图'
+                    },
+                    tooltip: {
+                        trigger: 'item'
+                    },
+                    series: [{
+                        name: '数据',
+                        type: 'pie',
+                        radius: '50%',
+                        data: [
+                            {value: 335, name: 'A'},
+                            {value: 310, name: 'B'},
+                            {value: 234, name: 'C'},
+                            {value: 135, name: 'D'},
+                            {value: 1548, name: 'E'}
+                        ]
+                    }]
+                };
+                chart2.setOption(option2);
+                console.log('图表2创建成功');
+            } catch (error) {
+                console.error('图表2创建失败:', error);
+                document.body.innerHTML += '<p style="color: red;">图表2创建失败: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>

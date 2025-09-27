@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医疗质量组件库演示</title>
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/medical-quality.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .demo-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fff;
+        }
+        
+        .demo-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .demo-description {
+            margin-bottom: 20px;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .demo-controls {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .demo-controls button {
+            margin: 5px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .demo-controls button:hover {
+            background: #2980b9;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .code-example {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .page-header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1><i class="fas fa-cubes"></i> 医疗质量组件库演示</h1>
+        <p>展示新一代医疗质量监测系统的组件功能</p>
+    </div>
+
+    <div class="container">
+        <!-- 统计卡片演示 -->
+        <div class="demo-section">
+            <div class="demo-title">
+                <i class="fas fa-chart-bar"></i> 统计卡片组件 (StatCard)
+            </div>
+            <div class="demo-description">
+                统计卡片组件用于显示关键指标数据，支持图标、趋势显示和点击交互。
+            </div>
+            
+            <div class="demo-controls">
+                <button onclick="createStatCardDemo()">创建统计卡片</button>
+                <button onclick="updateStatCardDemo()">更新数据</button>
+                <button onclick="clearStatCards()">清空卡片</button>
+            </div>
+            
+            <div id="stat-cards-demo" class="demo-grid"></div>
+            
+            <div class="code-example">
+// 创建统计卡片示例代码
+const statCard = medicalQualityComponents.createStatCard(container, {
+    title: '患者满意度',
+    value: '95.8%',
+    icon: 'fas fa-heart',
+    trend: '+2.3%',
+    trendType: 'positive',
+    clickable: true
+});
+            </div>
+        </div>
+
+        <!-- 数据表格演示 -->
+        <div class="demo-section">
+            <div class="demo-title">
+                <i class="fas fa-table"></i> 数据表格组件 (DataTable)
+            </div>
+            <div class="demo-description">
+                数据表格组件提供排序、搜索、分页和行选择功能，适用于各种数据展示场景。
+            </div>
+            
+            <div class="demo-controls">
+                <button onclick="createDataTableDemo()">创建数据表格</button>
+                <button onclick="addTableData()">添加数据</button>
+                <button onclick="exportTableData()">导出数据</button>
+            </div>
+            
+            <div id="data-table-demo"></div>
+            
+            <div class="code-example">
+// 创建数据表格示例代码
+const dataTable = medicalQualityComponents.createDataTable(container, {
+    columns: [
+        { key: 'name', title: '患者姓名', sortable: true },
+        { key: 'department', title: '科室', sortable: true },
+        { key: 'satisfaction', title: '满意度', sortable: true }
+    ],
+    data: patientData,
+    searchable: true,
+    pagination: true,
+    selectable: true
+});
+            </div>
+        </div>
+
+        <!-- 医疗图表演示 -->
+        <div class="demo-section">
+            <div class="demo-title">
+                <i class="fas fa-chart-line"></i> 医疗图表组件 (MedicalChart)
+            </div>
+            <div class="demo-description">
+                医疗图表组件基于ECharts，提供多种图表类型和医疗数据可视化功能。
+            </div>
+            
+            <div class="demo-controls">
+                <button onclick="createLineChart()">折线图</button>
+                <button onclick="createBarChart()">柱状图</button>
+                <button onclick="createPieChart()">饼图</button>
+                <button onclick="createRadarChart()">雷达图</button>
+            </div>
+            
+            <div id="medical-chart-demo" style="height: 400px;"></div>
+            
+            <div class="code-example">
+// 创建医疗图表示例代码
+const chart = medicalQualityComponents.createMedicalChart(container, {
+    type: 'line',
+    title: '患者满意度趋势',
+    data: {
+        categories: ['1月', '2月', '3月', '4月', '5月', '6月'],
+        series: [{
+            name: '满意度',
+            data: [92, 94, 96, 95, 97, 98]
+        }]
+    },
+    responsive: true
+});
+            </div>
+        </div>
+
+        <!-- 质量指标演示 -->
+        <div class="demo-section">
+            <div class="demo-title">
+                <i class="fas fa-tachometer-alt"></i> 质量指标组件 (QualityIndicator)
+            </div>
+            <div class="demo-description">
+                质量指标组件用于显示关键绩效指标，支持进度条、状态显示和阈值警告。
+            </div>
+            
+            <div class="demo-controls">
+                <button onclick="createQualityIndicators()">创建指标</button>
+                <button onclick="updateIndicators()">更新指标</button>
+                <button onclick="simulateAlerts()">模拟警告</button>
+            </div>
+            
+            <div id="quality-indicators-demo" class="demo-grid"></div>
+            
+            <div class="code-example">
+// 创建质量指标示例代码
+const indicator = medicalQualityComponents.createQualityIndicator(container, {
+    title: '手术成功率',
+    value: 98.5,
+    target: 95,
+    unit: '%',
+    status: 'excellent',
+    showProgress: true,
+    thresholds: {
+        excellent: 95,
+        good: 90,
+        warning: 85
+    }
+});
+            </div>
+        </div>
+
+        <!-- 通知演示 -->
+        <div class="demo-section">
+            <div class="demo-title">
+                <i class="fas fa-bell"></i> 通知组件 (Notification)
+            </div>
+            <div class="demo-description">
+                通知组件用于显示系统消息、警告和成功提示，支持多种类型和自动消失。
+            </div>
+            
+            <div class="demo-controls">
+                <button onclick="showSuccessNotification()">成功通知</button>
+                <button onclick="showWarningNotification()">警告通知</button>
+                <button onclick="showErrorNotification()">错误通知</button>
+                <button onclick="showInfoNotification()">信息通知</button>
+            </div>
+            
+            <div class="code-example">
+// 显示通知示例代码
+medicalQualityComponents.showNotification({
+    type: 'success',
+    title: '操作成功',
+    message: '患者数据已成功更新',
+    duration: 3000,
+    position: 'top-right'
+});
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入必要的脚本 -->
+    <script src="./js/echarts.min.js"></script>
+    <script src="./js/medical-quality-components.js"></script>
+    <script>
+        // 演示数据
+        const demoData = {
+            patients: [
+                { name: '张三', department: '内科', satisfaction: '95%', status: '良好' },
+                { name: '李四', department: '外科', satisfaction: '92%', status: '一般' },
+                { name: '王五', department: '儿科', satisfaction: '98%', status: '优秀' },
+                { name: '赵六', department: '妇科', satisfaction: '94%', status: '良好' },
+                { name: '钱七', department: '骨科', satisfaction: '96%', status: '良好' }
+            ],
+            statistics: [
+                { title: '患者满意度', value: '95.8%', icon: 'fas fa-heart', trend: '+2.3%', trendType: 'positive' },
+                { title: '手术成功率', value: '98.2%', icon: 'fas fa-user-md', trend: '+0.5%', trendType: 'positive' },
+                { title: '平均住院天数', value: '6.2天', icon: 'fas fa-calendar', trend: '-0.8天', trendType: 'positive' },
+                { title: '医疗事故率', value: '0.02%', icon: 'fas fa-shield-alt', trend: '-0.01%', trendType: 'positive' }
+            ]
+        };
+
+        // 统计卡片演示
+        function createStatCardDemo() {
+            const container = document.getElementById('stat-cards-demo');
+            container.innerHTML = '';
+            
+            demoData.statistics.forEach(stat => {
+                const cardContainer = document.createElement('div');
+                cardContainer.className = 'stat-card-container';
+                container.appendChild(cardContainer);
+                medicalQualityComponents.createStatCard(cardContainer, stat);
+            });
+        }
+
+        function updateStatCardDemo() {
+            const cards = document.querySelectorAll('#stat-cards-demo .stat-card');
+            cards.forEach(card => {
+                const valueElement = card.querySelector('.stat-value');
+                const currentValue = parseFloat(valueElement.textContent);
+                const newValue = (currentValue + Math.random() * 2 - 1).toFixed(1);
+                valueElement.textContent = newValue + (valueElement.textContent.includes('%') ? '%' : '天');
+                
+                // 添加更新动画
+                card.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    card.style.transform = 'scale(1)';
+                }, 200);
+            });
+        }
+
+        function clearStatCards() {
+            document.getElementById('stat-cards-demo').innerHTML = '';
+        }
+
+        // 数据表格演示
+        function createDataTableDemo() {
+            const container = document.getElementById('data-table-demo');
+            
+            medicalQualityComponents.createDataTable(container, {
+                columns: [
+                    { key: 'name', title: '患者姓名', sortable: true },
+                    { key: 'department', title: '科室', sortable: true },
+                    { key: 'satisfaction', title: '满意度', sortable: true },
+                    { key: 'status', title: '状态', sortable: true }
+                ],
+                data: demoData.patients,
+                searchable: true,
+                pagination: true,
+                selectable: true
+            });
+        }
+
+        function addTableData() {
+            const newPatient = {
+                name: '新患者' + Math.floor(Math.random() * 100),
+                department: ['内科', '外科', '儿科'][Math.floor(Math.random() * 3)],
+                satisfaction: (90 + Math.random() * 10).toFixed(1) + '%',
+                status: ['优秀', '良好', '一般'][Math.floor(Math.random() * 3)]
+            };
+            
+            demoData.patients.push(newPatient);
+            createDataTableDemo(); // 重新创建表格
+        }
+
+        function exportTableData() {
+            medicalQualityComponents.showNotification({
+                type: 'info',
+                title: '导出功能',
+                message: '表格数据导出功能演示',
+                duration: 2000
+            });
+        }
+
+        // 医疗图表演示
+        function createLineChart() {
+            const container = document.getElementById('medical-chart-demo');
+            
+            medicalQualityComponents.createMedicalChart(container, {
+                type: 'line',
+                title: '患者满意度趋势',
+                data: {
+                    categories: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    series: [{
+                        name: '满意度',
+                        data: [92, 94, 96, 95, 97, 98],
+                        color: '#3498db'
+                    }]
+                }
+            });
+        }
+
+        function createBarChart() {
+            const container = document.getElementById('medical-chart-demo');
+            
+            medicalQualityComponents.createMedicalChart(container, {
+                type: 'bar',
+                title: '各科室患者数量',
+                data: {
+                    categories: ['内科', '外科', '儿科', '妇科', '骨科'],
+                    series: [{
+                        name: '患者数量',
+                        data: [120, 95, 80, 75, 60],
+                        color: '#e74c3c'
+                    }]
+                }
+            });
+        }
+
+        function createPieChart() {
+            const container = document.getElementById('medical-chart-demo');
+            
+            medicalQualityComponents.createMedicalChart(container, {
+                type: 'pie',
+                title: '科室分布',
+                data: {
+                    series: [{
+                        name: '科室分布',
+                        data: [
+                            { name: '内科', value: 120 },
+                            { name: '外科', value: 95 },
+                            { name: '儿科', value: 80 },
+                            { name: '妇科', value: 75 },
+                            { name: '骨科', value: 60 }
+                        ]
+                    }]
+                }
+            });
+        }
+
+        function createRadarChart() {
+            const container = document.getElementById('medical-chart-demo');
+            
+            medicalQualityComponents.createMedicalChart(container, {
+                type: 'radar',
+                title: '医疗质量评估',
+                data: {
+                    indicators: [
+                        { name: '患者满意度', max: 100 },
+                        { name: '医疗安全', max: 100 },
+                        { name: '服务效率', max: 100 },
+                        { name: '技术水平', max: 100 },
+                        { name: '成本控制', max: 100 }
+                    ],
+                    series: [{
+                        name: '评估结果',
+                        data: [95, 92, 88, 96, 85]
+                    }]
+                }
+            });
+        }
+
+        // 质量指标演示
+        function createQualityIndicators() {
+            const container = document.getElementById('quality-indicators-demo');
+            container.innerHTML = '';
+            
+            const indicators = [
+                { title: '手术成功率', value: 98.5, target: 95, unit: '%', status: 'excellent' },
+                { title: '患者满意度', value: 92.3, target: 90, unit: '%', status: 'good' },
+                { title: '平均住院时间', value: 6.2, target: 7, unit: '天', status: 'good' },
+                { title: '医疗事故率', value: 0.02, target: 0.05, unit: '%', status: 'excellent' }
+            ];
+            
+            indicators.forEach(indicator => {
+                medicalQualityComponents.createQualityIndicator(container, indicator);
+            });
+        }
+
+        function updateIndicators() {
+            const indicators = document.querySelectorAll('#quality-indicators-demo .quality-indicator');
+            indicators.forEach(indicator => {
+                const valueElement = indicator.querySelector('.indicator-value');
+                const currentValue = parseFloat(valueElement.textContent);
+                const newValue = (currentValue + Math.random() * 4 - 2).toFixed(1);
+                valueElement.textContent = newValue;
+                
+                // 更新进度条
+                const progressBar = indicator.querySelector('.indicator-progress-fill');
+                if (progressBar) {
+                    const target = parseFloat(indicator.dataset.target || 100);
+                    const percentage = Math.min((newValue / target) * 100, 100);
+                    progressBar.style.width = percentage + '%';
+                }
+            });
+        }
+
+        function simulateAlerts() {
+            medicalQualityComponents.showNotification({
+                type: 'warning',
+                title: '质量指标警告',
+                message: '某项指标低于预期阈值，请及时关注',
+                duration: 4000
+            });
+        }
+
+        // 通知演示
+        function showSuccessNotification() {
+            medicalQualityComponents.showNotification({
+                type: 'success',
+                title: '操作成功',
+                message: '数据已成功保存到系统中',
+                duration: 3000
+            });
+        }
+
+        function showWarningNotification() {
+            medicalQualityComponents.showNotification({
+                type: 'warning',
+                title: '注意',
+                message: '检测到异常数据，请检查输入内容',
+                duration: 4000
+            });
+        }
+
+        function showErrorNotification() {
+            medicalQualityComponents.showNotification({
+                type: 'error',
+                title: '错误',
+                message: '网络连接失败，请稍后重试',
+                duration: 5000
+            });
+        }
+
+        function showInfoNotification() {
+            medicalQualityComponents.showNotification({
+                type: 'info',
+                title: '提示',
+                message: '系统将在5分钟后进行维护',
+                duration: 3000
+            });
+        }
+
+        // 页面加载完成后初始化演示
+        document.addEventListener('DOMContentLoaded', function() {
+            // 创建初始演示内容
+            createStatCardDemo();
+            createDataTableDemo();
+            createLineChart();
+            createQualityIndicators();
+            
+            // 显示欢迎通知
+            setTimeout(() => {
+                medicalQualityComponents.showNotification({
+                    type: 'info',
+                    title: '欢迎',
+                    message: '欢迎使用医疗质量组件库演示系统',
+                    duration: 3000
+                });
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

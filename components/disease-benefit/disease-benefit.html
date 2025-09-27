@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>病种效益分析组件</title>
+    <link rel="stylesheet" href="disease-benefit.css">
+</head>
+<body>
+    <!-- 病种效益分析组件 -->
+    <div id="disease-benefit-component" class="disease-benefit-component">
+        <!-- 病种效益分析内容 -->
+        <div class="disease-benefit-content">
+            <!-- 筛选区域 -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>病种筛选：</label>
+                        <div class="disease-filter-container">
+                            <input type="text" id="disease-search" class="disease-search" placeholder="搜索病种...">
+                            <div class="disease-dropdown" id="disease-dropdown">
+                                <div class="dropdown-content" id="disease-dropdown-content">
+                                    <!-- 病种选项将在这里动态生成 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>时间范围：</label>
+                        <select id="time-range-select" class="filter-select">
+                            <option value="month">本月</option>
+                            <option value="quarter">本季度</option>
+                            <option value="year">本年度</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>科室：</label>
+                        <select id="department-select" class="filter-select">
+                            <option value="all">全部科室</option>
+                            <option value="internal">内科</option>
+                            <option value="surgery">外科</option>
+                            <option value="pediatrics">儿科</option>
+                            <option value="obstetrics">妇产科</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表区域 -->
+            <div class="chart-grid two-columns">
+                <div class="chart-container">
+                    <div class="chart-title">病种效益分析</div>
+                    <div id="disease-benefit-chart" class="chart-content"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">DRG效益分析</div>
+                    <div id="drg-benefit-chart" class="chart-content"></div>
+                </div>
+            </div>
+
+            <!-- 数据表格 -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h3>病种效益明细</h3>
+                    <div class="table-controls">
+                        <button id="export-btn" class="btn btn-primary">导出数据</button>
+                        <button id="ai-insight-btn" class="btn btn-secondary">AI洞察</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="disease-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>病种名称</th>
+                                <th>病例数</th>
+                                <th>总收入</th>
+                                <th>总成本</th>
+                                <th>总结余</th>
+                                <th>平均收入</th>
+                                <th>平均成本</th>
+                                <th>平均结余</th>
+                                <th>利润率</th>
+                                <th>保本例数</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="disease-tbody">
+                            <!-- 数据行将在这里动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 医生病种表格 -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h3>医生病种效益</h3>
+                </div>
+                <div class="table-container">
+                    <table id="doctor-disease-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>医生姓名</th>
+                                <th>职称</th>
+                                <th>科室</th>
+                                <th>病种</th>
+                                <th>病例数</th>
+                                <th>平均收入</th>
+                                <th>平均成本</th>
+                                <th>平均结余</th>
+                                <th>利润率</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctor-disease-tbody">
+                            <!-- 数据行将在这里动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 病种详情弹窗 -->
+        <div id="disease-detail-modal" class="disease-detail-modal">
+            <div class="disease-detail-content">
+                <div class="disease-detail-header">
+                    <h2 class="disease-detail-title" id="disease-detail-title">病种详情</h2>
+                    <span class="disease-detail-close" id="disease-detail-close">&times;</span>
+                </div>
+                <div class="disease-detail-body">
+                    <!-- 病种基本信息 -->
+                    <div class="disease-info-grid">
+                        <div class="disease-info-card">
+                            <h3>收入构成分析</h3>
+                            <div id="disease-revenue-chart" class="disease-chart-container"></div>
+                        </div>
+                        <div class="disease-info-card">
+                            <h3>成本构成分析</h3>
+                            <div id="disease-cost-chart" class="disease-chart-container"></div>
+                        </div>
+                    </div>
+
+                    <!-- 科室明细 -->
+                    <div class="department-list">
+                        <h3>收治科室明细</h3>
+                        <div id="department-details"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 医生画像弹窗 -->
+        <div id="doctor-profile-modal" class="doctor-profile-modal">
+            <div class="doctor-profile-content">
+                <div class="doctor-profile-header">
+                    <h2 id="doctor-profile-title">医生医疗行为画像</h2>
+                    <span class="doctor-profile-close" id="doctor-profile-close">&times;</span>
+                </div>
+                <div class="doctor-profile-body">
+                    <!-- 医生基本信息 -->
+                    <div class="doctor-basic-info">
+                        <div class="doctor-info-card">
+                            <h3>基本信息</h3>
+                            <div class="doctor-info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">姓名：</span>
+                                    <span id="doctor-name-info" class="info-value"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">职称：</span>
+                                    <span id="doctor-title-info" class="info-value"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">科室：</span>
+                                    <span id="doctor-dept-info" class="info-value"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">总病例数：</span>
+                                    <span id="doctor-cases-info" class="info-value"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">平均收入：</span>
+                                    <span id="doctor-revenue-info" class="info-value"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">平均成本：</span>
+                                    <span id="doctor-cost-info" class="info-value"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">平均结余：</span>
+                                    <span id="doctor-benefit-info" class="info-value"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">盈利状态：</span>
+                                    <span id="doctor-status-info" class="info-value"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 医生画像图表 -->
+                    <div class="doctor-charts-grid">
+                        <div class="doctor-chart-card">
+                            <h3>收入构成分析</h3>
+                            <div id="doctor-revenue-chart" class="doctor-chart-container"></div>
+                        </div>
+                        <div class="doctor-chart-card">
+                            <h3>成本构成分析</h3>
+                            <div id="doctor-cost-chart" class="doctor-chart-container"></div>
+                        </div>
+                        <div class="doctor-chart-card">
+                            <h3>病种分布</h3>
+                            <div id="doctor-disease-chart" class="doctor-chart-container"></div>
+                        </div>
+                        <div class="doctor-chart-card">
+                            <h3>效率指标</h3>
+                            <div id="doctor-efficiency-chart" class="doctor-chart-container"></div>
+                        </div>
+                    </div>
+
+                    <!-- 医生详细数据表格 -->
+                    <div class="doctor-detail-table">
+                        <h3>病种明细</h3>
+                        <div class="table-container">
+                            <table id="doctor-disease-detail-table" class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>病种名称</th>
+                                        <th>病例数</th>
+                                        <th>平均收入</th>
+                                        <th>平均成本</th>
+                                        <th>平均结余</th>
+                                        <th>收入占比</th>
+                                        <th>成本占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="doctor-disease-detail-tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI洞察对话框 -->
+        <div id="ai-insight-modal" class="ai-insight-modal">
+            <div class="ai-insight-content">
+                <div class="ai-insight-header">
+                    <h2 class="ai-insight-title">🤖 AI洞察分析</h2>
+                    <span class="ai-insight-close">&times;</span>
+                </div>
+                <div class="ai-insight-body">
+                    <div id="ai-analysis-content" class="ai-analysis-content">
+                        <!-- AI分析内容将在这里动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <!-- 引入组件JavaScript -->
+    <script src="disease-benefit.js"></script>
+    
+    <!-- 初始化组件 -->
+    <script>
+        // 页面加载完成后初始化组件
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面DOM加载完成，开始初始化病种效益分析组件');
+            
+            try {
+                // 检查必要的依赖
+                if (typeof echarts === 'undefined') {
+                    throw new Error('ECharts未加载');
+                }
+                
+                if (typeof DiseaseBenefitComponent === 'undefined') {
+                    throw new Error('DiseaseBenefitComponent类未定义');
+                }
+                
+                // 创建组件实例
+                const component = new DiseaseBenefitComponent('disease-benefit-component', {
+                    debug: true,
+                    autoLoad: true,
+                    autoInit: true
+                });
+                
+                console.log('病种效益分析组件初始化成功');
+                
+                // 将组件实例挂载到全局，便于调试
+                window.diseaseBenefitComponent = component;
+                
+            } catch (error) {
+                console.error('病种效益分析组件初始化失败:', error);
+                
+                // 显示错误信息给用户
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #f8d7da;
+                    color: #721c24;
+                    padding: 15px;
+                    border: 1px solid #f5c6cb;
+                    border-radius: 4px;
+                    z-index: 9999;
+                    max-width: 400px;
+                    font-family: Arial, sans-serif;
+                `;
+                errorDiv.innerHTML = `
+                    <strong>组件初始化失败</strong><br>
+                    ${error.message}<br>
+                    <small>请检查控制台获取详细信息</small>
+                `;
+                document.body.appendChild(errorDiv);
+                
+                // 5秒后自动移除错误提示
+                setTimeout(() => {
+                    if (errorDiv.parentNode) {
+                        errorDiv.parentNode.removeChild(errorDiv);
+                    }
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

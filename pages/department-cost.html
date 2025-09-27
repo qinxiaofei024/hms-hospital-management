@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科室成本控制 - 佛山市南海区中医院数据中心管理平台</title>
+    <!-- 引入外部CSS -->
+    <link rel="stylesheet" href="./css/style.css">
+    
+    <!-- 引入外部JS -->
+    <script src="./js/echarts.min.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    
+    <!-- 自定义样式 -->
+    <style>
+        .page-container {
+            padding: 20px;
+            background-color: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .filter-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .chart-container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+            height: 400px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .cost-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cost-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .cost-card-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .cost-card-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .cost-card-change {
+            font-size: 12px;
+        }
+
+        .cost-card-change.positive {
+            color: #f5222d;
+        }
+
+        .cost-card-change.negative {
+            color: #52c41a;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e8e8e8;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            border-bottom-color: #0066cc;
+            color: #0066cc;
+            font-weight: 500;
+        }
+
+        .table-container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        th {
+            background-color: #fafafa;
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* 加载状态 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0066cc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .filter-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <div class="container">
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <div class="breadcrumb">
+                <span>首页</span>
+                <span class="breadcrumb-separator">/</span>
+                <span>科主任运营分析</span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">科室成本控制</span>
+            </div>
+        </div>
+        
+        <!-- 科室成本控制容器 -->
+        <div class="cost-container">
+            <div class="cost-header">
+                <h2>科室成本控制<span class="english-title">Department Cost Control</span></h2>
+                <div class="btn-group">
+                    <button id="exportBtn" class="btn-default">导出报告</button>
+                </div>
+            </div>
+            
+            <!-- 筛选条件 -->
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <label for="departmentSelect">选择科室：</label>
+                    <select id="departmentSelect">
+                        <option value="all">全部科室</option>
+                        <option value="internal" selected>内科</option>
+                        <option value="surgery">外科</option>
+                        <option value="pediatrics">儿科</option>
+                        <option value="gynecology">妇产科</option>
+                        <option value="neurology">神经内科</option>
+                        <option value="cardiology">心内科</option>
+                        <option value="orthopedics">骨科</option>
+                        <option value="ophthalmology">眼科</option>
+                        <option value="dermatology">皮肤科</option>
+                        <option value="ent">耳鼻喉科</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="dateRangePicker">时间范围：</label>
+                    <input type="text" id="dateRangePicker" placeholder="选择日期范围" value="2023-01-01 - 2023-10-31">
+                </div>
+                
+                <div class="filter-item">
+                    <label for="costTypeSelect">费用类型：</label>
+                    <select id="costTypeSelect">
+                        <option value="all">全部费用</option>
+                        <option value="medical">医疗费用</option>
+                        <option value="drug">药品费用</option>
+                        <option value="material">材料费用</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="reportTypeSelect">报告类型：</label>
+                    <select id="reportTypeSelect">
+                        <option value="summary">概览报告</option>
+                        <option value="detailed">详细报告</option>
+                        <option value="comparison">对比分析</option>
+                    </select>
+                </div>
+                
+                <div class="btn-group" style="margin-left: auto;">
+                    <button id="refreshBtn" class="btn-primary">刷新数据</button>
+                </div>
+            </div>
+            
+            <!-- 成本概览卡片 -->
+            <div class="cost-header">
+                <h2>成本概览</h2>
+            </div>
+            <div class="card-grid">
+                <div class="cost-card">
+                    <div class="card-title">总费用支出</div>
+                    <div class="card-value">¥4,589.2万</div>
+                    <div class="card-change negative">同比增长 4.2%</div>
+                </div>
+                
+                <div class="cost-card">
+                    <div class="card-title">药品费用</div>
+                    <div class="card-value">¥1,892.6万</div>
+                    <div class="card-change negative">同比增长 5.8%</div>
+                </div>
+                
+                <div class="cost-card">
+                    <div class="card-title">材料费用</div>
+                    <div class="card-value">¥1,256.8万</div>
+                    <div class="card-change negative">同比增长 3.5%</div>
+                </div>
+                
+                <div class="cost-card">
+                    <div class="card-title">例均费用</div>
+                    <div class="card-value">¥12,850</div>
+                    <div class="card-change positive">同比下降 1.2%</div>
+                </div>
+            </div>
+            
+            <!-- 图表分析区域 -->
+            <div class="cost-header">
+                <h2>成本分析</h2>
+            </div>
+            
+            <!-- 费用趋势分析 -->
+            <div class="chart-container" id="costTrendChart"></div>
+            
+            <!-- 费用结构分析 -->
+            <div class="chart-container" id="costStructureChart"></div>
+            
+            <!-- 详细分析标签页 -->
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab-btn active" data-tab="departmentCost">科室费用对比</div>
+                    <div class="tab-btn" data-tab="drgsCost">DRGs费用分析</div>
+                    <div class="tab-btn" data-tab="budgetExecution">预算执行分析</div>
+                    <div class="tab-btn" data-tab="drugCost">药品费用分析</div>
+                    <div class="tab-btn" data-tab="materialCost">材料费用分析</div>
+                </div>
+                
+                <!-- 科室费用对比 -->
+                <div class="tab-panel active" id="departmentCost">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>科室名称</th>
+                                    <th>总费用</th>
+                                    <th>药品费用</th>
+                                    <th>材料费用</th>
+                                    <th>例均费用</th>
+                                    <th>同比增长</th>
+                                    <th>占比</th>
+                                </tr>
+                            </thead>
+                            <tbody id="departmentCostTable">
+                                <!-- 数据将通过JavaScript动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- DRGs费用分析 -->
+                <div class="tab-panel" id="drgsCost">
+                    <div class="chart-container" id="drgsCostChart"></div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>DRGs组</th>
+                                    <th>病例数</th>
+                                    <th>例均费用</th>
+                                    <th>药品占比</th>
+                                    <th>材料占比</th>
+                                    <th>费用指数</th>
+                                    <th>时间指数</th>
+                                </tr>
+                            </thead>
+                            <tbody id="drgsCostTable">
+                                <!-- 数据将通过JavaScript动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 预算执行分析 -->
+                <div class="tab-panel" id="budgetExecution">
+                    <div class="chart-container" id="budgetExecutionChart"></div>
+                    <div class="chart-container" id="budgetTrendChart"></div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>预算项目</th>
+                                    <th>预算金额</th>
+                                    <th>实际支出</th>
+                                    <th>执行率</th>
+                                    <th>偏差金额</th>
+                                    <th>偏差率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="budgetExecutionTable">
+                                <!-- 数据将通过JavaScript动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 药品费用分析 -->
+                <div class="tab-panel" id="drugCost">
+                    <div class="chart-container" id="westernMedicineChart"></div>
+                    <div class="chart-container" id="chineseMedicineChart"></div>
+                    <div class="chart-container" id="biologicalChart"></div>
+                    <div class="chart-container" id="drugCategoryChart"></div>
+                </div>
+                
+                <!-- 材料费用分析 -->
+                <div class="tab-panel" id="materialCost">
+                    <div class="chart-container" id="highValueMaterialChart"></div>
+                    <div class="chart-container" id="lowValueMaterialChart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 成本控制建议 -->
+        <div class="cost-container">
+            <div class="cost-header">
+                <h2>成本控制建议</h2>
+            </div>
+            <div class="card-grid">
+                <div class="cost-card">
+                    <div class="card-title">药品成本控制建议</div>
+                    <ul>
+                        <li>优化抗菌药物使用管理，减少广谱抗生素的使用</li>
+                        <li>推进国家集采药品的使用，降低药品采购成本</li>
+                        <li>加强处方点评工作，规范医生处方行为</li>
+                        <li>建立药品使用监测预警机制</li>
+                    </ul>
+                </div>
+                
+                <div class="cost-card">
+                    <div class="card-title">材料成本控制建议</div>
+                    <ul>
+                        <li>建立高值耗材的使用审批制度</li>
+                        <li>推进集中采购和谈判议价，降低材料采购成本</li>
+                        <li>加强材料使用的精细化管理，减少浪费</li>
+                        <li>探索耗材租赁和共享使用模式</li>
+                    </ul>
+                </div>
+                
+                <div class="cost-card">
+                    <div class="card-title">医疗服务优化建议</div>
+                    <ul>
+                        <li>优化诊疗流程，提高医疗服务效率</li>
+                        <li>推广临床路径管理，规范诊疗行为</li>
+                        <li>加强病例组合管理，提高CMI值</li>
+                        <li>推进日间手术和微创技术，缩短住院时间</li>
+                    </ul>
+                </div>
+                
+                <div class="cost-card">
+                    <div class="card-title">预算管理建议</div>
+                    <ul>
+                        <li>建立科学的预算编制和调整机制</li>
+                        <li>加强预算执行监控，及时发现和解决问题</li>
+                        <li>建立预算执行考核机制，落实责任</li>
+                        <li>探索建立成本核算与绩效评价挂钩机制</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 加载状态遮罩 -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- 引入页面特定JS -->
+    <script src="./js/common.js"></script>
+    <script src="./js/department-cost-control.js"></script>
+
+    <!-- 加载统一导航组件 -->
+    <script src="./js/navigation-loader.js?v=20250125-fix3"></script>
+</body>
+</html>

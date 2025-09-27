@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>病种效益组件调试</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="disease-benefit.css">
+    <style>
+        .debug-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 350px;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            z-index: 1000;
+            max-height: 500px;
+            overflow-y: auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .debug-btn {
+            margin: 3px;
+            padding: 5px 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .debug-btn:hover {
+            background: #0056b3;
+        }
+        .debug-log {
+            font-size: 11px;
+            background: #f8f9fa;
+            padding: 8px;
+            margin: 8px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .status-info {
+            background: #e7f3ff;
+            padding: 5px;
+            margin: 5px 0;
+            border-left: 3px solid #007bff;
+            font-size: 12px;
+        }
+        .error-info {
+            background: #ffe7e7;
+            padding: 5px;
+            margin: 5px 0;
+            border-left: 3px solid #dc3545;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-panel">
+        <h3 style="margin: 0 0 10px 0; font-size: 14px;">调试面板</h3>
+        <div>
+            <button class="debug-btn" onclick="initComponent()">初始化组件</button>
+            <button class="debug-btn" onclick="refreshData()">刷新数据</button>
+            <button class="debug-btn" onclick="checkECharts()">检查ECharts</button>
+        </div>
+        <div>
+            <button class="debug-btn" onclick="checkData()">检查数据</button>
+            <button class="debug-btn" onclick="checkDOM()">检查DOM</button>
+            <button class="debug-btn" onclick="checkState()">检查状态</button>
+        </div>
+        <div>
+            <button class="debug-btn" onclick="testCharts()">测试图表</button>
+            <button class="debug-btn" onclick="testTables()">测试表格</button>
+            <button class="debug-btn" onclick="clearLog()">清空日志</button>
+        </div>
+        
+        <div id="status-info" class="status-info">等待初始化...</div>
+        <div class="debug-log" id="debug-log"></div>
+    </div>
+
+    <div id="disease-benefit-component"></div>
+
+    <script src="disease-benefit.js"></script>
+    <script>
+        let component = null;
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('debug-log');
+            const time = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            logDiv.innerHTML += `[${time}] ${prefix} ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(`[${type}]`, message);
+        }
+
+        function updateStatus(message, isError = false) {
+            const statusDiv = document.getElementById('status-info');
+            statusDiv.textContent = message;
+            statusDiv.className = isError ? 'error-info' : 'status-info';
+        }
+
+        function clearLog() {
+            document.getElementById('debug-log').innerHTML = '';
+        }
+
+        function initComponent() {
+            try {
+                log('开始初始化组件...', 'info');
+                updateStatus('正在初始化组件...');
+                
+                // 检查容器
+                const container = document.getElementById('disease-benefit-component');
+                if (!container) {
+                    throw new Error('找不到容器元素');
+                }
+                log(`容器元素找到: ${container.id}`, 'success');
+                
+                if (component) {
+                    log('销毁现有组件...', 'info');
+                    component.destroy();
+                }
+
+                component = new DiseaseBenefitComponent('disease-benefit-component', {
+                    debug: true,
+                    theme: 'light',
+                    language: 'zh-CN',
+                    enableExport: true,
+                    enableAI: true
+                });
+
+                log('组件初始化完成', 'success');
+                updateStatus('组件已初始化');
+                
+                // 等待一下再检查状态
+                setTimeout(() => {
+                    checkState();
+                }, 1000);
+                
+            } catch (error) {
+                log(`初始化失败: ${error.message}`, 'error');
+                updateStatus(`初始化失败: ${error.message}`, true);
+            }
+        }
+
+        function refreshData() {
+            if (component) {
+                log('刷新数据...', 'info');
+                component.refreshData();
+                updateStatus('数据已刷新');
+            } else {
+                log('组件未初始化', 'error');
+                updateStatus('组件未初始化', true);
+            }
+        }
+
+        function checkECharts() {
+            log('检查ECharts...', 'info');
+            if (typeof echarts !== 'undefined') {
+                log(`ECharts 可用，版本: ${echarts.version}`, 'success');
+            } else {
+                log('ECharts 不可用', 'error');
+            }
+        }
+
+        function checkData() {
+            if (component) {
+                try {
+                    const data = component.getData();
+                    log('获取数据成功', 'success');
+                    if (data && data.diseases) {
+                        log(`病种数据: ${data.diseases.length} 条`, 'info');
+                    }
+                    if (data && data.doctorDiseases) {
+                        log(`医生病种数据: ${data.doctorDiseases.length} 条`, 'info');
+                    }
+                    log(`完整数据: ${JSON.stringify(data, null, 2)}`, 'info');
+                } catch (error) {
+                    log(`获取数据失败: ${error.message}`, 'error');
+                }
+            } else {
+                log('组件未初始化', 'error');
+            }
+        }
+
+        function checkDOM() {
+            log('检查DOM元素...', 'info');
+            
+            const elements = [
+                'disease-benefit-component',
+                'disease-tbody',
+                'doctor-disease-tbody',
+                'disease-benefit-chart',
+                'drg-benefit-chart'
+            ];
+            
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    log(`✅ ${id}: 存在`, 'success');
+                } else {
+                    log(`❌ ${id}: 不存在`, 'error');
+                }
+            });
+        }
+
+        function checkState() {
+            if (component) {
+                try {
+                    const state = component.getState();
+                    log('组件状态检查:', 'info');
+                    log(`- 当前数据: ${state.currentData ? '有' : '无'}`, 'info');
+                    log(`- 过滤数据: ${state.filteredData ? '有' : '无'}`, 'info');
+                    log(`- 选中病种: ${state.selectedDiseases ? state.selectedDiseases.length : 0} 个`, 'info');
+                    log(`- 加载状态: ${state.isLoading ? '加载中' : '已完成'}`, 'info');
+                } catch (error) {
+                    log(`获取状态失败: ${error.message}`, 'error');
+                }
+            } else {
+                log('组件未初始化', 'error');
+            }
+        }
+
+        function testCharts() {
+            log('测试图表渲染...', 'info');
+            if (component) {
+                try {
+                    component.refreshCharts();
+                    log('图表刷新完成', 'success');
+                } catch (error) {
+                    log(`图表测试失败: ${error.message}`, 'error');
+                }
+            } else {
+                log('组件未初始化', 'error');
+            }
+        }
+
+        function testTables() {
+            log('测试表格渲染...', 'info');
+            checkDOM();
+            
+            // 检查表格内容
+            const diseaseTable = document.getElementById('disease-tbody');
+            const doctorTable = document.getElementById('doctor-disease-tbody');
+            
+            if (diseaseTable) {
+                log(`病种表格行数: ${diseaseTable.children.length}`, 'info');
+            }
+            if (doctorTable) {
+                log(`医生病种表格行数: ${doctorTable.children.length}`, 'info');
+            }
+        }
+
+        // 页面加载完成后自动初始化
+        window.addEventListener('load', function() {
+            log('页面加载完成', 'success');
+            checkECharts();
+            setTimeout(() => {
+                initComponent();
+            }, 500);
+        });
+
+        // 监听错误
+        window.addEventListener('error', function(e) {
+            log(`JavaScript错误: ${e.message} (${e.filename}:${e.lineno})`, 'error');
+            updateStatus(`发生错误: ${e.message}`, true);
+        });
+    </script>
+</body>
+</html>

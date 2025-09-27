@@ -1,0 +1,174 @@
+{
+  "overview": {
+    "totalRevenue": 55000.0,
+    "medicalRevenue": 24000.0,
+    "drugRevenue": 16700.0,
+    "operatingCost": 52000.0,
+    "netProfit": 3000.0,
+    "profitMargin": 5.5,
+    "avgPatientCost": 2280.5,
+    "avgBedRevenue": 3371.2,
+    "revenueGrowth": 8.5,
+    "costControlRate": 94.5
+  },
+  "revenueTrend": {
+    "months": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+    "totalRevenue": [47000, 45700, 48400, 50100, 51500, 52200, 53400, 54100, 54700, 55000, 55300, 55800],
+    "medicalRevenue": [20700, 20200, 21500, 22100, 22700, 23000, 23400, 23700, 23900, 24000, 24200, 24500],
+    "drugRevenue": [14400, 14000, 15000, 15400, 15700, 16100, 16400, 16600, 16700, 16700, 16800, 16900]
+  },
+  "costStructure": {
+    "categories": ["人员成本", "药品成本", "设备折旧", "水电费用", "管理费用", "其他成本"],
+    "data": [
+      {"value": 23800, "name": "人员成本", "color": "#0066cc"},
+      {"value": 19000, "name": "药品成本", "color": "#1890ff"},
+      {"value": 5050, "name": "设备折旧", "color": "#52c41a"},
+      {"value": 1830, "name": "水电费用", "color": "#faad14"},
+      {"value": 1540, "name": "管理费用", "color": "#8c8c8c"},
+      {"value": 780, "name": "其他成本", "color": "#d4380d"}
+    ]
+  },
+  "departmentRevenue": {
+    "departments": ["内科", "外科", "妇产科", "儿科", "急诊科", "影像科", "检验科", "药剂科", "手术室", "其他科室"],
+    "revenue": [11140, 11920, 7300, 4230, 3470, 4810, 3470, 2320, 5390, 1010],
+    "profit": [375, 425, 250, 145, 117, 164, 116, 78, 183, 33]
+  },
+  "efficiencyMetrics": {
+    "bedUtilization": 92.5,
+    "avgLengthOfStay": 6.8,
+    "bedTurnover": 48.5,
+    "doctorEfficiency": 125.8,
+    "nurseEfficiency": 85.6,
+    "equipmentUtilization": 82.5,
+    "drugUtilization": 78.5,
+    "materialUtilization": 85.2
+  },
+  "financialIndicators": {
+    "currentRatio": 1.85,
+    "quickRatio": 1.52,
+    "assetTurnover": 0.85,
+    "receivablesTurnover": 12.5,
+    "inventoryTurnover": 8.5,
+    "debtRatio": 42.5,
+    "returnOnAssets": 8.5,
+    "returnOnEquity": 15.2
+  },
+  "yearlyComparison": {
+    "years": ["2021", "2022", "2023", "2024", "2025"],
+    "revenue": [41300, 45100, 49500, 50900, 55000],
+    "profit": [2070, 2280, 2590, 2800, 3000],
+    "cost": [39230, 42820, 46910, 48100, 52000]
+  },
+  "departmentAnalysis": [
+    {
+      "id": "1",
+      "name": "内科",
+      "revenue": 11140,
+      "cost": 7390,
+      "profit": 3750,
+      "profitMargin": 33.7,
+      "patientCount": 3250,
+      "avgPatientCost": 1786.2,
+      "bedCount": 220,
+      "bedUtilization": 94.2
+    },
+    {
+      "id": "2",
+      "name": "外科",
+      "revenue": 11920,
+      "cost": 7680,
+      "profit": 4240,
+      "profitMargin": 35.6,
+      "patientCount": 1850,
+      "avgPatientCost": 3355.7,
+      "bedCount": 180,
+      "bedUtilization": 91.8
+    },
+    {
+      "id": "3",
+      "name": "妇产科",
+      "revenue": 7300,
+      "cost": 4800,
+      "profit": 2500,
+      "profitMargin": 34.2,
+      "patientCount": 1520,
+      "avgPatientCost": 2501.3,
+      "bedCount": 100,
+      "bedUtilization": 89.5
+    },
+    {
+      "id": "4",
+      "name": "儿科",
+      "revenue": 4230,
+      "cost": 2780,
+      "profit": 1450,
+      "profitMargin": 34.3,
+      "patientCount": 1850,
+      "avgPatientCost": 1191.9,
+      "bedCount": 80,
+      "bedUtilization": 87.2
+    },
+    {
+      "id": "5",
+      "name": "急诊科",
+      "revenue": 3470,
+      "cost": 2300,
+      "profit": 1170,
+      "profitMargin": 33.7,
+      "patientCount": 2850,
+      "avgPatientCost": 634.4,
+      "bedCount": 0,
+      "bedUtilization": 0
+    }
+  ],
+  "keyIndicators": [
+    {
+      "id": "1",
+      "name": "总收入",
+      "value": "55000.0",
+      "unit": "万元",
+      "trend": "up",
+      "change": "8.5%"
+    },
+    {
+      "id": "2",
+      "name": "净利润",
+      "value": "3000.0",
+      "unit": "万元",
+      "trend": "up",
+      "change": "7.1%"
+    },
+    {
+      "id": "3",
+      "name": "利润率",
+      "value": "5.5",
+      "unit": "%",
+      "trend": "down",
+      "change": "-1.8%"
+    },
+    {
+      "id": "4",
+      "name": "床位利用率",
+      "value": "92.5",
+      "unit": "%",
+      "trend": "up",
+      "change": "2.3%"
+    },
+    {
+      "id": "5",
+      "name": "平均住院日",
+      "value": "6.8",
+      "unit": "天",
+      "trend": "down",
+      "change": "-0.5%"
+    },
+    {
+      "id": "6",
+      "name": "次均费用",
+      "value": "2280.5",
+      "unit": "元",
+      "trend": "up",
+      "change": "2.8%"
+    }
+  ]
+}

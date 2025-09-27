@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOM注入测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { background: white; padding: 20px; border-radius: 8px; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .log { background: #000; color: #0f0; padding: 15px; font-family: monospace; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
+        #navigation-container { border: 2px solid #007bff; min-height: 100px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
+        .status { padding: 10px; margin: 5px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DOM注入测试</h1>
+        <button onclick="testBasicInjection()">测试基本注入</button>
+        <button onclick="testFetchAndInject()">测试Fetch并注入</button>
+        <button onclick="testContainerState()">检查容器状态</button>
+        <button onclick="clearContainer()">清空容器</button>
+        <button onclick="clearLog()">清除日志</button>
+    </div>
+
+    <div class="container">
+        <h2>Navigation Container</h2>
+        <div id="navigation-container"></div>
+    </div>
+
+    <div class="container">
+        <h2>测试结果</h2>
+        <div id="test-results"></div>
+    </div>
+
+    <div class="container">
+        <h2>日志输出</h2>
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        // 日志函数
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logDiv = document.getElementById('log');
+            const logMessage = `[${timestamp}] ${message}`;
+            logDiv.textContent += logMessage + '\n';
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(logMessage);
+        }
+
+        function addResult(message, type = 'success') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = message;
+            document.getElementById('test-results').appendChild(div);
+            log(message);
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+            document.getElementById('test-results').innerHTML = '';
+        }
+
+        function clearContainer() {
+            const container = document.getElementById('navigation-container');
+            container.innerHTML = '';
+            log('容器已清空');
+            addResult('✓ 容器已清空', 'info');
+        }
+
+        // 测试基本DOM注入
+        function testBasicInjection() {
+            log('开始测试基本DOM注入...');
+            
+            const container = document.getElementById('navigation-container');
+            if (!container) {
+                addResult('✗ 未找到navigation-container', 'error');
+                return;
+            }
+            
+            log('找到容器，开始注入测试内容...');
+            
+            const testHtml = `
+                <div style="background: #e7f3ff; padding: 15px; border-radius: 4px;">
+                    <h3>测试内容</h3>
+                    <p>这是一个测试注入的内容，时间: ${new Date().toLocaleTimeString()}</p>
+                    <ul>
+                        <li>项目1</li>
+                        <li>项目2</li>
+                        <li>项目3</li>
+                    </ul>
+                </div>
+            `;
+            
+            container.innerHTML = testHtml;
+            log('测试内容已注入');
+            
+            // 验证注入结果
+            setTimeout(() => {
+                if (container.children.length > 0) {
+                    addResult(`✓ 基本注入成功，容器有 ${container.children.length} 个子元素`, 'success');
+                    log(`容器内容长度: ${container.innerHTML.length}`);
+                } else {
+                    addResult('✗ 基本注入失败，容器仍为空', 'error');
+                }
+            }, 100);
+        }
+
+        // 测试Fetch并注入
+        async function testFetchAndInject() {
+            log('开始测试Fetch并注入...');
+            
+            const container = document.getElementById('navigation-container');
+            if (!container) {
+                addResult('✗ 未找到navigation-container', 'error');
+                return;
+            }
+            
+            try {
+                log('开始fetch nav.html...');
+                const response = await fetch('components/nav.html');
+                log(`Fetch响应: ${response.status} ${response.statusText}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const html = await response.text();
+                log(`获取HTML成功，长度: ${html.length}`);
+                addResult(`✓ Fetch成功，HTML长度: ${html.length}`, 'success');
+                
+                if (html.length < 100) {
+                    addResult('⚠ HTML内容可能太短', 'error');
+                    log(`HTML内容预览: ${html.substring(0, 200)}`);
+                    return;
+                }
+                
+                log('开始注入HTML到容器...');
+                container.innerHTML = html;
+                log('HTML注入完成');
+                
+                // 验证注入结果
+                setTimeout(() => {
+                    const childCount = container.children.length;
+                    const textLength = container.innerHTML.length;
+                    
+                    log(`注入后验证: 子元素数量=${childCount}, 内容长度=${textLength}`);
+                    
+                    if (childCount > 0) {
+                        addResult(`✓ Fetch注入成功，容器有 ${childCount} 个子元素`, 'success');
+                        log(`容器第一个子元素: ${container.children[0].tagName}`);
+                    } else if (textLength > 0) {
+                        addResult(`⚠ 有内容但无子元素，内容长度: ${textLength}`, 'error');
+                        log(`容器内容预览: ${container.innerHTML.substring(0, 200)}`);
+                    } else {
+                        addResult('✗ Fetch注入失败，容器仍为空', 'error');
+                    }
+                }, 100);
+                
+            } catch (error) {
+                log(`Fetch异常: ${error.message}`);
+                addResult(`✗ Fetch异常: ${error.message}`, 'error');
+            }
+        }
+
+        // 检查容器状态
+        function testContainerState() {
+            log('检查容器状态...');
+            
+            const container = document.getElementById('navigation-container');
+            if (!container) {
+                addResult('✗ 未找到navigation-container', 'error');
+                return;
+            }
+            
+            const childCount = container.children.length;
+            const textLength = container.innerHTML.length;
+            const textContent = container.textContent.trim();
+            
+            log(`容器状态检查:`);
+            log(`- 子元素数量: ${childCount}`);
+            log(`- innerHTML长度: ${textLength}`);
+            log(`- textContent长度: ${textContent.length}`);
+            log(`- 容器可见: ${container.offsetWidth > 0 && container.offsetHeight > 0}`);
+            log(`- 容器样式display: ${getComputedStyle(container).display}`);
+            
+            addResult(`容器状态: ${childCount}个子元素, ${textLength}字符内容`, 'info');
+            
+            if (textLength > 0) {
+                log(`内容预览: ${container.innerHTML.substring(0, 300)}...`);
+            }
+        }
+
+        // 页面加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            log('DOMContentLoaded事件触发');
+            addResult('✓ 页面DOM加载完成', 'success');
+            
+            // 自动检查容器状态
+            setTimeout(() => {
+                testContainerState();
+            }, 500);
+        });
+
+        // 错误监听
+        window.addEventListener('error', function(event) {
+            log(`JavaScript错误: ${event.error.message}`);
+            addResult(`✗ JavaScript错误: ${event.error.message}`, 'error');
+        });
+
+        window.addEventListener('unhandledrejection', function(event) {
+            log(`未处理的Promise拒绝: ${event.reason}`);
+            addResult(`✗ 未处理的Promise拒绝: ${event.reason}`, 'error');
+        });
+
+        log('DOM注入测试页面初始化完成');
+        addResult('✓ 测试页面初始化完成', 'success');
+    </script>
+</body>
+</html>

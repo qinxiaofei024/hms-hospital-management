@@ -1,0 +1,381 @@
+{
+  "start_url": "https://app.fanruan.com:8444/decision/app/package/?preview=false&appId=f59959b2-bdb1-54ec-3e2d-b7fa508267af&ssoToken=KDmf4GKGXrBANRTYiDDiRiQPP3Wszf%2Fvol%2FLHvB56PNgcU9xORfkTXPPlnsT5Zwm2MaT2JaRjcsoC2FV8oNH0dxReQezWHOy6Dxp75nDsESS6lXGzmEOdWSjAV6MOHCPFUZOQgeKnO5PfctCjFOq7VVaOlY96dOajprZgxH7VDmvrZiZ4wrU%2BCkFLXBkDlr1Wz6t8p8roc5HFUJpsmh7HdexcCCcddG5onFFW1Er%2FpP927g3Gv8kY61fvOdCExqaf6jnlCOCTofa46jF9CfgsU5aAgQNGqu%2F1gbvjLfJa2Jt305Wc%2BYXNeRA1K%2FdTArAbbFnFmTH4Q5aM%2FX2xUvj4A%3D%3D&force_web=true",
+  "saved_at": "20250927_070847",
+  "resources": [
+    {
+      "url": "https://app.fanruan.com:8444/decision/app/package/?preview=false&appId=f59959b2-bdb1-54ec-3e2d-b7fa508267af&force_web=true",
+      "status": 200,
+      "type": "document",
+      "content_type": "text/html;charset=UTF-8",
+      "path": "decision_app_package_index__955e883b.html",
+      "size": 713
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/resources?path=/com/fr/plugin/app/encapsulation/web/static/css/main.9593b1ee.css",
+      "status": 200,
+      "type": "stylesheet",
+      "content_type": "text/css;charset=UTF-8",
+      "path": "decision_resources__dc9d8f39.css",
+      "size": 5459
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/resources?path=/com/fr/plugin/app/encapsulation/web/static/js/main.622b4b69.js",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript;charset=UTF-8",
+      "path": "decision_resources__a25e512f.js",
+      "size": 566977
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/app/package/f59959b2-bdb1-54ec-3e2d-b7fa508267af",
+      "status": 200,
+      "type": "xhr",
+      "content_type": "application/json;charset=UTF-8",
+      "path": "decision_app_package_f59959b2-bdb1-54ec-3e2d-b7fa508267af.json",
+      "size": 2685
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp?viewlet=%25E5%258C%25BB%25E8%258D%25AF%25E5%25BA%2594%25E7%2594%25A8%252F%25E5%258C%25BB%25E8%258D%25AF%25E5%2581%25A5%25E5%25BA%25B7%25E7%25BB%258F%25E8%2590%25A5%25E7%25AE%25A1%25E7%2590%2586%25E9%25A9%25BE%25E9%25A9%25B6%25E8%2588%25B1%252F%25E5%2585%25A8%25E5%25B1%2580%25E9%25A9%25BE%25E9%25A9%25B6%25E8%2588%25B1.fvs",
+      "status": 200,
+      "type": "document",
+      "content_type": "text/html;charset=UTF-8",
+      "path": "decision_view_duchamp__ef10355d.html",
+      "size": 8931
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/js/shared-hash-QGZb_1OY.js",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript",
+      "path": "decision_view_duchamp_resource__cea170d2.js",
+      "size": 1751
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/css/shared-hash-BJ1ATTf3.css",
+      "status": 200,
+      "type": "stylesheet",
+      "content_type": "text/css",
+      "path": "decision_view_duchamp_resource__a05f1965.css",
+      "size": 783
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/css/CanvasPainter-hash-Db8IZYQi.css",
+      "status": 200,
+      "type": "stylesheet",
+      "content_type": "text/css",
+      "path": "decision_view_duchamp_resource__0c1a6da8.css",
+      "size": 805
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/css/index-hash-CwHdcfI2.css",
+      "status": 200,
+      "type": "stylesheet",
+      "content_type": "text/css",
+      "path": "decision_view_duchamp_resource__f61a1f8a.css",
+      "size": 1726
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/js/utils-hash-BZGqdNop.js",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript",
+      "path": "decision_view_duchamp_resource__c8577055.js",
+      "size": 2443019
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/css/utils-hash-DUu0BauC.css",
+      "status": 200,
+      "type": "stylesheet",
+      "content_type": "text/css",
+      "path": "decision_view_duchamp_resource__25b2bbd9.css",
+      "size": 545628
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/css/preview-hash-oQXhAD89.css",
+      "status": 200,
+      "type": "stylesheet",
+      "content_type": "text/css",
+      "path": "decision_view_duchamp_resource__5c49c4e4.css",
+      "size": 5689
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/file?path=/com/fr/plugin/wysiwyg/web/static/css/animate.min.css&tag=1758620467721",
+      "status": 200,
+      "type": "stylesheet",
+      "content_type": "text/css;charset=UTF-8",
+      "path": "decision_file__16650dde.css",
+      "size": 6366
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/theme/blue.css",
+      "status": 200,
+      "type": "stylesheet",
+      "content_type": "text/css",
+      "path": "decision_view_duchamp_resource__a29ecc0f.css",
+      "size": 82862
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/theme/dark-blue.css",
+      "status": 200,
+      "type": "stylesheet",
+      "content_type": "text/css",
+      "path": "decision_view_duchamp_resource__6bbe125b.css",
+      "size": 88576
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/file?path=/com/fr/web/core/css/leaflet.css&tag=1758620467721",
+      "status": 200,
+      "type": "stylesheet",
+      "content_type": "text/css;charset=UTF-8",
+      "path": "decision_file__e65ed1d7.css",
+      "size": 16981
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/js/indexOf-hash-DlluUZiX.js",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript",
+      "path": "decision_view_duchamp_resource__22a613b8.js",
+      "size": 397
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/js/polyfill-hash-Cs1uKvqB.js",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript",
+      "path": "decision_view_duchamp_resource__02f7164a.js",
+      "size": 12034
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/js/index-hash-Bf6mcu9N.js",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript",
+      "path": "decision_view_duchamp_resource__f6037991.js",
+      "size": 15966
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/css/setAppConfig-hash-C0U6weWh.css",
+      "status": 200,
+      "type": "stylesheet",
+      "content_type": "text/css",
+      "path": "decision_view_duchamp_resource__b2d475f4.css",
+      "size": 426081
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/js/useControllerStyles-hash-DdpwKTcR.js",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript",
+      "path": "decision_view_duchamp_resource__1a1c2103.js",
+      "size": 587
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/file?path=/com/fr/plugin/wysiwyg/web/static/templateLoad/templateLoad.js&tag=1758620467721",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript;charset=UTF-8",
+      "path": "decision_file__300f82f0.js",
+      "size": 7818
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/js/CanvasPainter-hash-C9zXrXqV.js",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript",
+      "path": "decision_view_duchamp_resource__02d95521.js",
+      "size": 19681
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource/locale?fr_locale=zh_CN&tag=1758620467721",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript;charset=UTF-8",
+      "path": "decision_view_duchamp_resource_locale__9e56b9c8.js",
+      "size": 173149
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/js/preview-hash-BEXWSmCn.js",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript",
+      "path": "decision_view_duchamp_resource__476b53e6.js",
+      "size": 34234
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/js/polyfills-hash-DKouTO5U.js",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript",
+      "path": "decision_view_duchamp_resource__171e7ee2.js",
+      "size": 120034
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/file?path=com.fr.form.fit.component.I18nEngineGenerator&type=class&parser=plain",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript;charset=UTF-8",
+      "path": "decision_file__85479e73.js",
+      "size": 13331
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource?resource=/com/fr/plugin/wysiwyg/web/static/js/setAppConfig-hash-DSmqnnw2.js",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript",
+      "path": "decision_view_duchamp_resource__a9080bca.js",
+      "size": 4078302
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/file?path=/com/fr/web/ui/fineui.min.js&tag=1758620467721",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript;charset=UTF-8",
+      "path": "decision_file__b4091169.js",
+      "size": 2057317
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp?op=emb&resource=finereport.plugin.fvs.js&__pre__=true&jsVersion=1758789943811",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript;charset=UTF-8",
+      "path": "decision_view_duchamp__cbb20b40.js",
+      "size": 2413429
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/file?path=/com/fr/plugin/wysiwyg/web/shared/shared-override.js&tag=1758620467721",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript;charset=UTF-8",
+      "path": "decision_file__adeef46e.js",
+      "size": 22894
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/file?path=/com/fr/plugin/wysiwyg/web/preview/preview-override.js&tag=1758620467721",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript;charset=UTF-8",
+      "path": "decision_file__cc266690.js",
+      "size": 5782
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp?op=emb&resource=finereport.main.fvs.js&__pre__=true&jsVersion=1758789943811&inter=zh_CN&__fr_locale__=",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript;charset=UTF-8",
+      "path": "decision_view_duchamp__ce25f9fa.js",
+      "size": 925102
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp?op=emb&resource=finereport.chart.fvs.js&__pre__=true&jsVersion=1758620467721",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript;charset=UTF-8",
+      "path": "decision_view_duchamp__4154ac7f.js",
+      "size": 1343795
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/preview/info/collect",
+      "status": 200,
+      "type": "xhr",
+      "content_type": "application/json;charset=UTF-8",
+      "path": "decision_preview_info_collect.json",
+      "size": 18
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/sentinel/template/support/check",
+      "status": 200,
+      "type": "xhr",
+      "content_type": "application/json;charset=UTF-8",
+      "path": "decision_sentinel_template_support_check.json",
+      "size": 91
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/store",
+      "status": 200,
+      "type": "xhr",
+      "content_type": "text/html;charset=UTF-8",
+      "path": "decision_view_duchamp_store.html",
+      "size": 379153
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp?op=resource&resource=com/fr/plugin/wysiwyg/chart/css/sliderdashboard.min.css&tag=1756799602206",
+      "status": 200,
+      "type": "stylesheet",
+      "content_type": "text/css;charset=UTF-8",
+      "path": "decision_view_duchamp__da5d3266.css",
+      "size": 1428
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp?op=resource&resource=com/fr/plugin/wysiwyg/chart/js/meterWrapper.js&tag=1756799602206",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript;charset=UTF-8",
+      "path": "decision_view_duchamp__4d9e5157.js",
+      "size": 467
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp?op=resource&resource=com/fr/plugin/wysiwyg/chart/js/sliderdashboard.min.js&tag=1756799602206",
+      "status": 200,
+      "type": "script",
+      "content_type": "text/javascript;charset=UTF-8",
+      "path": "decision_view_duchamp__2a4a047d.js",
+      "size": 239708
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource/preview?tplPath=local%252Ffvs%252Fftp_preview%252F1758786226000%252F%25E5%258C%25BB%25E8%258D%25AF%25E5%25BA%2594%25E7%2594%25A8%252F%25E5%258C%25BB%25E8%258D%25AF%25E5%2581%25A5%25E5%25BA%25B7%25E7%25BB%258F%25E8%2590%25A5%25E7%25AE%25A1%25E7%2590%2586%25E9%25A9%25BE%25E9%25A9%25B6%25E8%2588%25B1%252F%25E5%2585%25A8%25E5%25B1%2580%25E9%25A9%25BE%25E9%25A9%25B6%25E8%2588%25B1.fvs&fvsTplStateID=&resource=/__from__reuse__/5675a668-b26b-4500-b272-1300de4486d5.png",
+      "status": 200,
+      "type": "image",
+      "content_type": "image/png",
+      "path": "decision_view_duchamp_resource_preview__8ce418ca.png",
+      "size": 570880
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource/preview?tplPath=local%252Ffvs%252Fftp_preview%252F1758786226000%252F%25E5%258C%25BB%25E8%258D%25AF%25E5%25BA%2594%25E7%2594%25A8%252F%25E5%258C%25BB%25E8%258D%25AF%25E5%2581%25A5%25E5%25BA%25B7%25E7%25BB%258F%25E8%2590%25A5%25E7%25AE%25A1%25E7%2590%2586%25E9%25A9%25BE%25E9%25A9%25B6%25E8%2588%25B1%252F%25E5%2585%25A8%25E5%25B1%2580%25E9%25A9%25BE%25E9%25A9%25B6%25E8%2588%25B1.fvs&fvsTplStateID=&resource=/__from__reuse__/5ebc7b30-d11a-47d9-a456-61504ff3c193.png",
+      "status": 200,
+      "type": "image",
+      "content_type": "image/png",
+      "path": "decision_view_duchamp_resource_preview__1a0f3361.png",
+      "size": 174241
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/compute/dependence",
+      "status": 200,
+      "type": "xhr",
+      "content_type": "text/html;charset=UTF-8",
+      "path": "decision_view_duchamp_compute_dependence.html",
+      "size": 6681
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource/preview?tplPath=local%252Ffvs%252Fftp_preview%252F1758786226000%252F%25E5%258C%25BB%25E8%258D%25AF%25E5%25BA%2594%25E7%2594%25A8%252F%25E5%258C%25BB%25E8%258D%25AF%25E5%2581%25A5%25E5%25BA%25B7%25E7%25BB%258F%25E8%2590%25A5%25E7%25AE%25A1%25E7%2590%2586%25E9%25A9%25BE%25E9%25A9%25B6%25E8%2588%25B1%252F%25E5%2585%25A8%25E5%25B1%2580%25E9%25A9%25BE%25E9%25A9%25B6%25E8%2588%25B1.fvs&fvsTplStateID=&resource=/__from__reuse__/2c2b6193-f30b-4d36-a273-33f23e3f5161.png",
+      "status": 200,
+      "type": "image",
+      "content_type": "image/png",
+      "path": "decision_view_duchamp_resource_preview__c42deb76.png",
+      "size": 48896
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource/preview?tplPath=local%252Ffvs%252Fftp_preview%252F1758786226000%252F%25E5%258C%25BB%25E8%258D%25AF%25E5%25BA%2594%25E7%2594%25A8%252F%25E5%258C%25BB%25E8%258D%25AF%25E5%2581%25A5%25E5%25BA%25B7%25E7%25BB%258F%25E8%2590%25A5%25E7%25AE%25A1%25E7%2590%2586%25E9%25A9%25BE%25E9%25A9%25B6%25E8%2588%25B1%252F%25E5%2585%25A8%25E5%25B1%2580%25E9%25A9%25BE%25E9%25A9%25B6%25E8%2588%25B1.fvs&fvsTplStateID=&resource=/__from__reuse__/20219f18-3903-417d-ae4a-024d8fb90b91.png",
+      "status": 200,
+      "type": "image",
+      "content_type": "image/png",
+      "path": "decision_view_duchamp_resource_preview__e514b5cf.png",
+      "size": 72644
+    },
+    {
+      "url": "https://app.fanruan.com:8444/decision/view/duchamp/resource/preview?tplPath=local%252Ffvs%252Fftp_preview%252F1758786226000%252F%25E5%258C%25BB%25E8%258D%25AF%25E5%25BA%2594%25E7%2594%25A8%252F%25E5%258C%25BB%25E8%258D%25AF%25E5%2581%25A5%25E5%25BA%25B7%25E7%25BB%258F%25E8%2590%25A5%25E7%25AE%25A1%25E7%2590%2586%25E9%25A9%25BE%25E9%25A9%25B6%25E8%2588%25B1%252F%25E5%2585%25A8%25E5%25B1%2580%25E9%25A9%25BE%25E9%25A9%25B6%25E8%2588%25B1.fvs&fvsTplStateID=&resource=/__from__reuse__/7e3f08e5-8c80-4e35-b362-693091ec239d.png",
+      "status": 200,
+      "type": "image",
+      "content_type": "image/png",
+      "path": "decision_view_duchamp_resource_preview__180158f9.png",
+      "size": 80426
+    }
+  ],
+  "errors": [
+    {
+      "url": "https://app.fanruan.com:8444/decision/app/package/?preview=false&appId=f59959b2-bdb1-54ec-3e2d-b7fa508267af&ssoToken=KDmf4GKGXrBANRTYiDDiRiQPP3Wszf%2Fvol%2FLHvB56PNgcU9xORfkTXPPlnsT5Zwm2MaT2JaRjcsoC2FV8oNH0dxReQezWHOy6Dxp75nDsESS6lXGzmEOdWSjAV6MOHCPFUZOQgeKnO5PfctCjFOq7VVaOlY96dOajprZgxH7VDmvrZiZ4wrU%2BCkFLXBkDlr1Wz6t8p8roc5HFUJpsmh7HdexcCCcddG5onFFW1Er%2FpP927g3Gv8kY61fvOdCExqaf6jnlCOCTofa46jF9CfgsU5aAgQNGqu%2F1gbvjLfJa2Jt305Wc%2BYXNeRA1K%2FdTArAbbFnFmTH4Q5aM%2FX2xUvj4A%3D%3D&force_web=true",
+      "when": "read_body",
+      "error": "Response.body: Response body is unavailable for redirect responses"
+    }
+  ]
+}

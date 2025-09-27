@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组件上传 - HMS组件库</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .upload-form {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: #dc3545;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .file-upload {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            background: #f8f9ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            background: #f0f4ff;
+            border-color: #5a67d8;
+        }
+
+        .file-upload.dragover {
+            background: #e6f3ff;
+            border-color: #4299e1;
+        }
+
+        .file-upload-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .file-upload-text {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-hint {
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .file-list {
+            margin-top: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .file-icon {
+            width: 30px;
+            height: 30px;
+            background: #667eea;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .file-size {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .file-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .tag-input-container {
+            position: relative;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tag {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tag-remove {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .dependency-list {
+            margin-top: 15px;
+        }
+
+        .dependency-item {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .dependency-item input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+        }
+
+        .add-dependency {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .remove-dependency {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .preview-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border: 2px solid #e9ecef;
+        }
+
+        .preview-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .preview-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.success {
+            background: #28a745;
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        .notification.warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="goBack()">← 返回组件库</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>上传组件</h1>
+            <p>分享您的组件，让更多开发者受益</p>
+        </div>
+        
+        <div class="content">
+            <form class="upload-form" id="uploadForm">
+                <!-- 基本信息 -->
+                <div class="form-section">
+                    <h3 class="section-title">基本信息</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required">组件名称</label>
+                            <input type="text" class="form-input" id="componentName" required placeholder="请输入组件名称">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required">版本号</label>
+                            <input type="text" class="form-input" id="componentVersion" required placeholder="1.0.0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label required">组件描述</label>
+                        <textarea class="form-input form-textarea" id="componentDescription" required placeholder="请详细描述组件的功能和用途"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required">分类</label>
+                            <select class="form-select" id="componentCategory" required>
+                                <option value="">请选择分类</option>
+                                <option value="数据分析">数据分析</option>
+                                <option value="图表组件">图表组件</option>
+                                <option value="表单组件">表单组件</option>
+                                <option value="布局组件">布局组件</option>
+                                <option value="导航组件">导航组件</option>
+                                <option value="反馈组件">反馈组件</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required">状态</label>
+                            <select class="form-select" id="componentStatus" required>
+                                <option value="">请选择状态</option>
+                                <option value="stable">稳定版</option>
+                                <option value="beta">测试版</option>
+                                <option value="alpha">开发版</option>
+                                <option value="deprecated">已废弃</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">标签</label>
+                        <div class="tag-input-container">
+                            <input type="text" class="form-input" id="tagInput" placeholder="输入标签后按回车添加">
+                            <div class="tag-list" id="tagList"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 文件上传 -->
+                <div class="form-section">
+                    <h3 class="section-title">文件上传</h3>
+                    
+                    <div class="file-upload" id="fileUpload">
+                        <div class="file-upload-icon">📁</div>
+                        <div class="file-upload-text">点击或拖拽文件到此处上传</div>
+                        <div class="file-upload-hint">支持 .js, .css, .html 文件</div>
+                        <input type="file" id="fileInput" multiple accept=".js,.css,.html" style="display: none;">
+                    </div>
+                    
+                    <div class="file-list" id="fileList"></div>
+                </div>
+                
+                <!-- 依赖管理 -->
+                <div class="form-section">
+                    <h3 class="section-title">依赖管理</h3>
+                    
+                    <div class="dependency-list" id="dependencyList">
+                        <!-- 动态生成 -->
+                    </div>
+                    
+                    <button type="button" class="add-dependency" onclick="addDependency()">+ 添加依赖</button>
+                </div>
+                
+                <!-- API文档 -->
+                <div class="form-section">
+                    <h3 class="section-title">API文档</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">类名</label>
+                        <input type="text" class="form-input" id="apiClassName" placeholder="组件的主类名">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">构造函数参数</label>
+                        <textarea class="form-input form-textarea" id="apiConstructor" placeholder="JSON格式的构造函数参数说明"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">公共方法</label>
+                        <textarea class="form-input form-textarea" id="apiMethods" placeholder="JSON格式的公共方法说明"></textarea>
+                    </div>
+                </div>
+                
+                <!-- 预览 -->
+                <div class="preview-section">
+                    <h3 class="preview-title">组件预览</h3>
+                    <div class="preview-card" id="previewCard">
+                        <p style="color: #666; text-align: center;">填写基本信息后将显示预览</p>
+                    </div>
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">重置</button>
+                    <button type="submit" class="btn btn-primary">上传组件</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        class ComponentUploader {
+            constructor() {
+                this.tags = [];
+                this.files = [];
+                this.dependencies = [];
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.addDependency(); // 添加第一个依赖项
+            }
+
+            setupEventListeners() {
+                // 文件上传
+                const fileUpload = document.getElementById('fileUpload');
+                const fileInput = document.getElementById('fileInput');
+
+                fileUpload.addEventListener('click', () => fileInput.click());
+                fileInput.addEventListener('change', (e) => this.handleFileSelect(e.target.files));
+
+                // 拖拽上传
+                fileUpload.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    fileUpload.classList.add('dragover');
+                });
+
+                fileUpload.addEventListener('dragleave', () => {
+                    fileUpload.classList.remove('dragover');
+                });
+
+                fileUpload.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    fileUpload.classList.remove('dragover');
+                    this.handleFileSelect(e.dataTransfer.files);
+                });
+
+                // 标签输入
+                const tagInput = document.getElementById('tagInput');
+                tagInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.addTag(tagInput.value.trim());
+                        tagInput.value = '';
+                    }
+                });
+
+                // 表单提交
+                document.getElementById('uploadForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.submitForm();
+                });
+
+                // 实时预览
+                ['componentName', 'componentDescription', 'componentCategory', 'componentStatus'].forEach(id => {
+                    document.getElementById(id).addEventListener('input', () => this.updatePreview());
+                });
+            }
+
+            handleFileSelect(files) {
+                Array.from(files).forEach(file => {
+                    if (this.isValidFile(file)) {
+                        this.files.push(file);
+                        this.renderFileList();
+                    } else {
+                        this.showNotification('不支持的文件类型: ' + file.name, 'error');
+                    }
+                });
+            }
+
+            isValidFile(file) {
+                const validTypes = ['.js', '.css', '.html'];
+                return validTypes.some(type => file.name.toLowerCase().endsWith(type));
+            }
+
+            renderFileList() {
+                const fileList = document.getElementById('fileList');
+                fileList.innerHTML = this.files.map((file, index) => `
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-icon">${this.getFileIcon(file.name)}</div>
+                            <div class="file-details">
+                                <div class="file-name">${file.name}</div>
+                                <div class="file-size">${this.formatFileSize(file.size)}</div>
+                            </div>
+                        </div>
+                        <button type="button" class="file-remove" onclick="uploader.removeFile(${index})">删除</button>
+                    </div>
+                `).join('');
+            }
+
+            getFileIcon(filename) {
+                if (filename.endsWith('.js')) return 'JS';
+                if (filename.endsWith('.css')) return 'CSS';
+                if (filename.endsWith('.html')) return 'HTML';
+                return 'FILE';
+            }
+
+            formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            removeFile(index) {
+                this.files.splice(index, 1);
+                this.renderFileList();
+            }
+
+            addTag(tag) {
+                if (tag && !this.tags.includes(tag)) {
+                    this.tags.push(tag);
+                    this.renderTags();
+                }
+            }
+
+            removeTag(index) {
+                this.tags.splice(index, 1);
+                this.renderTags();
+            }
+
+            renderTags() {
+                const tagList = document.getElementById('tagList');
+                tagList.innerHTML = this.tags.map((tag, index) => `
+                    <div class="tag">
+                        ${tag}
+                        <button type="button" class="tag-remove" onclick="uploader.removeTag(${index})">×</button>
+                    </div>
+                `).join('');
+            }
+
+            addDependency() {
+                this.dependencies.push({ name: '', version: '', type: 'external', required: true });
+                this.renderDependencies();
+            }
+
+            removeDependency(index) {
+                this.dependencies.splice(index, 1);
+                this.renderDependencies();
+            }
+
+            renderDependencies() {
+                const dependencyList = document.getElementById('dependencyList');
+                dependencyList.innerHTML = this.dependencies.map((dep, index) => `
+                    <div class="dependency-item">
+                        <input type="text" placeholder="依赖名称" value="${dep.name}" 
+                               onchange="uploader.updateDependency(${index}, 'name', this.value)">
+                        <input type="text" placeholder="版本号" value="${dep.version}"
+                               onchange="uploader.updateDependency(${index}, 'version', this.value)">
+                        <select onchange="uploader.updateDependency(${index}, 'type', this.value)">
+                            <option value="external" ${dep.type === 'external' ? 'selected' : ''}>外部依赖</option>
+                            <option value="internal" ${dep.type === 'internal' ? 'selected' : ''}>内部依赖</option>
+                        </select>
+                        <button type="button" class="remove-dependency" onclick="uploader.removeDependency(${index})">删除</button>
+                    </div>
+                `).join('');
+            }
+
+            updateDependency(index, field, value) {
+                this.dependencies[index][field] = value;
+            }
+
+            updatePreview() {
+                const name = document.getElementById('componentName').value;
+                const description = document.getElementById('componentDescription').value;
+                const category = document.getElementById('componentCategory').value;
+                const status = document.getElementById('componentStatus').value;
+
+                if (!name && !description) {
+                    document.getElementById('previewCard').innerHTML = 
+                        '<p style="color: #666; text-align: center;">填写基本信息后将显示预览</p>';
+                    return;
+                }
+
+                const previewHtml = `
+                    <div style="border-bottom: 1px solid #e9ecef; padding-bottom: 15px; margin-bottom: 15px;">
+                        <h3 style="color: #333; margin-bottom: 8px;">${name || '组件名称'}</h3>
+                        <p style="color: #666; margin-bottom: 10px;">${description || '组件描述'}</p>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            ${category ? `<span style="background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem;">${category}</span>` : ''}
+                            ${status ? `<span style="background: #28a745; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem;">${status}</span>` : ''}
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; text-align: center;">
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;">${this.files.length}</div>
+                            <div style="font-size: 0.9rem; color: #666;">文件数量</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;">${this.tags.length}</div>
+                            <div style="font-size: 0.9rem; color: #666;">标签数量</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;">${this.dependencies.filter(d => d.name).length}</div>
+                            <div style="font-size: 0.9rem; color: #666;">依赖数量</div>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('previewCard').innerHTML = previewHtml;
+            }
+
+            validateForm() {
+                const required = ['componentName', 'componentVersion', 'componentDescription', 'componentCategory', 'componentStatus'];
+                
+                for (let field of required) {
+                    if (!document.getElementById(field).value.trim()) {
+                        this.showNotification(`请填写${document.querySelector(`label[for="${field}"], label[class*="${field}"]`)?.textContent || field}`, 'error');
+                        return false;
+                    }
+                }
+
+                if (this.files.length === 0) {
+                    this.showNotification('请至少上传一个文件', 'error');
+                    return false;
+                }
+
+                return true;
+            }
+
+            async submitForm() {
+                if (!this.validateForm()) return;
+
+                try {
+                    this.showNotification('正在上传组件...', 'warning');
+
+                    // 构建组件数据
+                    const componentData = {
+                        id: this.generateId(document.getElementById('componentName').value),
+                        name: document.getElementById('componentName').value,
+                        version: document.getElementById('componentVersion').value,
+                        description: document.getElementById('componentDescription').value,
+                        category: document.getElementById('componentCategory').value,
+                        status: document.getElementById('componentStatus').value,
+                        tags: this.tags,
+                        author: 'HMS开发者', // 可以从用户信息获取
+                        createDate: new Date().toISOString(),
+                        updateDate: new Date().toISOString(),
+                        dependencies: this.dependencies.filter(d => d.name),
+                        files: this.generateFilesPaths(),
+                        api: this.parseApiData()
+                    };
+
+                    // 模拟上传过程
+                    await this.simulateUpload(componentData);
+
+                    this.showNotification('组件上传成功！', 'success');
+                    
+                    // 3秒后跳转回组件库
+                    setTimeout(() => {
+                        window.location.href = 'component-library.html';
+                    }, 3000);
+
+                } catch (error) {
+                    console.error('上传失败:', error);
+                    this.showNotification('上传失败，请重试', 'error');
+                }
+            }
+
+            generateId(name) {
+                return name.toLowerCase()
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/\s+/g, '-')
+                    .replace(/-+/g, '-')
+                    .trim();
+            }
+
+            generateFilesPaths() {
+                const paths = {};
+                this.files.forEach(file => {
+                    const ext = file.name.split('.').pop();
+                    if (ext === 'js') paths.main = `../components/${this.generateId(document.getElementById('componentName').value)}/${file.name}`;
+                    if (ext === 'css') paths.css = `../components/${this.generateId(document.getElementById('componentName').value)}/${file.name}`;
+                    if (ext === 'html') paths.demo = `../components/${this.generateId(document.getElementById('componentName').value)}/${file.name}`;
+                });
+                return paths;
+            }
+
+            parseApiData() {
+                try {
+                    const className = document.getElementById('apiClassName').value || 'Component';
+                    const constructor = document.getElementById('apiConstructor').value;
+                    const methods = document.getElementById('apiMethods').value;
+
+                    return {
+                        className,
+                        constructor: constructor ? JSON.parse(constructor) : { parameters: [] },
+                        methods: methods ? JSON.parse(methods) : []
+                    };
+                } catch (error) {
+                    return {
+                        className: 'Component',
+                        constructor: { parameters: [] },
+                        methods: []
+                    };
+                }
+            }
+
+            async simulateUpload(data) {
+                // 模拟文件上传过程
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        console.log('组件数据:', data);
+                        resolve();
+                    }, 2000);
+                });
+            }
+
+            showNotification(message, type = 'success') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.remove();
+                }, 5000);
+            }
+        }
+
+        // 全局函数
+        function goBack() {
+            window.history.back();
+        }
+
+        function resetForm() {
+            if (confirm('确定要重置表单吗？所有数据将丢失。')) {
+                document.getElementById('uploadForm').reset();
+                uploader.tags = [];
+                uploader.files = [];
+                uploader.dependencies = [];
+                uploader.renderTags();
+                uploader.renderFileList();
+                uploader.addDependency();
+                uploader.updatePreview();
+            }
+        }
+
+        function addDependency() {
+            uploader.addDependency();
+        }
+
+        // 初始化
+        let uploader;
+        document.addEventListener('DOMContentLoaded', () => {
+            uploader = new ComponentUploader();
+        });
+    </script>
+</body>
+</html>

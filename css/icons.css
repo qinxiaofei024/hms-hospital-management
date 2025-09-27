@@ -1,0 +1,63 @@
+/* Global icon class mappings (emoji-based fallback) */
+
+/* Base style for all icon-* classes */
+[class^="icon-"], [class*=" icon-"] {
+  display: inline-block;
+  font-style: normal;
+  line-height: 1;
+  vertical-align: -0.1em;
+  margin-right: 6px;
+  font-size: 1em;
+}
+
+/* Color hints for trends */
+.icon-arrow-up { color: #52c41a; }
+.icon-arrow-down { color: #f5222d; }
+
+/* Common actions */
+.icon-refresh::before { content: "\1F501"; }      /* 🔁 */
+.icon-export::before { content: "\1F4E4"; }       /* 📤 */
+.icon-search::before { content: "\1F50D"; }       /* 🔍 */
+.icon-settings::before { content: "\2699\FE0F"; } /* ⚙️ */
+.icon-check::before { content: "\2705"; }         /* ✅ */
+.icon-clock::before { content: "\1F553"; }        /* 🕓 */
+
+/* Medical + business */
+.icon-medical::before { content: "\1F3E5"; }      /* 🏥 */
+.icon-patient::before { content: "\1F468\200D\2695\FE0F"; } /* 🧑‍⚕️ */
+.icon-user::before { content: "\1F464"; }         /* 👤 */
+.icon-users::before { content: "\1F465"; }        /* 👥 */
+.icon-money::before { content: "\1F4B0"; }        /* 💰 */
+.icon-revenue::before { content: "\1F4B5"; }      /* 💵 */
+.icon-economic::before { content: "\1F4B9"; }     /* 💹 */
+.icon-quality::before { content: "\1F3C5"; }      /* 🏅 */
+.icon-efficiency::before { content: "\26A1"; }    /* ⚡ */
+.icon-health::before { content: "\2764\FE0F"; }   /* ❤️ */
+.icon-ai::before { content: "\1F916"; }           /* 🤖 */
+
+/* Equipment / resources */
+.icon-equipment::before { content: "\1FA7A"; }     /* 🩺 */
+.icon-test::before { content: "\1F9EA"; }         /* 🧪 */
+.icon-bed::before { content: "\1F6CF\FE0F"; }     /* 🛏️ */
+
+/* Time / charts */
+.icon-time::before { content: "\23F1\FE0F"; }     /* ⏱️ */
+.icon-trend::before { content: "\1F4C8"; }        /* 📈 */
+.icon-chart::before { content: "\1F4CA"; }        /* 📊 */
+
+/* Mobile operation specific */
+.icon-stat::before { content: "\1F4C8"; }         /* 📈 */
+.icon-todo::before { content: "\1F4DD"; }         /* 📝 */
+.icon-alert::before { content: "\26A0\FE0F"; }    /* ⚠️ */
+.icon-calendar::before { content: "\1F4C5"; }     /* 📅 */
+.icon-task::before { content: "\1F4CB"; }         /* 📋 */
+.icon-ward::before { content: "\1F3E5"; }         /* 🏥 */
+.icon-record::before { content: "\1F4C4"; }       /* 📄 */
+.icon-service::before { content: "\1F6CE\FE0F"; } /* 🛎️ */
+
+/* Arrows */
+.icon-arrow-up::before { content: "\2B06\FE0F"; }   /* ⬆️ */
+.icon-arrow-down::before { content: "\2B07\FE0F"; } /* ⬇️ */
+
+/* Misc */
+.icon-time::before { content: "\23F1\FE0F"; }

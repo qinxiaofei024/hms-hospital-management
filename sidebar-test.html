@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>侧栏收放功能测试</title>
+    <link rel="stylesheet" href="./css/common.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .test-button:hover {
+            background: #0056b3;
+        }
+        
+        .log-output {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-success { background: #28a745; }
+        .status-error { background: #dc3545; }
+        .status-warning { background: #ffc107; }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 -->
+    <div id="navigation-container"></div>
+    
+    <div class="main-content">
+        <div class="test-container">
+            <h1>侧栏收放功能测试</h1>
+            
+            <div class="test-section">
+                <h3>功能状态检查</h3>
+                <div id="status-checks">
+                    <div id="navigation-status">
+                        <span class="status-indicator status-warning"></span>
+                        <span>导航加载状态: 检查中...</span>
+                    </div>
+                    <div id="sidebar-manager-status">
+                        <span class="status-indicator status-warning"></span>
+                        <span>SidebarManager状态: 检查中...</span>
+                    </div>
+                    <div id="toggle-button-status">
+                        <span class="status-indicator status-warning"></span>
+                        <span>收放按钮状态: 检查中...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="test-section">
+                <h3>手动测试</h3>
+                <button class="test-button" onclick="testToggleSidebar()">测试侧栏收放</button>
+                <button class="test-button" onclick="testSidebarStatus()">检查侧栏状态</button>
+                <button class="test-button" onclick="testFindToggleButton()">查找收放按钮</button>
+                <button class="test-button" onclick="clearLog()">清空日志</button>
+            </div>
+            
+            <div class="test-section">
+                <h3>测试日志</h3>
+                <div id="log-output" class="log-output"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载统一导航组件 -->
+    <script src="./js/navigation-loader.js"></script>
+    
+    <script>
+        let logOutput = null;
+        
+        function log(message, type = 'info') {
+            if (!logOutput) {
+                logOutput = document.getElementById('log-output');
+            }
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '[ERROR]' : type === 'warn' ? '[WARN]' : '[INFO]';
+            const logMessage = `${timestamp} ${prefix} ${message}`;
+            
+            console.log(logMessage);
+            if (logOutput) {
+                logOutput.innerHTML += logMessage + '\n';
+                logOutput.scrollTop = logOutput.scrollHeight;
+            }
+        }
+        
+        function updateStatus(elementId, success, message) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                const indicator = element.querySelector('.status-indicator');
+                const text = element.querySelector('span:last-child');
+                
+                if (indicator) {
+                    indicator.className = `status-indicator ${success ? 'status-success' : 'status-error'}`;
+                }
+                if (text) {
+                    text.textContent = message;
+                }
+            }
+        }
+        
+        function testToggleSidebar() {
+            log('开始测试侧栏收放功能...');
+            
+            if (typeof window.sidebarManager === 'undefined') {
+                log('SidebarManager实例不存在', 'error');
+                return;
+            }
+            
+            try {
+                window.sidebarManager.toggleSidebar();
+                log('侧栏收放功能调用成功');
+            } catch (error) {
+                log(`侧栏收放功能调用失败: ${error.message}`, 'error');
+            }
+        }
+        
+        function testSidebarStatus() {
+            log('检查侧栏状态...');
+            
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                log(`侧栏状态: ${isCollapsed ? '已收起' : '已展开'}`);
+                log(`侧栏类名: ${sidebar.className}`);
+            } else {
+                log('未找到侧栏元素', 'warn');
+            }
+            
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                log(`主内容区域类名: ${mainContent.className}`);
+            }
+        }
+        
+        function testFindToggleButton() {
+            log('查找收放按钮...');
+            
+            const toggleButton = document.querySelector('.toggle-sidebar-btn');
+            if (toggleButton) {
+                log('找到收放按钮');
+                log(`按钮文本: "${toggleButton.textContent}"`);
+                log(`按钮类名: ${toggleButton.className}`);
+                
+                // 测试点击事件
+                try {
+                    toggleButton.click();
+                    log('模拟点击收放按钮成功');
+                } catch (error) {
+                    log(`模拟点击收放按钮失败: ${error.message}`, 'error');
+                }
+            } else {
+                log('未找到收放按钮', 'warn');
+                
+                // 查找所有可能的按钮
+                const allButtons = document.querySelectorAll('button');
+                log(`页面中共有 ${allButtons.length} 个按钮`);
+                allButtons.forEach((btn, index) => {
+                    log(`按钮 ${index + 1}: "${btn.textContent}" (类名: ${btn.className})`);
+                });
+            }
+        }
+        
+        function clearLog() {
+            if (logOutput) {
+                logOutput.innerHTML = '';
+            }
+        }
+        
+        function checkInitialStatus() {
+            log('开始检查初始状态...');
+            
+            // 检查导航是否加载
+            const navContainer = document.getElementById('navigation-container');
+            if (navContainer && navContainer.children.length > 0) {
+                updateStatus('navigation-status', true, '导航加载状态: 已加载');
+                log('导航容器已加载内容');
+            } else {
+                updateStatus('navigation-status', false, '导航加载状态: 未加载');
+                log('导航容器为空', 'warn');
+            }
+            
+            // 检查SidebarManager
+            if (typeof window.sidebarManager !== 'undefined') {
+                updateStatus('sidebar-manager-status', true, 'SidebarManager状态: 已初始化');
+                log('SidebarManager已初始化');
+            } else {
+                updateStatus('sidebar-manager-status', false, 'SidebarManager状态: 未初始化');
+                log('SidebarManager未初始化', 'error');
+            }
+            
+            // 检查收放按钮
+            const toggleButton = document.querySelector('.toggle-sidebar-btn');
+            if (toggleButton) {
+                updateStatus('toggle-button-status', true, '收放按钮状态: 已找到');
+                log('收放按钮已找到');
+            } else {
+                updateStatus('toggle-button-status', false, '收放按钮状态: 未找到');
+                log('收放按钮未找到', 'warn');
+            }
+        }
+        
+        // 监听导航加载完成事件
+        document.addEventListener('navigationLoaded', function(event) {
+            log('收到导航加载完成事件');
+            log(`事件详情: ${JSON.stringify(event.detail)}`);
+            
+            // 延迟检查状态，确保所有初始化完成
+            setTimeout(checkInitialStatus, 500);
+        });
+        
+        // 页面加载完成后的初始检查
+        document.addEventListener('DOMContentLoaded', function() {
+            log('页面DOM加载完成');
+            
+            // 延迟检查，等待导航加载
+            setTimeout(checkInitialStatus, 2000);
+        });
+        
+        log('侧栏收放功能测试页面已加载');
+    </script>
+</body>
+</html>

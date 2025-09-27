@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医疗科研分析 - 科主任运营分析</title>
+    
+    <!-- 开发环境缓存控制 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- 预加载关键CSS -->
+    <link rel="preload" href="./css/style.css" as="style">
+    <link rel="preload" href="./css/common.css" as="style">
+    
+    <!-- CSS文件引用 - 必须按此顺序 -->
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/department-cockpit.css">
+    
+    <!-- ECharts库 -->
+    <script src="./js/echarts.min.js"></script>
+    <style>
+        /* 覆盖全局main-content的flex布局，确保内容垂直排列 */
+        .main-content {
+            display: block !important;
+            flex-direction: column !important;
+            padding: 24px !important;
+        }
+
+        .main-content > * {
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        .main-content > *:last-child {
+            margin-bottom: 0;
+        }
+        
+        .medical-research {
+            padding: 20px;
+            background: #f5f5f5;
+            min-height: calc(100vh - 48px);
+            width: 100%;
+        }
+        
+        .page-header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .breadcrumb {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-group label {
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+        }
+        
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            background: white;
+            min-width: 120px;
+        }
+        
+        .action-buttons {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #1890ff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #40a9ff;
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e6e6e6;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .metric-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .metric-change {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .metric-change.positive {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .metric-change.negative {
+            background: #fff2f0;
+            color: #ff4d4f;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .chart {
+            width: 100%;
+            height: 300px;
+        }
+        
+        .data-table {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .table-content {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        th {
+            background: #fafafa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-ongoing {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+        
+        .status-completed {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .status-pending {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+        
+        .status-cancelled {
+            background: #fff2f0;
+            color: #ff4d4f;
+        }
+        
+        .impact-factor {
+            font-weight: 600;
+            color: #722ed1;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .action-buttons {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏容器 -->
+    <div id="navigation-container"></div>
+    
+    <div class="main-content">
+        <div class="medical-research">
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <div class="breadcrumb">科主任运营分析 > 医疗科研分析 <span style="font-size: 12px; color: #999;">Medical Research Analysis</span></div>
+            <h1 class="page-title">医疗科研分析 <span style="font-size: 18px; color: #666; font-weight: normal;">Medical Research Analysis</span></h1>
+        </div>
+        
+        <!-- 筛选控件 -->
+        <div class="filters">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>时间范围:</label>
+                    <select id="time-range">
+                        <option value="7">近7天</option>
+                        <option value="30">近30天</option>
+                        <option value="90">近3个月</option>
+                        <option value="365" selected>近1年</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>科室:</label>
+                    <select id="department-select">
+                        <option value="">全部科室</option>
+                        <option value="cardiology">心内科</option>
+                        <option value="orthopedics">骨科</option>
+                        <option value="neurosurgery">神经外科</option>
+                        <option value="gastroenterology">消化内科</option>
+                        <option value="respiratory">呼吸内科</option>
+                        <option value="neurology">神经内科</option>
+                        <option value="gynecology">妇产科</option>
+                        <option value="pediatrics">儿科</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>研究类型:</label>
+                    <select id="research-type">
+                        <option value="">全部类型</option>
+                        <option value="clinical">临床研究</option>
+                        <option value="basic">基础研究</option>
+                        <option value="translational">转化研究</option>
+                        <option value="epidemiological">流行病学</option>
+                        <option value="health-services">卫生服务研究</option>
+                    </select>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="refresh-btn">刷新</button>
+                    <button class="btn btn-primary" id="export-btn">导出报告</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 关键指标 -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon" style="background: #1890ff;">📊</div>
+                <div class="metric-value">156</div>
+                <div class="metric-label">在研项目数 <span style="font-size: 12px; color: #666;">Active Projects</span></div>
+                <div class="metric-change positive">+23 较去年</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon" style="background: #52c41a;">📝</div>
+                <div class="metric-value">89</div>
+                <div class="metric-label">发表论文数 <span style="font-size: 12px; color: #666;">Publications</span></div>
+                <div class="metric-change positive">+15 较去年</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon" style="background: #fa8c16;">💰</div>
+                <div class="metric-value">1,285万</div>
+                <div class="metric-label">科研经费 <span style="font-size: 12px; color: #666;">Research Funding</span></div>
+                <div class="metric-change positive">+18.5% 较去年</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon" style="background: #722ed1;">🏆</div>
+                <div class="metric-value">12</div>
+                <div class="metric-label">获奖项目 <span style="font-size: 12px; color: #666;">Awards</span></div>
+                <div class="metric-change positive">+3 较去年</div>
+            </div>
+        </div>
+        
+        <!-- 图表区域 -->
+        <div class="charts-grid">
+            <div class="chart-container">
+                <div id="research-trend-chart" class="chart"></div>
+            </div>
+            
+            <div class="chart-container">
+                <div id="funding-distribution-chart" class="chart"></div>
+            </div>
+            
+            <div class="chart-container">
+                <div id="publication-analysis-chart" class="chart"></div>
+            </div>
+            
+            <div class="chart-container">
+                <div id="department-comparison-chart" class="chart"></div>
+            </div>
+        </div>
+        
+        <!-- 详细数据表格 -->
+        <div class="data-table">
+            <div class="table-header">科研项目详细数据 <span style="font-size: 14px; color: #666; font-weight: normal;">Research Projects Details</span></div>
+            <div class="table-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>项目名称</th>
+                            <th>负责人</th>
+                            <th>所属科室</th>
+                            <th>研究类型</th>
+                            <th>经费(万元)</th>
+                            <th>开始时间</th>
+                            <th>预计结束</th>
+                            <th>状态</th>
+                            <th>影响因子</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>心血管疾病基因治疗研究</td>
+                            <td>张主任</td>
+                            <td>心内科</td>
+                            <td>基础研究</td>
+                            <td>185</td>
+                            <td>2023-03-15</td>
+                            <td>2025-03-14</td>
+                            <td><span class="status-badge status-ongoing">进行中</span></td>
+                            <td><span class="impact-factor">8.5</span></td>
+                        </tr>
+                        <tr>
+                            <td>骨关节炎干细胞治疗</td>
+                            <td>李教授</td>
+                            <td>骨科</td>
+                            <td>临床研究</td>
+                            <td>220</td>
+                            <td>2023-01-10</td>
+                            <td>2024-12-31</td>
+                            <td><span class="status-badge status-ongoing">进行中</span></td>
+                            <td><span class="impact-factor">6.8</span></td>
+                        </tr>
+                        <tr>
+                            <td>脑肿瘤精准手术导航</td>
+                            <td>王医生</td>
+                            <td>神经外科</td>
+                            <td>转化研究</td>
+                            <td>156</td>
+                            <td>2022-09-01</td>
+                            <td>2024-08-31</td>
+                            <td><span class="status-badge status-completed">已完成</span></td>
+                            <td><span class="impact-factor">9.2</span></td>
+                        </tr>
+                        <tr>
+                            <td>消化道肿瘤早期筛查</td>
+                            <td>陈主任</td>
+                            <td>消化内科</td>
+                            <td>临床研究</td>
+                            <td>98</td>
+                            <td>2023-06-01</td>
+                            <td>2025-05-31</td>
+                            <td><span class="status-badge status-ongoing">进行中</span></td>
+                            <td><span class="impact-factor">7.3</span></td>
+                        </tr>
+                        <tr>
+                            <td>慢性阻塞性肺病流行病学</td>
+                            <td>刘教授</td>
+                            <td>呼吸内科</td>
+                            <td>流行病学</td>
+                            <td>75</td>
+                            <td>2023-04-15</td>
+                            <td>2024-10-15</td>
+                            <td><span class="status-badge status-pending">待启动</span></td>
+                            <td><span class="impact-factor">5.6</span></td>
+                        </tr>
+                        <tr>
+                            <td>帕金森病早期诊断标志物</td>
+                            <td>赵医生</td>
+                            <td>神经内科</td>
+                            <td>基础研究</td>
+                            <td>128</td>
+                            <td>2022-11-01</td>
+                            <td>2024-10-31</td>
+                            <td><span class="status-badge status-ongoing">进行中</span></td>
+                            <td><span class="impact-factor">8.1</span></td>
+                        </tr>
+                        <tr>
+                            <td>妊娠期糖尿病管理模式</td>
+                            <td>孙主任</td>
+                            <td>妇产科</td>
+                            <td>卫生服务研究</td>
+                            <td>65</td>
+                            <td>2023-02-01</td>
+                            <td>2024-07-31</td>
+                            <td><span class="status-badge status-ongoing">进行中</span></td>
+                            <td><span class="impact-factor">4.2</span></td>
+                        </tr>
+                        <tr>
+                            <td>儿童白血病免疫治疗</td>
+                            <td>周教授</td>
+                            <td>儿科</td>
+                            <td>临床研究</td>
+                            <td>195</td>
+                            <td>2023-05-01</td>
+                            <td>2025-04-30</td>
+                            <td><span class="status-badge status-ongoing">进行中</span></td>
+                            <td><span class="impact-factor">7.9</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div> <!-- 结束 medical-research -->
+    </div> <!-- 结束 main-content -->
+    
+    <script src="./js/medical-research-analysis.js"></script>
+    
+    <!-- 导航栏加载脚本 -->
+    <script src="./js/navigation-loader.js?v=20250125-fix3"></script>
+</body>
+</html>

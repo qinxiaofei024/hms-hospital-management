@@ -1,0 +1,243 @@
+{
+  "overview": {
+    "totalInterfaces": {
+      "2023": 36,
+      "2024": 40,
+      "2025": 42
+    },
+    "normalInterfaces": {
+      "2023": 34,
+      "2024": 38,
+      "2025": 39
+    },
+    "warningInterfaces": {
+      "2023": 2,
+      "2024": 2,
+      "2025": 2
+    },
+    "errorInterfaces": {
+      "2023": 0,
+      "2024": 0,
+      "2025": 1
+    },
+    "dataCompleteness": {
+      "2023": 95.2,
+      "2024": 96.5,
+      "2025": 97.8
+    },
+    "avgResponseTime": {
+      "2023": 3.2,
+      "2024": 2.8,
+      "2025": 2.5
+    }
+  },
+  "successRateTrend": {
+    "timePoints": ["00:00", "02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"],
+    "2023": {
+      "data": [98.2, 98.0, 97.8, 98.5, 98.6, 97.7, 97.5, 97.3, 98.1, 98.0, 98.4, 98.3]
+    },
+    "2024": {
+      "data": [98.7, 98.5, 98.3, 99.0, 99.1, 98.2, 98.0, 97.8, 98.6, 98.5, 98.9, 98.8]
+    },
+    "2025": {
+      "data": [99.2, 99.0, 98.8, 99.5, 99.6, 98.7, 98.5, 98.3, 99.1, 99.0, 99.4, 99.3]
+    }
+  },
+  "dataTransferTrend": {
+    "timePoints": ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00"],
+    "2023": {
+      "data": [80, 60, 180, 280, 220, 120]
+    },
+    "2024": {
+      "data": [100, 75, 200, 320, 250, 135]
+    },
+    "2025": {
+      "data": [120, 85, 230, 350, 280, 150]
+    }
+  },
+  "dataSources": [
+    {
+      "id": "1",
+      "name": "电子病历系统",
+      "type": "业务系统",
+      "ip": "172.16.10.23",
+      "status": "normal",
+      "statusText": "正常",
+      "dataVolume": "12.5 TB",
+      "lastSyncTime": "2025-06-15 09:15:32",
+      "connectionType": "JDBC",
+      "frequency": "实时",
+      "errorCount": 0
+    },
+    {
+      "id": "2",
+      "name": "医院信息系统",
+      "type": "业务系统",
+      "ip": "172.16.10.24",
+      "status": "normal",
+      "statusText": "正常",
+      "dataVolume": "8.2 TB",
+      "lastSyncTime": "2025-06-15 09:12:18",
+      "connectionType": "REST API",
+      "frequency": "实时",
+      "errorCount": 0
+    },
+    {
+      "id": "3",
+      "name": "检验系统",
+      "type": "业务系统",
+      "ip": "172.16.10.25",
+      "status": "warning",
+      "statusText": "警告",
+      "dataVolume": "4.1 TB",
+      "lastSyncTime": "2025-06-15 09:08:45",
+      "connectionType": "HL7",
+      "frequency": "每15分钟",
+      "errorCount": 3
+    },
+    {
+      "id": "4",
+      "name": "影像系统",
+      "type": "业务系统",
+      "ip": "172.16.10.26",
+      "status": "normal",
+      "statusText": "正常",
+      "dataVolume": "9.8 TB",
+      "lastSyncTime": "2025-06-15 09:05:22",
+      "connectionType": "DICOM",
+      "frequency": "每30分钟",
+      "errorCount": 0
+    },
+    {
+      "id": "5",
+      "name": "财务系统",
+      "type": "业务系统",
+      "ip": "172.16.10.27",
+      "status": "normal",
+      "statusText": "正常",
+      "dataVolume": "2.5 TB",
+      "lastSyncTime": "2025-06-15 09:02:10",
+      "connectionType": "Web Service",
+      "frequency": "每天",
+      "errorCount": 0
+    },
+    {
+      "id": "6",
+      "name": "人力资源系统",
+      "type": "业务系统",
+      "ip": "172.16.10.28",
+      "status": "error",
+      "statusText": "离线",
+      "dataVolume": "0.3 TB",
+      "lastSyncTime": "2025-06-15 08:58:36",
+      "connectionType": "REST API",
+      "frequency": "每周",
+      "errorCount": 12
+    },
+    {
+      "id": "7",
+      "name": "药品管理系统",
+      "type": "业务系统",
+      "ip": "172.16.10.29",
+      "status": "warning",
+      "statusText": "警告",
+      "dataVolume": "1.2 TB",
+      "lastSyncTime": "2025-06-15 08:55:14",
+      "connectionType": "ODBC",
+      "frequency": "每小时",
+      "errorCount": 5
+    },
+    {
+      "id": "8",
+      "name": "护理管理系统",
+      "type": "业务系统",
+      "ip": "172.16.10.30",
+      "status": "normal",
+      "statusText": "正常",
+      "dataVolume": "1.5 TB",
+      "lastSyncTime": "2025-06-15 08:52:08",
+      "connectionType": "JDBC",
+      "frequency": "每30分钟",
+      "errorCount": 0
+    },
+    {
+      "id": "9",
+      "name": "手术麻醉系统",
+      "type": "业务系统",
+      "ip": "172.16.10.31",
+      "status": "normal",
+      "statusText": "正常",
+      "dataVolume": "0.8 TB",
+      "lastSyncTime": "2025-06-15 08:48:33",
+      "connectionType": "HL7",
+      "frequency": "实时",
+      "errorCount": 0
+    },
+    {
+      "id": "10",
+      "name": "预约挂号系统",
+      "type": "业务系统",
+      "ip": "172.16.10.32",
+      "status": "normal",
+      "statusText": "正常",
+      "dataVolume": "0.4 TB",
+      "lastSyncTime": "2025-06-15 08:45:12",
+      "connectionType": "REST API",
+      "frequency": "实时",
+      "errorCount": 0
+    }
+  ],
+  "interfaceStatistics": {
+    "byType": [
+      {"name": "医疗业务", "value": 18},
+      {"name": "医技检查", "value": 8},
+      {"name": "财务收费", "value": 5},
+      {"name": "管理系统", "value": 7},
+      {"name": "外部接口", "value": 4}
+    ],
+    "byResponseTime": [
+      {"name": "<1s", "value": 25},
+      {"name": "1-3s", "value": 12},
+      {"name": "3-5s", "value": 3},
+      {"name": ">5s", "value": 2}
+    ]
+  },
+  "integrationAlerts": [
+    {
+      "id": "1",
+      "title": "人力资源系统连接失败",
+      "description": "人力资源系统自08:58:36起连接失败，已尝试多次重连",
+      "level": "error",
+      "time": "2025-06-15 08:58:36",
+      "source": "数据集成平台",
+      "handler": "信息中心"
+    },
+    {
+      "id": "2",
+      "title": "检验系统数据同步延迟",
+      "description": "检验系统最近3次同步延迟超过阈值，平均延迟8分钟",
+      "level": "warning",
+      "time": "2025-06-15 09:08:45",
+      "source": "数据集成平台",
+      "handler": "医学检验科"
+    },
+    {
+      "id": "3",
+      "title": "药品管理系统数据格式异常",
+      "description": "药品管理系统返回数据格式与预期不符，已跳过5条记录",
+      "level": "warning",
+      "time": "2025-06-15 08:55:14",
+      "source": "数据集成平台",
+      "handler": "药剂科"
+    },
+    {
+      "id": "4",
+      "title": "影像系统传输速率降低",
+      "description": "影像系统数据传输速率较昨日下降20%",
+      "level": "info",
+      "time": "2025-06-15 09:05:22",
+      "source": "数据集成平台",
+      "handler": "医学影像科"
+    }
+  ]
+}

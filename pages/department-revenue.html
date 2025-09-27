@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科室收入分析 - 佛山市南海区中医院数据中心管理平台</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        /* 科室收入分析特殊样式 */
+        .department-revenue-page {
+            padding: 24px;
+        }
+        
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-item label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .filter-item select {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #fff;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #0066cc;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0052a3;
+        }
+        
+        .btn-default {
+            background-color: #fff;
+            color: #666;
+            border: 1px solid #d9d9d9;
+        }
+        
+        .btn-default:hover {
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .chart-container {
+            height: 350px;
+            margin-bottom: 16px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .key-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .metric-card {
+            padding: 16px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+        
+        .metric-card-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0066cc;
+            margin-bottom: 4px;
+        }
+        
+        .metric-card-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .metric-card-change {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .positive {
+            color: #52c41a;
+        }
+        
+        .negative {
+            color: #ff4d4f;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 24px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        .data-table th {
+            background-color: #fafafa;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #f0f0f0;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .data-table td {
+            padding: 12px;
+            border: 1px solid #f0f0f0;
+            color: #666;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f0f7ff;
+        }
+        
+        .highlight-row {
+            background-color: #fff7e6 !important;
+        }
+        
+        .comparison-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .comparison-item {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .comparison-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 24px;
+        }
+        
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            background-color: #fff;
+            color: #666;
+            cursor: pointer;
+            margin: 0 4px;
+            border-radius: 4px;
+        }
+        
+        .pagination-btn:hover {
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        .pagination-btn.active {
+            background-color: #0066cc;
+            color: #fff;
+            border-color: #0066cc;
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .export-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .indicator-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-excellent {
+            background-color: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+        
+        .status-good {
+            background-color: #f0f7ff;
+            color: #0066cc;
+            border: 1px solid #91d5ff;
+        }
+        
+        .status-warning {
+            background-color: #fffbe6;
+            color: #fa8c16;
+            border: 1px solid #ffe58f;
+        }
+        
+        .status-danger {
+            background-color: #fff1f0;
+            color: #ff4d4f;
+            border: 1px solid #ffccc7;
+        }
+        
+        .revenue-item {
+            margin-bottom: 24px;
+        }
+        
+        .revenue-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .revenue-item-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .revenue-item-info {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .radar-chart-container {
+            height: 400px;
+        }
+        
+        .trend-chart-container {
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="content-wrapper responsive-wrapper">
+            <!-- 右侧内容区 -->
+            <main class="department-revenue-page">
+                <!-- 页面头部 -->
+                <div class="page-header">
+                    <h2>科室收入分析<span class="english-title">Department Revenue Analysis</span></h2>
+                    <div class="breadcrumb">
+                        <a href="./index.html">首页</a> &gt; 
+                        <a href="#department-analysis">科主任运营分析</a> &gt; 
+                        <span>科室收入分析</span>
+                    </div>
+                </div>
+
+                <!-- 筛选控件 -->
+                <div class="filter-controls">
+                    <div class="filter-item">
+                        <label for="time-range">时间范围：</label>
+                        <select id="time-range">
+                            <option value="today">今日</option>
+                            <option value="week">本周</option>
+                            <option value="month" selected>本月</option>
+                            <option value="quarter">本季度</option>
+                            <option value="year">本年</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="department-select">选择科室：</label>
+                        <select id="department-select">
+                            <option value="cardiology">心内科</option>
+                            <option value="orthopedics">骨科</option>
+                            <option value="neurosurgery">神经外科</option>
+                            <option value="digestive">消化内科</option>
+                            <option value="respiratory">呼吸内科</option>
+                            <option value="neurology">神经内科</option>
+                            <option value="obstetrics">妇产科</option>
+                            <option value="pediatrics">儿科</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="revenue-type">收入类型：</label>
+                        <select id="revenue-type">
+                            <option value="all" selected>全部收入</option>
+                            <option value="medical-service">医疗服务收入</option>
+                            <option value="drug">药品收入</option>
+                            <option value="material">卫生材料收入</option>
+                            <option value="inspection">检查收入</option>
+                            <option value="treatment">治疗收入</option>
+                            <option value="operation">手术收入</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="refresh-data-btn">刷新数据</button>
+                </div>
+
+                <!-- 导出选项 -->
+                <div class="export-actions">
+                    <button class="btn btn-default">导出为Excel</button>
+                    <button class="btn btn-default">导出为PDF</button>
+                    <button class="btn btn-default">导出图表</button>
+                </div>
+
+                <!-- 关键收入指标 -->
+                <div class="section">
+                    <h3 class="section-title">一、关键收入指标</h3>
+                    <div class="key-metrics">
+                        <div class="metric-card">
+                            <div class="metric-card-value">¥3.2亿</div>
+                            <div class="metric-card-label">医疗收入</div>
+                            <div class="metric-card-change positive">+14.3% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">¥1.8亿</div>
+                            <div class="metric-card-label">收支结余</div>
+                            <div class="metric-card-change negative">-3.2% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">38.2%</div>
+                            <div class="metric-card-label">医疗服务收入占比</div>
+                            <div class="metric-card-change negative">-1.5% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">42.5%</div>
+                            <div class="metric-card-label">药品收入占比</div>
+                            <div class="metric-card-change negative">+0.7% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">19.3%</div>
+                            <div class="metric-card-label">卫生材料收入占比</div>
+                            <div class="metric-card-change negative">+0.8% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">+11.5%</div>
+                            <div class="metric-card-label">同比增长率</div>
+                            <div class="metric-card-change positive">+2.3% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">+14.3%</div>
+                            <div class="metric-card-label">环比增长率</div>
+                            <div class="metric-card-change positive">+3.8% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">¥11,200</div>
+                            <div class="metric-card-label">次均费用</div>
+                            <div class="metric-card-change positive">+3.2% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">¥35,600</div>
+                            <div class="metric-card-label">出院者平均费用</div>
+                            <div class="metric-card-change positive">+2.8% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">¥265</div>
+                            <div class="metric-card-label">门诊次均费用</div>
+                            <div class="metric-card-change positive">+1.5% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">112.5%</div>
+                            <div class="metric-card-label">年度目标完成率</div>
+                            <div class="metric-card-change positive">+2.5% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">96.8%</div>
+                            <div class="metric-card-label">收支结余率</div>
+                            <div class="metric-card-change negative">-3.2% 较上月</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 医疗收入趋势分析 -->
+                <div class="section">
+                    <h3 class="section-title">二、医疗收入趋势分析</h3>
+                    <div class="trend-chart-container">
+                        <h4 class="chart-title">医疗收入月度趋势</h4>
+                        <div id="revenueMonthlyTrendChart" class="chart-container"></div>
+                    </div>
+
+                    <div class="chart-grid">
+                        <div>
+                            <h4 class="chart-title">医疗收入季度趋势</h4>
+                            <div id="revenueQuarterlyTrendChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">医疗收入年度对比</h4>
+                            <div id="revenueYearlyComparisonChart" class="chart-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <h4 class="chart-title">医疗收入趋势详细数据</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>月份</th>
+                                    <th>医疗收入</th>
+                                    <th>环比增长</th>
+                                    <th>同比增长</th>
+                                    <th>累计收入</th>
+                                    <th>累计同比增长</th>
+                                    <th>年度目标</th>
+                                    <th>累计完成率</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1月</td>
+                                    <td>¥2.6亿</td>
+                                    <td>--</td>
+                                    <td class="positive">+9.2%</td>
+                                    <td>¥2.6亿</td>
+                                    <td class="positive">+9.2%</td>
+                                    <td>¥2.4亿</td>
+                                    <td>108.3%</td>
+                                </tr>
+                                <tr>
+                                    <td>2月</td>
+                                    <td>¥2.4亿</td>
+                                    <td class="negative">-7.7%</td>
+                                    <td class="positive">+11.1%</td>
+                                    <td>¥5.0亿</td>
+                                    <td class="positive">+10.1%</td>
+                                    <td>¥4.8亿</td>
+                                    <td>104.2%</td>
+                                </tr>
+                                <tr>
+                                    <td>3月</td>
+                                    <td>¥2.8亿</td>
+                                    <td class="positive">+16.7%</td>
+                                    <td class="positive">+12.0%</td>
+                                    <td>¥7.8亿</td>
+                                    <td class="positive">+10.8%</td>
+                                    <td>¥7.2亿</td>
+                                    <td>108.3%</td>
+                                </tr>
+                                <tr>
+                                    <td>4月</td>
+                                    <td>¥2.7亿</td>
+                                    <td class="negative">-3.6%</td>
+                                    <td class="positive">+10.2%</td>
+                                    <td>¥10.5亿</td>
+                                    <td class="positive">+10.7%</td>
+                                    <td>¥9.6亿</td>
+                                    <td>109.4%</td>
+                                </tr>
+                                <tr>
+                                    <td>5月</td>
+                                    <td>¥2.9亿</td>
+                                    <td class="positive">+7.4%</td>
+                                    <td class="positive">+11.5%</td>
+                                    <td>¥13.4亿</td>
+                                    <td class="positive">+10.9%</td>
+                                    <td>¥12.0亿</td>
+                                    <td>111.7%</td>
+                                </tr>
+                                <tr>
+                                    <td>6月</td>
+                                    <td>¥3.0亿</td>
+                                    <td class="positive">+3.4%</td>
+                                    <td class="positive">+12.3%</td>
+                                    <td>¥16.4亿</td>
+                                    <td class="positive">+11.1%</td>
+                                    <td>¥14.4亿</td>
+                                    <td>113.9%</td>
+                                </tr>
+                                <tr>
+                                    <td>7月</td>
+                                    <td>¥2.9亿</td>
+                                    <td class="negative">-3.3%</td>
+                                    <td class="positive">+10.9%</td>
+                                    <td>¥19.3亿</td>
+                                    <td class="positive">+11.0%</td>
+                                    <td>¥16.8亿</td>
+                                    <td>114.9%</td>
+                                </tr>
+                                <tr>
+                                    <td>8月</td>
+                                    <td>¥3.0亿</td>
+                                    <td class="positive">+3.4%</td>
+                                    <td class="positive">+11.1%</td>
+                                    <td>¥22.3亿</td>
+                                    <td class="positive">+11.0%</td>
+                                    <td>¥19.2亿</td>
+                                    <td>116.1%</td>
+                                </tr>
+                                <tr>
+                                    <td>9月</td>
+                                    <td>¥2.8亿</td>
+                                    <td class="negative">-6.7%</td>
+                                    <td class="positive">+10.2%</td>
+                                    <td>¥25.1亿</td>
+                                    <td class="positive">+10.9%</td>
+                                    <td>¥21.6亿</td>
+                                    <td>116.2%</td>
+                                </tr>
+                                <tr class="highlight-row">
+                                    <td>10月</td>
+                                    <td>¥3.2亿</td>
+                                    <td class="positive">+14.3%</td>
+                                    <td class="positive">+11.5%</td>
+                                    <td>¥28.3亿</td>
+                                    <td class="positive">+11.0%</td>
+                                    <td>¥24.0亿</td>
+                                    <td class="positive">117.9%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 医疗收入结构分析 -->
+                <div class="section">
+                    <h3 class="section-title">三、医疗收入结构分析</h3>
+                    <div class="chart-grid">
+                        <div>
+                            <h4 class="chart-title">医疗收入构成</h4>
+                            <div id="revenueStructureChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">医疗收入结构月度变化</h4>
+                            <div id="revenueStructureMonthlyChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">门诊收入结构</h4>
+                            <div id="outpatientRevenueStructureChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">住院收入结构</h4>
+                            <div id="inpatientRevenueStructureChart" class="chart-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <h4 class="chart-title">医疗收入结构详细数据</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>收入类型</th>
+                                    <th>本月收入</th>
+                                    <th>本月占比</th>
+                                    <th>上月收入</th>
+                                    <th>上月占比</th>
+                                    <th>环比增长</th>
+                                    <th>占比变化</th>
+                                    <th>年度目标占比</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="highlight-row">
+                                    <td>医疗服务收入</td>
+                                    <td>¥1.2亿</td>
+                                    <td>38.2%</td>
+                                    <td>¥1.1亿</td>
+                                    <td>39.7%</td>
+                                    <td class="positive">+9.1%</td>
+                                    <td class="negative">-1.5%</td>
+                                    <td>≥43%</td>
+                                    <td><span class="indicator-status status-danger">未达标</span></td>
+                                </tr>
+                                <tr>
+                                    <td>药品收入</td>
+                                    <td>¥1.4亿</td>
+                                    <td>42.5%</td>
+                                    <td>¥1.2亿</td>
+                                    <td>41.8%</td>
+                                    <td class="positive">+16.7%</td>
+                                    <td class="negative">+0.7%</td>
+                                    <td>≤40%</td>
+                                    <td><span class="indicator-status status-danger">超标</span></td>
+                                </tr>
+                                <tr>
+                                    <td>卫生材料收入</td>
+                                    <td>¥0.62亿</td>
+                                    <td>19.3%</td>
+                                    <td>¥0.52亿</td>
+                                    <td>18.5%</td>
+                                    <td class="positive">+19.2%</td>
+                                    <td class="negative">+0.8%</td>
+                                    <td>≤20%</td>
+                                    <td><span class="indicator-status status-good">良好</span></td>
+                                </tr>
+                                <tr>
+                                    <td>其中：检查收入</td>
+                                    <td>¥0.45亿</td>
+                                    <td>14.1%</td>
+                                    <td>¥0.41亿</td>
+                                    <td>14.4%</td>
+                                    <td class="positive">+9.8%</td>
+                                    <td class="negative">-0.3%</td>
+                                    <td>--</td>
+                                    <td><span class="indicator-status status-good">良好</span></td>
+                                </tr>
+                                <tr>
+                                    <td>治疗收入</td>
+                                    <td>¥0.38亿</td>
+                                    <td>11.9%</td>
+                                    <td>¥0.35亿</td>
+                                    <td>12.2%</td>
+                                    <td class="positive">+8.6%</td>
+                                    <td class="negative">-0.3%</td>
+                                    <td>--</td>
+                                    <td><span class="indicator-status status-good">良好</span></td>
+                                </tr>
+                                <tr>
+                                    <td>手术收入</td>
+                                    <td>¥0.58亿</td>
+                                    <td>18.1%</td>
+                                    <td class="negative">¥0.51亿</td>
+                                    <td>17.9%</td>
+                                    <td class="positive">+13.7%</td>
+                                    <td class="positive">+0.2%</td>
+                                    <td>≥18%</td>
+                                    <td><span class="indicator-status status-good">良好</span></td>
+                                </tr>
+                                <tr>
+                                    <td>床位收入</td>
+                                    <td>¥0.21亿</td>
+                                    <td>6.6%</td>
+                                    <td>¥0.20亿</td>
+                                    <td>6.9%</td>
+                                    <td class="positive">+5.0%</td>
+                                    <td class="negative">-0.3%</td>
+                                    <td>--</td>
+                                    <td><span class="indicator-status status-good">良好</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 科室收入对比分析 -->
+                <div class="section">
+                    <h3 class="section-title">四、科室收入对比分析</h3>
+                    <div class="chart-grid">
+                        <div>
+                            <h4 class="chart-title">各科室收入排名</h4>
+                            <div id="departmentsRevenueRankingChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">本科室与标杆科室对比</h4>
+                            <div id="departmentVsBenchmarkChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">科室收入增长速度对比</h4>
+                            <div id="revenueGrowthComparisonChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">科室收入结构雷达图</h4>
+                            <div id="revenueStructureRadarChart" class="chart-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <h4 class="chart-title">科室收入对比详细数据</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>科室名称</th>
+                                    <th>医疗收入</th>
+                                    <th>同比增长</th>
+                                    <th>环比增长</th>
+                                    <th>医疗服务收入占比</th>
+                                    <th>药品收入占比</th>
+                                    <th>卫生材料收入占比</th>
+                                    <th>排名</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="highlight-row">
+                                    <td>心内科</td>
+                                    <td>¥3.2亿</td>
+                                    <td class="positive">+11.5%</td>
+                                    <td class="positive">+14.3%</td>
+                                    <td>38.2%</td>
+                                    <td>42.5%</td>
+                                    <td>19.3%</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>骨科</td>
+                                    <td>¥3.0亿</td>
+                                    <td class="positive">+10.2%</td>
+                                    <td class="positive">+12.5%</td>
+                                    <td>39.8%</td>
+                                    <td>41.2%</td>
+                                    <td>19.0%</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>神经外科</td>
+                                    <td>¥2.8亿</td>
+                                    <td class="positive">+9.8%</td>
+                                    <td class="positive">+11.7%</td>
+                                    <td>40.5%</td>
+                                    <td>40.8%</td>
+                                    <td>18.7%</td>
+                                    <td>3</td>
+                                </tr>
+                                <tr>
+                                    <td>消化内科</td>
+                                    <td>¥2.6亿</td>
+                                    <td class="positive">+10.5%</td>
+                                    <td class="positive">+13.0%</td>
+                                    <td>39.2%</td>
+                                    <td>41.5%</td>
+                                    <td>19.3%</td>
+                                    <td>4</td>
+                                </tr>
+                                <tr>
+                                    <td>呼吸内科</td>
+                                    <td>¥2.5亿</td>
+                                    <td class="positive">+9.7%</td>
+                                    <td class="positive">+12.3%</td>
+                                    <td>38.8%</td>
+                                    <td>42.1%</td>
+                                    <td>19.1%</td>
+                                    <td>5</td>
+                                </tr>
+                                <tr>
+                                    <td>神经内科</td>
+                                    <td>¥2.4亿</td>
+                                    <td class="positive">+10.1%</td>
+                                    <td class="positive">+11.9%</td>
+                                    <td>39.5%</td>
+                                    <td>41.3%</td>
+                                    <td>19.2%</td>
+                                    <td>6</td>
+                                </tr>
+                                <tr>
+                                    <td>妇产科</td>
+                                    <td>¥2.2亿</td>
+                                    <td class="positive">+9.4%</td>
+                                    <td class="positive">+11.5%</td>
+                                    <td>40.2%</td>
+                                    <td>40.5%</td>
+                                    <td>19.3%</td>
+                                    <td>7</td>
+                                </tr>
+                                <tr>
+                                    <td>儿科</td>
+                                    <td>¥2.0亿</td>
+                                    <td class="positive">+9.2%</td>
+                                    <td class="positive">+10.8%</td>
+                                    <td>39.6%</td>
+                                    <td>41.8%</td>
+                                    <td>18.6%</td>
+                                    <td>8</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 次均费用分析 -->
+                <div class="section">
+                    <h3 class="section-title">五、次均费用分析</h3>
+                    <div class="chart-grid">
+                        <div>
+                            <h4 class="chart-title">出院者平均费用趋势</h4>
+                            <div id="averageCostPerDischargeTrendChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">门诊次均费用趋势</h4>
+                            <div id="averageCostPerVisitTrendChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">各科室次均费用对比</h4>
+                            <div id="departmentsAverageCostComparisonChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">次均费用构成</h4>
+                            <div id="averageCostStructureChart" class="chart-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <h4 class="chart-title">次均费用详细数据</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>费用类型</th>
+                                    <th>本月数值</th>
+                                    <th>上月数值</th>
+                                    <th>环比增长</th>
+                                    <th>去年同期</th>
+                                    <th>同比增长</th>
+                                    <th>目标值</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>出院者平均费用</td>
+                                    <td>¥35,600</td>
+                                    <td>¥34,380</td>
+                                    <td class="positive">+3.5%</td>
+                                    <td>¥33,250</td>
+                                    <td class="positive">+7.1%</td>
+                                    <td>≤¥36,000</td>
+                                    <td><span class="indicator-status status-good">良好</span></td>
+                                </tr>
+                                <tr>
+                                    <td>门诊次均费用</td>
+                                    <td>¥265</td>
+                                    <td>¥261</td>
+                                    <td class="positive">+1.5%</td>
+                                    <td>¥256</td>
+                                    <td class="positive">+3.5%</td>
+                                    <td>≤¥270</td>
+                                    <td><span class="indicator-status status-good">良好</span></td>
+                                </tr>
+                                <tr>
+                                    <td>住院次均药品费用</td>
+                                    <td>¥15,130</td>
+                                    <td>¥14,670</td>
+                                    <td class="positive">+3.1%</td>
+                                    <td>¥14,210</td>
+                                    <td class="positive">+6.5%</td>
+                                    <td>≤¥15,500</td>
+                                    <td><span class="indicator-status status-good">良好</span></td>
+                                </tr>
+                                <tr>
+                                    <td>住院次均材料费用</td>
+                                    <td>¥6,870</td>
+                                    <td>¥6,390</td>
+                                    <td class="positive">+7.5%</td>
+                                    <td>¥6,290</td>
+                                    <td class="positive">+9.2%</td>
+                                    <td>≤¥7,000</td>
+                                    <td><span class="indicator-status status-good">良好</span></td>
+                                </tr>
+                                <tr>
+                                    <td>住院次均检查费用</td>
+                                    <td>¥6,010</td>
+                                    <td>¥5,870</td>
+                                    <td class="positive">+2.4%</td>
+                                    <td>¥5,680</td>
+                                    <td class="positive">+5.8%</td>
+                                    <td>≤¥6,200</td>
+                                    <td><span class="indicator-status status-good">良好</span></td>
+                                </tr>
+                                <tr>
+                                    <td>住院次均治疗费用</td>
+                                    <td>¥4,120</td>
+                                    <td>¥3,980</td>
+                                    <td class="positive">+3.5%</td>
+                                    <td>¥3,890</td>
+                                    <td class="positive">+6.0%</td>
+                                    <td>≤¥4,300</td>
+                                    <td><span class="indicator-status status-good">良好</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 收入增长因素分析 -->
+                <div class="section">
+                    <h3 class="section-title">六、收入增长因素分析</h3>
+                    <div class="chart-grid">
+                        <div>
+                            <h4 class="chart-title">收入增长因素贡献度</h4>
+                            <div id="revenueGrowthFactorsChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">工作量增长贡献</h4>
+                            <div id="workloadGrowthContributionChart" class="chart-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <h4 class="chart-title">收入增长因素详细分析</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>增长因素</th>
+                                    <th>贡献值</th>
+                                    <th>贡献占比</th>
+                                    <th>具体表现</th>
+                                    <th>影响分析</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>工作量增长</td>
+                                    <td>+12.5%</td>
+                                    <td>72.5%</td>
+                                    <td>门急诊人次+8.2%，出院人次+3.5%</td>
+                                    <td>科室服务量持续增长，患者需求增加，市场份额扩大</td>
+                                </tr>
+                                <tr>
+                                    <td>服务价格调整</td>
+                                    <td>+3.2%</td>
+                                    <td>18.7%</td>
+                                    <td>部分医疗服务项目价格上调</td>
+                                    <td>政策因素影响，合理补偿医疗服务成本</td>
+                                </tr>
+                                <tr>
+                                    <td>病种结构变化</td>
+                                    <td>+1.5%</td>
+                                    <td>8.8%</td>
+                                    <td>CMI值+0.05，疑难病例占比+1.4%</td>
+                                    <td>专科能力提升，疑难重症诊疗能力增强</td>
+                                </tr>
+                                <tr>
+                                    <td>其他因素</td>
+                                    <td>-1.0%</td>
+                                    <td>-0.0%</td>
+                                    <td>部分药品和材料价格下调</td>
+                                    <td>政策调控和市场竞争影响</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 收入优化建议 -->
+                <div class="section">
+                    <h3 class="section-title">七、收入结构优化建议</h3>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>问题类别</th>
+                                    <th>存在问题</th>
+                                    <th>原因分析</th>
+                                    <th>优化建议</th>
+                                    <th>责任部门</th>
+                                    <th>计划完成时间</th>
+                                    <th>预期效果</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>收入结构不合理</td>
+                                    <td>医疗服务收入占比未达目标（38.2% < 43%）</td>
+                                    <td>医疗服务价格调整滞后，部分医疗技术项目开展不足</td>
+                                    <td>1. 积极开展新技术、新项目；2. 优化服务流程，提高医疗服务效率；3. 加强医疗服务收费管理</td>
+                                    <td>心内科、医务科、财务科</td>
+                                    <td>2023-12-31</td>
+                                    <td>医疗服务收入占比提升至40%以上</td>
+                                </tr>
+                                <tr>
+                                    <td>药品收入占比过高</td>
+                                    <td>药品收入占比超标（42.5% > 40%）</td>
+                                    <td>部分医生用药结构不合理，辅助用药使用过多</td>
+                                    <td>1. 加强处方点评和用药监管；2. 优化用药目录；3. 推广临床路径和合理用药</td>
+                                    <td>心内科、药剂科</td>
+                                    <td>2023-11-30</td>
+                                    <td>药品收入占比降至40%以下</td>
+                                </tr>
+                                <tr>
+                                    <td>卫生材料管控</td>
+                                    <td>卫生材料收入增长较快（+19.2%）</td>
+                                    <td>部分高值耗材使用增加，成本控制措施不够严格</td>
+                                    <td>1. 建立高值耗材使用评估机制；2. 推行耗材集中采购和议价；3. 加强耗材使用监控</td>
+                                    <td>心内科、设备科、财务科</td>
+                                    <td>2023-12-15</td>
+                                    <td>卫生材料收入占比控制在20%以内</td>
+                                </tr>
+                                <tr>
+                                    <td>科室发展不平衡</td>
+                                    <td>部分亚专业收入增长缓慢</td>
+                                    <td>亚专业发展规划不够明确，资源配置不合理</td>
+                                    <td>1. 制定亚专业发展规划；2. 优化资源配置；3. 加强亚专业人才培养和引进</td>
+                                    <td>心内科、人事科、医务科</td>
+                                    <td>2024-03-31</td>
+                                    <td>各亚专业均衡发展，整体收入结构优化</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 数据分页 -->
+                <div class="pagination">
+                    <button class="pagination-btn" disabled>上一页</button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <span>...</span>
+                    <button class="pagination-btn">10</button>
+                    <button class="pagination-btn">下一页</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="./js/common.js"></script>
+    <script src="./js/department-revenue.js"></script>
+
+    <!-- 加载统一导航组件 -->
+    <script src="./js/navigation-loader.js?v=20250125-fix3"></script>
+</body>
+</html>

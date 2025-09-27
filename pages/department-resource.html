@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科室资源效益 - 佛山市南海区中医院数据中心管理平台</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/department-resource.css">
+    <link rel="stylesheet" href="./css/suggestion-modal.css">
+    
+    <!-- 医生人均收入弹窗样式 -->
+    <style>
+        /* 弹窗基础样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e5e5;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+            transition: all 0.2s ease;
+            padding: 0 8px;
+            border-radius: 4px;
+        }
+
+        .close:hover {
+            color: #333;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-body {
+            padding: 24px;
+            max-height: calc(90vh - 160px);
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px 24px;
+            border-top: 1px solid #e5e5e5;
+            background-color: #f8f9fa;
+        }
+
+
+
+
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            .income-summary {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .modal-body {
+                padding: 16px;
+            }
+
+            .breakdown-table {
+                font-size: 12px;
+            }
+
+            .breakdown-table th,
+            .breakdown-table td {
+                padding: 8px 12px;
+            }
+        }
+    </style>
+<!-- ECharts 由 Common.ensureEcharts 统一加载 -->
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 统一导航组件 -->
+    
+    
+    <div class="container">
+        <!-- 主要内容区域 -->
+        <div class="main-content">
+            <!-- 右侧内容区 -->
+            <div class="content-wrapper responsive-wrapper">
+                <!-- 主内容区域 -->
+                <main class="content">
+                    <!-- 页面头部标题 -->
+                    <div class="page-header">
+                        <h2>科室资源效益分析<span class="english-title">Department Resource Analysis</span></h2>
+                        <div class="breadcrumb">
+                            <a href="./index.html">首页</a> &gt; 
+                            <a href="#department-analysis">科主任运营分析</a> &gt; 
+                            <span>科室资源效益</span>
+                        </div>
+                    </div>
+
+                    <!-- 筛选控件区域 -->
+                    <div class="filter-controls">
+                        <div class="filter-item">
+                            <label for="timeRange">时间范围：</label>
+                            <select id="timeRange">
+                                <option value="month">近一个月</option>
+                                <option value="quarter">近一个季度</option>
+                                <option value="halfYear">近半年</option>
+                                <option value="year" selected>近一年</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="department">科室：</label>
+                            <select id="department">
+                                <option value="0">全部科室</option>
+                                <option value="1" selected>心内科</option>
+                                <option value="2">骨科</option>
+                                <option value="3">神经外科</option>
+                                <option value="4">消化内科</option>
+                                <option value="5">呼吸内科</option>
+                                <option value="6">神经内科</option>
+                                <option value="7">妇产科</option>
+                                <option value="8">儿科</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="resourceType">资源类型：</label>
+                            <select id="resourceType">
+                                <option value="all" selected>全部资源</option>
+                                <option value="human">人力资源</option>
+                                <option value="equipment">设备资源</option>
+                                <option value="space">空间资源</option>
+                                <option value="bed">床位资源</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <button id="refreshBtn" class="btn btn-primary">刷新数据</button>
+                        </div>
+                    </div>
+
+                    <!-- 导出选项 -->
+                    <div class="export-options">
+                        <button id="exportExcelBtn" class="btn btn-secondary">导出Excel</button>
+                        <button id="exportPdfBtn" class="btn btn-secondary">导出PDF</button>
+                        <button id="exportChartBtn" class="btn btn-secondary">导出图表</button>
+                    </div>
+
+                    <!-- 关键指标卡片区域 -->
+                    <div class="key-indicators">
+                        <div class="indicator-card">
+                            <div class="indicator-title">病床使用率</div>
+                            <div class="indicator-value">92.3%</div>
+                            <div class="indicator-trend">
+                                <span class="up">+2.1%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-title">平均住院日</div>
+                            <div class="indicator-value">7.8天</div>
+                            <div class="indicator-trend">
+                                <span class="down">-0.3天</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-title">医生人均工作量</div>
+                            <div class="indicator-value">126</div>
+                            <div class="indicator-trend">
+                                <span class="up">+5.3%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="indicator-card" id="doctorIncomeCard">
+                            <div class="indicator-title">医生人均收入</div>
+                            <div class="indicator-value">¥28.5万</div>
+                            <div class="indicator-trend">
+                                <span class="up">+6.2%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-title">护士人均护理量</div>
+                            <div class="indicator-value">89</div>
+                            <div class="indicator-trend">
+                                <span class="up">+3.7%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-title">设备使用率</div>
+                            <div class="indicator-value">87.5%</div>
+                            <div class="indicator-trend">
+                                <span class="up">+1.4%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-title">设备完好率</div>
+                            <div class="indicator-value">98.2%</div>
+                            <div class="indicator-trend">
+                                <span class="down">-0.5%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-title">人员配置</div>
+                            <div class="indicator-value">
+                                <span class="staff-info">医生:18人</span>
+                            </div>
+                            <div class="indicator-subvalue">
+                                <span class="staff-info">护士:42人</span>
+                            </div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-title">资源效率指数</div>
+                            <div class="indicator-value">89.7</div>
+                            <div class="indicator-trend">
+                                <span class="up">+3.2%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-title">空间使用率</div>
+                            <div class="indicator-value">85.3%</div>
+                            <div class="indicator-trend">
+                                <span class="stable">持平</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-title">人员成本率</div>
+                            <div class="indicator-value">41.8%</div>
+                            <div class="indicator-trend">
+                                <span class="up">+0.9%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-title">单位资源产出</div>
+                            <div class="indicator-value">¥35.2万</div>
+                            <div class="indicator-trend">
+                                <span class="up">+8.4%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-title">资源投入产出比</div>
+                            <div class="indicator-value">1:3.2</div>
+                            <div class="indicator-trend">
+                                <span class="up">+0.4</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 病床使用率趋势分析 -->
+                    <div class="analysis-section">
+                        <div class="section-header">
+                            <h3>病床使用率趋势分析</h3>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-item">
+                                <div id="bedUsageMonthlyChart" class="chart"></div>
+                            </div>
+                            <div class="chart-item">
+                                <div id="bedUsageWeeklyChart" class="chart"></div>
+                            </div>
+                            <div class="chart-item">
+                                <div id="bedUsageDepartmentComparisonChart" class="chart"></div>
+                            </div>
+                        </div>
+                        <div class="data-table">
+                            <table id="bedUsageTable">
+                                <thead>
+                                    <tr>
+                                        <th>月份</th>
+                                        <th>病床使用率</th>
+                                        <th>环比</th>
+                                        <th>同比</th>
+                                        <th>开放床位数</th>
+                                        <th>实际占用床日</th>
+                                        <th>目标</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 数据通过JavaScript动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 人力资源利用分析 -->
+                    <div class="analysis-section">
+                        <div class="section-header">
+                            <h3>人力资源利用分析</h3>
+                        </div>
+                        <!-- 医生专项分析 - 第一行 -->
+                        <div class="charts-grid">
+                            <div class="chart-item">
+                                <div id="doctorStructureChart" class="chart"></div>
+                            </div>
+                            <div class="chart-item">
+                                <div id="doctorEfficiencyChart" class="chart"></div>
+                            </div>
+                            <div class="chart-item">
+                                <div id="doctorProductivityChart" class="chart"></div>
+                            </div>
+                        </div>
+                        <!-- 综合人员分析 - 第二行 -->
+                        <div class="charts-grid">
+                            <div class="chart-item">
+                                <div id="staffStructureChart" class="chart"></div>
+                            </div>
+                            <div class="chart-item">
+                                <div id="staffProductivityChart" class="chart"></div>
+                            </div>
+                            <div class="chart-item">
+                                <div id="staffCostChart" class="chart"></div>
+                            </div>
+                        </div>
+                        <!-- 医生专项分析表格 -->
+                        <div class="data-table">
+                            <h4 class="table-title">医生效率与效益分析</h4>
+                            <table id="doctorAnalysisTable">
+                                <thead>
+                                    <tr>
+                                        <th>医生类别</th>
+                                        <th>人数</th>
+                                        <th>平均接诊量</th>
+                                        <th>平均收入</th>
+                                        <th>工作效率</th>
+                                        <th>满意度</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 数据通过JavaScript动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- 综合人员分析表格 -->
+                        <div class="data-table">
+                            <h4 class="table-title">综合人员分析</h4>
+                            <table id="staffAnalysisTable">
+                                <thead>
+                                    <tr>
+                                        <th>人员类别</th>
+                                        <th>人数</th>
+                                        <th>人均工作量</th>
+                                        <th>人均产值</th>
+                                        <th>人均成本</th>
+                                        <th>成本效益比</th>
+                                        <th>效率指数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 数据通过JavaScript动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 设备资源效益分析 -->
+                    <div class="analysis-section">
+                        <div class="section-header">
+                            <h3>设备资源效益分析</h3>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-item">
+                                <div id="equipmentUsageChart" class="chart"></div>
+                            </div>
+                        </div>
+                        <div class="data-table">
+                            <table id="equipmentAnalysisTable">
+                                <thead>
+                                    <tr>
+                                        <th>设备名称</th>
+                                        <th>型号</th>
+                                        <th>购置日期</th>
+                                        <th>投资金额</th>
+                                        <th>使用率</th>
+                                        <th>完好率</th>
+                                        <th>月均收入</th>
+                                        <th>投资回收期</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 数据通过JavaScript动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 空间资源利用分析 -->
+                    <div class="analysis-section">
+                        <div class="section-header">
+                            <h3>空间资源利用分析</h3>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-item">
+                                <div id="spaceAllocationChart" class="chart"></div>
+                            </div>
+                        </div>
+                        <div class="data-table">
+                            <table id="spaceAnalysisTable">
+                                <thead>
+                                    <tr>
+                                        <th>区域</th>
+                                        <th>面积(m²)</th>
+                                        <th>使用率</th>
+                                        <th>单位面积产出</th>
+                                        <th>优化建议</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 数据通过JavaScript动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 资源效率综合分析 -->
+                    <div class="analysis-section">
+                        <div class="section-header">
+                            <h3>资源效率综合分析</h3>
+                        </div>
+                        <div class="charts-grid">
+                            <div class="chart-item">
+                                <div id="resourceEfficiencyRadarChart" class="chart"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 资源优化建议 -->
+                    <div class="analysis-section">
+                        <div class="section-header">
+                            <h3>资源优化建议</h3>
+                        </div>
+                        <div class="data-table">
+                            <table id="optimizationSuggestionsTable">
+                                <thead>
+                                    <tr>
+                                        <th>序号</th>
+                                        <th>问题类别</th>
+                                        <th>存在问题</th>
+                                        <th>原因分析</th>
+                                        <th>优化建议</th>
+                                        <th>责任部门</th>
+                                        <th>完成期限</th>
+                                        <th>预期效果</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 数据通过JavaScript动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 分页控件 -->
+                    <div class="pagination">
+                        <button class="btn btn-secondary">上一页</button>
+                        <button class="btn btn-primary">1</button>
+                        <button class="btn btn-secondary">2</button>
+                        <button class="btn btn-secondary">3</button>
+                        <button class="btn btn-secondary">...</button>
+                        <button class="btn btn-secondary">10</button>
+                        <button class="btn btn-secondary">下一页</button>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- 医生收入构成明细弹窗 -->
+    <div id="doctorIncomeModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">医生医疗业务收入构成明细</h3>
+                <span class="close" onclick="closeDoctorIncomeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="income-breakdown">
+                    <div class="income-chart-container">
+                        <div id="incomeBreakdownChart" class="chart"></div>
+                    </div>
+                    <div class="income-details">
+                        <table id="incomeDetailsTable">
+                            <thead>
+                                <tr>
+                                    <th>收入项目</th>
+                                    <th>金额(元)</th>
+                                    <th>占比</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 数据通过JavaScript动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/common.js"></script>
+    <script src="./js/department-resources.js"></script>
+    
+    <!-- 加载统一导航组件 -->
+    <script src="./js/navigation-loader.js?v=20250125-fix3"></script>
+</body>
+</html>

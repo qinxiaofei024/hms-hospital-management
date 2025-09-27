@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组件版本管理 - HMS组件库</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .component-selector {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .component-selector label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .component-selector select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
+
+        .version-list {
+            display: none;
+        }
+
+        .version-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .version-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .version-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .version-number {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #4facfe;
+        }
+
+        .version-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-current {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-deprecated {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .status-beta {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .version-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .version-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-compare {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-rollback {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        .changelog {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .changelog h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .changelog ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .changelog li {
+            padding: 5px 0;
+            color: #666;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .changelog li:before {
+            content: "•";
+            color: #4facfe;
+            position: absolute;
+            left: 0;
+        }
+
+        .new-version-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .new-version-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(79, 172, 254, 0.4);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">← 返回</button>
+            <h1>组件版本管理</h1>
+            <p>管理组件版本，查看更新历史和变更日志</p>
+        </div>
+
+        <div class="content">
+            <div class="component-selector">
+                <label for="componentSelect">选择组件：</label>
+                <select id="componentSelect" onchange="loadVersions()">
+                    <option value="">请选择一个组件...</option>
+                </select>
+            </div>
+
+            <div id="versionList" class="version-list">
+                <div class="loading">
+                    <p>加载版本信息中...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="new-version-btn" onclick="createNewVersion()">+ 发布新版本</button>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        class VersionManager {
+            constructor() {
+                this.components = [];
+                this.currentComponent = null;
+                this.versions = [];
+                this.init();
+            }
+
+            async init() {
+                await this.loadComponents();
+                this.populateComponentSelector();
+            }
+
+            async loadComponents() {
+                try {
+                    const response = await fetch('../data/component-library.json');
+                    const data = await response.json();
+                    this.components = data.components || [];
+                } catch (error) {
+                    console.error('加载组件数据失败:', error);
+                    this.showNotification('加载组件数据失败', 'error');
+                }
+            }
+
+            populateComponentSelector() {
+                const select = document.getElementById('componentSelect');
+                select.innerHTML = '<option value="">请选择一个组件...</option>';
+                
+                this.components.forEach(component => {
+                    const option = document.createElement('option');
+                    option.value = component.id;
+                    option.textContent = component.name;
+                    select.appendChild(option);
+                });
+            }
+
+            async loadVersions() {
+                const componentId = document.getElementById('componentSelect').value;
+                const versionList = document.getElementById('versionList');
+                
+                if (!componentId) {
+                    versionList.style.display = 'none';
+                    return;
+                }
+
+                versionList.style.display = 'block';
+                versionList.innerHTML = '<div class="loading"><p>加载版本信息中...</p></div>';
+
+                this.currentComponent = this.components.find(c => c.id === componentId);
+                
+                // 模拟版本数据（实际应用中应从服务器获取）
+                this.versions = this.generateMockVersions(this.currentComponent);
+                
+                setTimeout(() => {
+                    this.renderVersions();
+                }, 500);
+            }
+
+            generateMockVersions(component) {
+                const versions = [
+                    {
+                        version: component.version || '1.0.0',
+                        status: 'current',
+                        releaseDate: new Date().toISOString().split('T')[0],
+                        author: component.author || '系统管理员',
+                        downloads: Math.floor(Math.random() * 1000) + 100,
+                        size: '2.3 MB',
+                        changelog: [
+                            '修复了数据加载的性能问题',
+                            '优化了图表渲染效果',
+                            '增加了新的配置选项'
+                        ]
+                    }
+                ];
+
+                // 生成历史版本
+                for (let i = 1; i <= 3; i++) {
+                    const versionParts = component.version ? component.version.split('.') : ['1', '0', '0'];
+                    const minorVersion = parseInt(versionParts[1]) - i;
+                    const version = `${versionParts[0]}.${Math.max(0, minorVersion)}.${versionParts[2]}`;
+                    
+                    const date = new Date();
+                    date.setDate(date.getDate() - (i * 30));
+                    
+                    versions.push({
+                        version: version,
+                        status: i === 3 ? 'deprecated' : 'stable',
+                        releaseDate: date.toISOString().split('T')[0],
+                        author: component.author || '系统管理员',
+                        downloads: Math.floor(Math.random() * 500) + 50,
+                        size: '2.1 MB',
+                        changelog: [
+                            '修复了已知问题',
+                            '性能优化',
+                            '界面改进'
+                        ]
+                    });
+                }
+
+                return versions;
+            }
+
+            renderVersions() {
+                const versionList = document.getElementById('versionList');
+                
+                if (this.versions.length === 0) {
+                    versionList.innerHTML = `
+                        <div class="empty-state">
+                            <h3>暂无版本信息</h3>
+                            <p>该组件还没有版本记录</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const versionsHtml = this.versions.map(version => `
+                    <div class="version-item">
+                        <div class="version-header">
+                            <div class="version-number">v${version.version}</div>
+                            <div class="version-status status-${version.status}">
+                                ${this.getStatusText(version.status)}
+                            </div>
+                        </div>
+                        
+                        <div class="version-info">
+                            <div class="info-item">
+                                <div class="info-label">发布日期</div>
+                                <div class="info-value">${version.releaseDate}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">作者</div>
+                                <div class="info-value">${version.author}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">下载次数</div>
+                                <div class="info-value">${version.downloads}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">文件大小</div>
+                                <div class="info-value">${version.size}</div>
+                            </div>
+                        </div>
+
+                        <div class="version-actions">
+                            <button class="action-btn btn-download" onclick="downloadVersion('${version.version}')">
+                                下载
+                            </button>
+                            <button class="action-btn btn-compare" onclick="compareVersion('${version.version}')">
+                                对比
+                            </button>
+                            ${version.status !== 'current' ? `
+                                <button class="action-btn btn-rollback" onclick="rollbackVersion('${version.version}')">
+                                    回滚
+                                </button>
+                            ` : ''}
+                            ${version.status === 'deprecated' ? `
+                                <button class="action-btn btn-delete" onclick="deleteVersion('${version.version}')">
+                                    删除
+                                </button>
+                            ` : ''}
+                        </div>
+
+                        <div class="changelog">
+                            <h4>更新日志</h4>
+                            <ul>
+                                ${version.changelog.map(change => `<li>${change}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `).join('');
+
+                versionList.innerHTML = versionsHtml;
+            }
+
+            getStatusText(status) {
+                const statusMap = {
+                    'current': '当前版本',
+                    'stable': '稳定版本',
+                    'beta': '测试版本',
+                    'deprecated': '已弃用'
+                };
+                return statusMap[status] || status;
+            }
+
+            showNotification(message, type = 'success') {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.className = `notification ${type}`;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // 全局实例
+        let versionManager;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            versionManager = new VersionManager();
+        });
+
+        // 全局函数
+        function goBack() {
+            window.history.back();
+        }
+
+        function loadVersions() {
+            if (versionManager) {
+                versionManager.loadVersions();
+            }
+        }
+
+        function downloadVersion(version) {
+            versionManager.showNotification(`开始下载版本 ${version}`);
+            // 实际下载逻辑
+        }
+
+        function compareVersion(version) {
+            versionManager.showNotification(`对比版本 ${version} 功能开发中`);
+            // 实际对比逻辑
+        }
+
+        function rollbackVersion(version) {
+            if (confirm(`确定要回滚到版本 ${version} 吗？`)) {
+                versionManager.showNotification(`回滚到版本 ${version} 成功`);
+                // 实际回滚逻辑
+                setTimeout(() => {
+                    versionManager.loadVersions();
+                }, 1000);
+            }
+        }
+
+        function deleteVersion(version) {
+            if (confirm(`确定要删除版本 ${version} 吗？此操作不可恢复。`)) {
+                versionManager.showNotification(`删除版本 ${version} 成功`);
+                // 实际删除逻辑
+                setTimeout(() => {
+                    versionManager.loadVersions();
+                }, 1000);
+            }
+        }
+
+        function createNewVersion() {
+            if (!versionManager.currentComponent) {
+                versionManager.showNotification('请先选择一个组件', 'error');
+                return;
+            }
+            versionManager.showNotification('新版本发布功能开发中');
+            // 跳转到版本发布页面
+        }
+    </script>
+</body>
+</html>

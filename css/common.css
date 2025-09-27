@@ -1,0 +1,264 @@
+/* 通用样式文件 */
+
+/* 重置样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 基础样式 */
+body {
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+}
+
+/* 容器样式 */
+.container {
+    width: 100%;
+    margin: 0;
+    padding: 0 20px;
+}
+
+/* 卡片样式 */
+.card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    background: #fafafa;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* 按钮样式 */
+.btn {
+    display: inline-block;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background: #545b62;
+}
+
+/* 表格样式 */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.table th {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+/* 数据表格通用样式 - 表头固定 */
+.data-table {
+    position: relative;
+}
+
+.data-table th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #fafafa;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 确保表格容器支持滚动 */
+.table-container {
+    position: relative;
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+/* 为表头添加更好的视觉效果 */
+.data-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #fafafa;
+    border-bottom: 2px solid #e8e8e8;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    color: #333;
+}
+
+/* 表单样式 */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* 工具提示 */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 10px;
+    }
+    
+    .card-body {
+        padding: 15px;
+    }
+    
+    .table {
+        font-size: 12px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 8px;
+    }
+}
+
+/* 加载动画 */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 状态样式 */
+.status-success {
+    color: #28a745;
+}
+
+.status-warning {
+    color: #ffc107;
+}
+
+.status-danger {
+    color: #dc3545;
+}
+
+.status-info {
+    color: #17a2b8;
+}
+
+/* 徽章样式 */
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+}
+
+.badge-primary {
+    color: #fff;
+    background-color: #007bff;
+}
+
+.badge-success {
+    color: #fff;
+    background-color: #28a745;
+}
+
+.badge-warning {
+    color: #212529;
+    background-color: #ffc107;
+}
+
+.badge-danger {
+    color: #fff;
+    background-color: #dc3545;
+}

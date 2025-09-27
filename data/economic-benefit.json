@@ -1,0 +1,322 @@
+{
+  "overview": {
+    "totalRevenue": 2865.3,
+    "totalCost": 1765.3,
+    "netProfit": 1100.0,
+    "profitMargin": 38.4,
+    "revenueGrowth": 8.5,
+    "costGrowth": 5.2,
+    "roi": 18.5,
+    "assetTurnover": 0.85,
+    "currentRatio": 1.85
+  },
+  "revenueAnalysis": {
+    "bySource": [
+      {"name": "医疗服务收入", "value": 1250.5, "percentage": 43.6, "color": "#0066cc"},
+      {"name": "药品收入", "value": 870.2, "percentage": 30.4, "color": "#1890ff"},
+      {"name": "检查收入", "value": 420.8, "percentage": 14.7, "color": "#52c41a"},
+      {"name": "手术收入", "value": 280.5, "percentage": 9.8, "color": "#faad14"},
+      {"name": "其他收入", "value": 43.3, "percentage": 1.5, "color": "#8c8c8c"}
+    ],
+    "byDepartment": [
+      {"name": "内科", "value": 580.5, "percentage": 20.3},
+      {"name": "外科", "value": 620.8, "percentage": 21.7},
+      {"name": "妇产科", "value": 380.2, "percentage": 13.3},
+      {"name": "儿科", "value": 220.5, "percentage": 7.7},
+      {"name": "急诊科", "value": 180.8, "percentage": 6.3},
+      {"name": "影像科", "value": 250.3, "percentage": 8.7},
+      {"name": "检验科", "value": 180.5, "percentage": 6.3},
+      {"name": "药剂科", "value": 120.8, "percentage": 4.2},
+      {"name": "手术室", "value": 280.5, "percentage": 9.8},
+      {"name": "其他科室", "value": 52.4, "percentage": 1.8}
+    ],
+    "trend": {
+      "months": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+      "revenue": [2450.2, 2380.5, 2520.8, 2610.3, 2680.7, 2720.5, 2780.3, 2820.6, 2850.2, 2865.3, 2880.5, 2905.8],
+      "profit": [850.0, 880.0, 920.0, 950.0, 980.0, 1000.0, 1020.0, 1040.0, 1060.0, 1100.0, 1120.0, 1150.0]
+    }
+  },
+  "costAnalysis": {
+    "byCategory": [
+      {"name": "人员成本", "value": 850.5, "percentage": 45.8, "color": "#0066cc"},
+      {"name": "药品成本", "value": 680.2, "percentage": 36.6, "color": "#1890ff"},
+      {"name": "设备折旧", "value": 180.8, "percentage": 9.7, "color": "#52c41a"},
+      {"name": "水电费用", "value": 65.5, "percentage": 3.5, "color": "#faad14"},
+      {"name": "管理费用", "value": 55.3, "percentage": 3.0, "color": "#8c8c8c"},
+      {"name": "其他成本", "value": 24.5, "percentage": 1.3, "color": "#d4380d"}
+    ],
+    "byDepartment": [
+      {"name": "内科", "value": 385.0, "percentage": 20.7},
+      {"name": "外科", "value": 400.0, "percentage": 21.5},
+      {"name": "妇产科", "value": 250.0, "percentage": 13.5},
+      {"name": "儿科", "value": 145.0, "percentage": 7.8},
+      {"name": "急诊科", "value": 120.0, "percentage": 6.5},
+      {"name": "影像科", "value": 165.0, "percentage": 8.9},
+      {"name": "检验科", "value": 120.0, "percentage": 6.5},
+      {"name": "药剂科", "value": 80.0, "percentage": 4.3},
+      {"name": "手术室", "value": 185.0, "percentage": 10.0},
+      {"name": "其他科室", "value": 26.8, "percentage": 1.4}
+    ],
+    "trend": {
+      "months": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+      "cost": [1670.0, 1625.0, 1715.0, 1775.0, 1825.0, 1845.0, 1890.0, 1915.0, 1935.0, 1856.8, 1860.0, 1870.0]
+    }
+  },
+  "efficiencyAnalysis": {
+    "bedUtilization": {
+      "departments": ["内科", "外科", "妇产科", "儿科", "ICU", "其他科室"],
+      "utilization": [94.2, 91.8, 89.5, 87.2, 85.5, 82.3],
+      "target": [90.0, 90.0, 90.0, 90.0, 85.0, 80.0]
+    },
+    "resourceEfficiency": [
+      {"name": "床位周转率", "current": 48.5, "target": 50.0, "unit": "次/月"},
+      {"name": "平均住院日", "current": 6.8, "target": 6.5, "unit": "天"},
+      {"name": "设备使用率", "current": 82.5, "target": 85.0, "unit": "%"},
+      {"name": "药品周转率", "current": 8.5, "target": 10.0, "unit": "次/月"},
+      {"name": "人员效率", "current": 125.8, "target": 130.0, "unit": "人次/日"}
+    ],
+    "financialRatios": [
+      {"name": "流动比率", "current": 1.85, "target": 2.0, "unit": ""},
+      {"name": "速动比率", "current": 1.52, "target": 1.5, "unit": ""},
+      {"name": "资产负债率", "current": 42.5, "target": 40.0, "unit": "%"},
+      {"name": "资产周转率", "current": 0.85, "target": 0.9, "unit": ""},
+      {"name": "净资产收益率", "current": 15.2, "target": 16.0, "unit": "%"}
+    ]
+  },
+  "benefitComparison": {
+    "yearly": {
+      "years": ["2021", "2022", "2023", "2024", "2025"],
+      "revenue": [2150.5, 2350.8, 2580.2, 2650.5, 2865.3],
+      "cost": [1470.0, 1600.0, 1730.0, 1730.0, 1856.8],
+      "profit": [680.5, 750.8, 850.2, 920.5, 1008.5]
+    },
+    "industry": {
+      "metrics": ["收入增长率", "利润率", "成本控制率", "资产周转率", "净资产收益率"],
+      "current": [8.5, 35.2, 92.3, 0.85, 15.2],
+      "industry": [7.2, 32.5, 90.5, 0.82, 14.5],
+      "top": [12.5, 40.8, 95.2, 1.05, 18.5]
+    }
+  },
+  "departmentBenefits": [
+    {
+      "id": "1",
+      "name": "内科",
+      "revenue": 580.5,
+      "cost": 385.0,
+      "profit": 195.5,
+      "profitMargin": 33.7,
+      "revenueGrowth": 8.2,
+      "costControl": 94.5,
+      "patientCount": 3250,
+      "avgPatientCost": 1786.2
+    },
+    {
+      "id": "2",
+      "name": "外科",
+      "revenue": 620.8,
+      "cost": 400.0,
+      "profit": 220.8,
+      "profitMargin": 35.6,
+      "revenueGrowth": 9.5,
+      "costControl": 92.8,
+      "patientCount": 1850,
+      "avgPatientCost": 3355.7
+    },
+    {
+      "id": "3",
+      "name": "妇产科",
+      "revenue": 380.2,
+      "cost": 250.0,
+      "profit": 130.2,
+      "profitMargin": 34.2,
+      "revenueGrowth": 7.8,
+      "costControl": 93.2,
+      "patientCount": 1520,
+      "avgPatientCost": 2501.3
+    },
+    {
+      "id": "4",
+      "name": "儿科",
+      "revenue": 220.5,
+      "cost": 145.0,
+      "profit": 75.5,
+      "profitMargin": 34.2,
+      "revenueGrowth": 6.5,
+      "costControl": 95.5,
+      "patientCount": 1850,
+      "avgPatientCost": 1191.9
+    },
+    {
+      "id": "5",
+      "name": "急诊科",
+      "revenue": 180.8,
+      "cost": 120.0,
+      "profit": 60.8,
+      "profitMargin": 33.6,
+      "revenueGrowth": 8.8,
+      "costControl": 91.2,
+      "patientCount": 2850,
+      "avgPatientCost": 634.4
+    }
+  ],
+  "serviceData": [
+    {
+      "code": "310100001",
+      "name": "普通门诊诊查费",
+      "quantity": 15680,
+      "revenue": 1254000,
+      "cost": 752400,
+      "benefit": 501600,
+      "benefitRate": 40.0
+    },
+    {
+      "code": "310100002", 
+      "name": "专家门诊诊查费",
+      "quantity": 8520,
+      "revenue": 1704000,
+      "cost": 1022400,
+      "benefit": 681600,
+      "benefitRate": 40.0
+    },
+    {
+      "code": "310100003",
+      "name": "急诊诊查费",
+      "quantity": 4250,
+      "revenue": 680000,
+      "cost": 408000,
+      "benefit": 272000,
+      "benefitRate": 40.0
+    },
+    {
+      "code": "310200001",
+      "name": "床位费",
+      "quantity": 12500,
+      "revenue": 3750000,
+      "cost": 1875000,
+      "benefit": 1875000,
+      "benefitRate": 50.0
+    },
+    {
+      "code": "310200002",
+      "name": "重症监护床位费",
+      "quantity": 1850,
+      "revenue": 1665000,
+      "cost": 999000,
+      "benefit": 666000,
+      "benefitRate": 40.0
+    },
+    {
+      "code": "310300001",
+      "name": "护理费",
+      "quantity": 18500,
+      "revenue": 1295000,
+      "cost": 906500,
+      "benefit": 388500,
+      "benefitRate": 30.0
+    },
+    {
+      "code": "310400001",
+      "name": "手术费",
+      "quantity": 2850,
+      "revenue": 4275000,
+      "cost": 2565000,
+      "benefit": 1710000,
+      "benefitRate": 40.0
+    },
+    {
+      "code": "310400002",
+      "name": "麻醉费",
+      "quantity": 2650,
+      "revenue": 1325000,
+      "cost": 795000,
+      "benefit": 530000,
+      "benefitRate": 40.0
+    },
+    {
+      "code": "310500001",
+      "name": "检验费",
+      "quantity": 25800,
+      "revenue": 2064000,
+      "cost": 1238400,
+      "benefit": 825600,
+      "benefitRate": 40.0
+    },
+    {
+      "code": "310600001",
+      "name": "影像学检查费",
+      "quantity": 8950,
+      "revenue": 2685000,
+      "cost": 1611000,
+      "benefit": 1074000,
+      "benefitRate": 40.0
+    },
+    {
+      "code": "310700001",
+      "name": "治疗费",
+      "quantity": 12600,
+      "revenue": 1890000,
+      "cost": 1323000,
+      "benefit": 567000,
+      "benefitRate": 30.0
+    },
+    {
+      "code": "310800001",
+      "name": "材料费",
+      "quantity": 15200,
+      "revenue": 3040000,
+      "cost": 2128000,
+      "benefit": 912000,
+      "benefitRate": 30.0
+    }
+  ],
+  "keyIndicators": [
+    {
+      "id": "1",
+      "name": "总收入",
+      "value": "2865.3",
+      "unit": "万元",
+      "trend": "up",
+      "change": "8.5%"
+    },
+    {
+      "id": "2",
+      "name": "净利润",
+      "value": "1008.5",
+      "unit": "万元",
+      "trend": "up",
+      "change": "9.6%"
+    },
+    {
+      "id": "3",
+      "name": "利润率",
+      "value": "35.2",
+      "unit": "%",
+      "trend": "up",
+      "change": "1.1%"
+    },
+    {
+      "id": "4",
+      "name": "成本控制率",
+      "value": "92.3",
+      "unit": "%",
+      "trend": "up",
+      "change": "1.8%"
+    },
+    {
+      "id": "5",
+      "name": "床位利用率",
+      "value": "92.5",
+      "unit": "%",
+      "trend": "up",
+      "change": "2.3%"
+    },
+    {
+      "id": "6",
+      "name": "资产周转率",
+      "value": "0.85",
+      "unit": "",
+      "trend": "up",
+      "change": "3.7%"
+    }
+  ]
+}

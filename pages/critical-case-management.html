@@ -1,0 +1,2353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>危重病例管理 - 佛山市南海区中医院数据中心管理平台</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/medical-quality-safety.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        /* 通用响应式容器 */
+        .container {
+            max-width: 100%;
+            padding: 0 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            body {
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            body {
+                font-size: 13px;
+            }
+        }
+        
+        /* 危重病例管理页面样式 */
+        .critical-case-management {
+            padding: 24px;
+            background-color: #f5f7fa;
+            min-height: calc(100vh - 48px);
+        }
+        
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .page-header {
+            background: #fff;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-bottom: 3px solid #0078d4;
+        }
+        
+        .page-header h2 {
+            color: #0078d4;
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+        }
+        
+        .breadcrumb {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        /* 响应式布局 */
+        @media (max-width: 1400px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+        
+        @media (max-width: 1000px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .page-header {
+                padding: 20px 16px;
+                margin-bottom: 20px;
+            }
+            
+            .page-header h2 {
+                font-size: 24px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .dashboard-grid {
+                gap: 12px;
+            }
+            
+            .page-header {
+                padding: 16px 12px;
+                margin-bottom: 16px;
+            }
+            
+            .page-header h2 {
+                font-size: 20px;
+            }
+            
+            .breadcrumb {
+                font-size: 12px;
+            }
+        }
+        
+        .dashboard-item {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .dashboard-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dashboard-item h3 {
+            margin: 0 0 16px 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .dashboard-item h3::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background-color: #0078d4;
+            border-radius: 2px;
+        }
+        
+        .chart-standard {
+            width: 100%;
+            height: 300px;
+            max-width: 100%;
+        }
+        
+        @media (max-width: 1000px) {
+            .chart-standard { height: 260px; }
+        }
+        @media (max-width: 768px) {
+            .chart-standard { height: 240px; }
+        }
+        @media (max-width: 480px) {
+            .chart-standard { height: 220px; }
+        }
+        
+        .key-indicators {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        /* 指标卡片响应式布局 */
+        @media (max-width: 1400px) {
+            .key-indicators {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 14px;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .key-indicators {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 14px;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .key-indicators {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .key-indicators {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                margin-bottom: 16px;
+            }
+        }
+            
+            .indicator-card {
+                padding: 16px;
+            }
+            
+            .indicator-value {
+                font-size: 24px;
+            }
+            
+            .indicator-label {
+                font-size: 13px;
+            }
+        
+        
+        @media (max-width: 480px) {
+            .key-indicators {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                margin-bottom: 16px;
+            }
+            
+            .indicator-card {
+                padding: 14px;
+            }
+            
+            .indicator-value {
+                font-size: 22px;
+            }
+            
+            .indicator-label {
+                font-size: 12px;
+            }
+        }
+        
+        .indicator-card {
+            background-color: #f0f7ff;
+            color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #e6f2ff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .indicator-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .indicator-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0066cc;
+            margin-bottom: 8px;
+        }
+        
+        .indicator-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        
+        .indicator-change {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .positive {
+            color: #52c41a;
+        }
+        
+        .negative {
+            color: #ff4d4f;
+        }
+        
+        .monitoring-panel {
+            background: linear-gradient(135deg, #0066cc 0%, #0078d4 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .monitoring-panel h3 {
+            color: white;
+            margin-bottom: 16px;
+        }
+        
+        .monitoring-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        /* 监控面板响应式布局 */
+        @media (max-width: 1200px) {
+            .monitoring-stats {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 14px;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .monitoring-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 14px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .monitoring-panel {
+                padding: 16px;
+                margin-bottom: 20px;
+            }
+            
+            .monitoring-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .monitoring-stat {
+                padding: 10px;
+            }
+            
+            .monitoring-stat-value {
+                font-size: 20px;
+            }
+            
+            .monitoring-stat-label {
+                font-size: 11px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .monitoring-panel {
+                padding: 14px;
+                margin-bottom: 16px;
+            }
+            
+            .monitoring-stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .monitoring-stat {
+                padding: 8px;
+            }
+            
+            .monitoring-stat-value {
+                font-size: 18px;
+            }
+        }
+        
+        /* 仪表板项目响应式布局 */
+        @media (max-width: 768px) {
+            .dashboard-item {
+                padding: 20px;
+            }
+            
+            .dashboard-item h3 {
+                font-size: 16px;
+            }
+            
+            .chart-standard {
+                height: 250px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .dashboard-item {
+                padding: 16px;
+            }
+            
+            .dashboard-item h3 {
+                font-size: 15px;
+            }
+            
+            .chart-standard {
+                height: 200px;
+            }
+        }
+        
+        .monitoring-stat {
+            text-align: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+        }
+        
+        .monitoring-stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .monitoring-stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .case-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .table-header {
+            background-color: #f8f9fa;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        .btn-primary {
+            background-color: #0066cc;
+            border-color: #0066cc;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0052a3;
+            border-color: #0052a3;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        /* 表格响应式布局 */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        @media (max-width: 768px) {
+            .case-table {
+                margin: 0 -10px;
+                border-radius: 0;
+            }
+            
+            .table-header {
+                padding: 12px 16px;
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+            
+            .table-actions {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+            
+            .data-table th {
+                font-size: 13px;
+            }
+            
+            .btn {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+            
+            .table-title {
+                font-size: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .case-table {
+                margin: 0 -5px;
+            }
+            
+            .table-header {
+                padding: 10px 12px;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+            
+            .data-table th {
+                font-size: 12px;
+            }
+            
+            .btn {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+            
+            .table-title {
+                font-size: 14px;
+            }
+            
+            .status-badge {
+                padding: 1px 6px;
+                font-size: 10px;
+            }
+        }
+        
+        .data-table th {
+            background-color: #0078d4;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .data-table td {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .data-table tbody tr:hover {
+            background-color: #f8f9ff;
+        }
+        
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-critical {
+            background-color: #fff2f0;
+            color: #ff4d4f;
+            border: 1px solid #ffccc7;
+        }
+        
+        .status-severe {
+            background-color: #fff7e6;
+            color: #fa8c16;
+            border: 1px solid #ffd591;
+        }
+        
+        .status-stable {
+            background-color: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+        
+        .real-time-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 16px 24px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f0;
+        }
+
+        .current-time {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .monitoring-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #2ed573;
+            font-weight: 600;
+        }
+
+        .monitoring-status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background-color: #2ed573;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .critical-case-management {
+                padding: 16px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .key-indicators {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .time-display {
+            font-size: 14px;
+            color: #666;
+            text-align: right;
+            margin-bottom: 16px;
+        }
+
+        /* 病例详情弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e5e5;
+            background-color: #f8f9fa;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close {
+            font-size: 24px;
+            font-weight: bold;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s ease;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 0;
+            max-height: calc(90vh - 140px);
+            overflow-y: auto;
+        }
+
+        .detail-tabs {
+            display: flex;
+            border-bottom: 1px solid #e5e5e5;
+            background-color: #f8f9fa;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+            background-color: #fff;
+        }
+
+        .tab-btn:hover {
+            color: #007bff;
+            background-color: #fff;
+        }
+
+        .tab-content {
+            padding: 24px;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #007bff;
+        }
+
+        .info-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .info-item label {
+            font-weight: 600;
+            color: #333;
+            margin-right: 8px;
+            min-width: 80px;
+            flex-shrink: 0;
+        }
+
+        .info-item span {
+            color: #666;
+            flex: 1;
+        }
+
+        .text-content {
+            color: #666;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        /* 治疗时间线样式 */
+        .treatment-timeline {
+            margin-bottom: 24px;
+        }
+
+        .timeline-header h4 {
+            margin: 0 0 16px 0;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .timeline-content {
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 12px 0 12px 20px;
+            border-left: 2px solid #e5e5e5;
+        }
+
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 16px;
+            width: 8px;
+            height: 8px;
+            background-color: #007bff;
+            border-radius: 50%;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .timeline-content-text {
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* 费用信息样式 */
+        .cost-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .cost-card {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e5e5e5;
+        }
+
+        .cost-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .cost-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .cost-value.paid {
+            color: #28a745;
+        }
+
+        .cost-value.unpaid {
+            color: #dc3545;
+        }
+
+        .cost-breakdown h4 {
+            margin: 0 0 16px 0;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .cost-item-name {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .cost-item-amount {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 20px 24px;
+            border-top: 1px solid #e5e5e5;
+            background-color: #f8f9fa;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 表格行点击效果 */
+        .case-table tbody tr {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .case-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* 弹窗响应式设计 */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                max-height: 95vh;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cost-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                flex: 1 1 50%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-header {
+                padding: 16px;
+            }
+
+            .tab-content {
+                padding: 16px;
+            }
+
+            .modal-footer {
+                padding: 16px;
+            }
+
+            .tab-btn {
+                flex: 1 1 100%;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+    
+    <div class="container">
+        <div class="main-content">
+            <div class="content-wrapper">
+                <main class="content">
+                    <!-- 页面头部 -->
+                    <div class="page-header">
+                        <h2>危重病例管理 <span class="english-title">Critical Case Management</span></h2>
+                        <div class="breadcrumb">
+                            <span>首页</span> / <span>医疗质量安全</span> / <span>危重病例管理</span>
+                        </div>
+                    </div>
+
+                    <div class="critical-case-management">
+                        <!-- 时间显示 -->
+                        <div class="time-display">
+                            <span id="currentTime"></span>
+                        </div>
+
+                        <!-- 实时监控面板 -->
+                        <div class="monitoring-panel">
+                            <h3>实时监控</h3>
+                            <div class="monitoring-stats">
+                                <div class="monitoring-stat">
+                                    <div class="monitoring-stat-value" id="onlineStaff">156</div>
+                                    <div class="monitoring-stat-label">在线医护</div>
+                                </div>
+                                <div class="monitoring-stat">
+                                    <div class="monitoring-stat-value" id="activeCases">23</div>
+                                    <div class="monitoring-stat-label">活跃病例</div>
+                                </div>
+                                <div class="monitoring-stat">
+                                    <div class="monitoring-stat-value" id="emergencyAlerts">2</div>
+                                    <div class="monitoring-stat-label">紧急警报</div>
+                                </div>
+                                <div class="monitoring-stat">
+                                    <div class="monitoring-stat-value" id="bedOccupancy">89%</div>
+                                    <div class="monitoring-stat-label">床位占用率</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 关键指标 -->
+                        <div class="key-indicators">
+                            <div class="indicator-card">
+                                <div class="indicator-value">342</div>
+                                <div class="indicator-label">总病例数</div>
+                                <div class="indicator-change positive">+12 较昨日</div>
+                            </div>
+                            <div class="indicator-card">
+                                <div class="indicator-value">89</div>
+                                <div class="indicator-label">危重病例</div>
+                                <div class="indicator-change negative">+3 较昨日</div>
+                            </div>
+                            <div class="indicator-card">
+                                <div class="indicator-value">28</div>
+                                <div class="indicator-label">今日新增</div>
+                                <div class="indicator-change positive">+5 较昨日</div>
+                            </div>
+                            <div class="indicator-card">
+                                <div class="indicator-value">94.2%</div>
+                                <div class="indicator-label">治愈率</div>
+                                <div class="indicator-change positive">+0.8% 较上月</div>
+                            </div>
+                        </div>
+
+                        <!-- 图表分析 -->
+                        <div class="dashboard-grid">
+                            <div class="dashboard-item">
+                                <h3>病例趋势分析</h3>
+                                <div id="caseTrendChart" class="chart-standard"></div>
+                            </div>
+                            <div class="dashboard-item">
+                                <h3>科室分布</h3>
+                                <div id="departmentChart" class="chart-standard"></div>
+                            </div>
+                            <div class="dashboard-item">
+                                <h3>严重程度分布</h3>
+                                <div id="severityChart" class="chart-standard"></div>
+                            </div>
+                            <div class="dashboard-item">
+                                <h3>治疗效果分析</h3>
+                                <div id="treatmentChart" class="chart-standard"></div>
+                            </div>
+                        </div>
+
+                        <!-- 病例列表 -->
+                        <div class="case-table">
+                            <div class="table-header">
+                                <div class="table-title">实时病例监控</div>
+                                <div class="table-actions">
+                                    <button class="btn">筛选</button>
+                                    <button class="btn">导出</button>
+                                    <button class="btn btn-primary">新增病例</button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>病例编号</th>
+                                            <th>患者姓名</th>
+                                            <th>科室</th>
+                                            <th>诊断</th>
+                                            <th>严重程度</th>
+                                            <th>入院时间</th>
+                                            <th>主治医师</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                <tbody id="caseTableBody">
+                                    <tr class="case-row" data-case-id="CC2024001">
+                                        <td>CC2024001</td>
+                                        <td>张**</td>
+                                        <td>ICU</td>
+                                        <td>急性心肌梗死</td>
+                                        <td><span class="status-badge status-critical">危重</span></td>
+                                        <td>2024-01-15 08:30</td>
+                                        <td>李主任</td>
+                                        <td><span class="status-badge status-critical">抢救中</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024001">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024002">
+                                        <td>CC2024002</td>
+                                        <td>王**</td>
+                                        <td>神经外科</td>
+                                        <td>脑出血</td>
+                                        <td><span class="status-badge status-severe">重症</span></td>
+                                        <td>2024-01-15 10:15</td>
+                                        <td>陈医生</td>
+                                        <td><span class="status-badge status-severe">观察中</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024002">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024003">
+                                        <td>CC2024003</td>
+                                        <td>刘**</td>
+                                        <td>呼吸科</td>
+                                        <td>重症肺炎</td>
+                                        <td><span class="status-badge status-severe">重症</span></td>
+                                        <td>2024-01-15 14:20</td>
+                                        <td>赵医生</td>
+                                        <td><span class="status-badge status-stable">稳定</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024003">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024004">
+                                        <td>CC2024004</td>
+                                        <td>陈**</td>
+                                        <td>心外科</td>
+                                        <td>主动脉夹层</td>
+                                        <td><span class="status-badge status-critical">危重</span></td>
+                                        <td>2024-01-15 16:45</td>
+                                        <td>周主任</td>
+                                        <td><span class="status-badge status-critical">手术中</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024004">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024005">
+                                        <td>CC2024005</td>
+                                        <td>李**</td>
+                                        <td>急诊科</td>
+                                        <td>多发性外伤</td>
+                                        <td><span class="status-badge status-severe">重症</span></td>
+                                        <td>2024-01-15 18:20</td>
+                                        <td>吴医生</td>
+                                        <td><span class="status-badge status-severe">抢救中</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024005">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024006">
+                                        <td>CC2024006</td>
+                                        <td>赵**</td>
+                                        <td>肾内科</td>
+                                        <td>急性肾衰竭</td>
+                                        <td><span class="status-badge status-severe">重症</span></td>
+                                        <td>2024-01-15 20:10</td>
+                                        <td>孙医生</td>
+                                        <td><span class="status-badge status-stable">透析中</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024006">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024007">
+                                        <td>CC2024007</td>
+                                        <td>钱**</td>
+                                        <td>消化科</td>
+                                        <td>急性胰腺炎</td>
+                                        <td><span class="status-badge status-moderate">中度</span></td>
+                                        <td>2024-01-15 22:30</td>
+                                        <td>马医生</td>
+                                        <td><span class="status-badge status-stable">稳定</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024007">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024008">
+                                        <td>CC2024008</td>
+                                        <td>孙**</td>
+                                        <td>血液科</td>
+                                        <td>急性白血病</td>
+                                        <td><span class="status-badge status-severe">重症</span></td>
+                                        <td>2024-01-16 02:15</td>
+                                        <td>朱医生</td>
+                                        <td><span class="status-badge status-severe">化疗中</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024008">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024009">
+                                        <td>CC2024009</td>
+                                        <td>周**</td>
+                                        <td>妇产科</td>
+                                        <td>产后大出血</td>
+                                        <td><span class="status-badge status-critical">危重</span></td>
+                                        <td>2024-01-16 04:30</td>
+                                        <td>郑医生</td>
+                                        <td><span class="status-badge status-critical">抢救中</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024009">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024010">
+                                        <td>CC2024010</td>
+                                        <td>吴**</td>
+                                        <td>骨科</td>
+                                        <td>多发性骨折</td>
+                                        <td><span class="status-badge status-moderate">中度</span></td>
+                                        <td>2024-01-16 06:45</td>
+                                        <td>冯医生</td>
+                                        <td><span class="status-badge status-stable">术后恢复</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024010">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024011">
+                                        <td>CC2024011</td>
+                                        <td>郑**</td>
+                                        <td>泌尿外科</td>
+                                        <td>肾结石梗阻</td>
+                                        <td><span class="status-badge status-moderate">中度</span></td>
+                                        <td>2024-01-16 08:20</td>
+                                        <td>卫医生</td>
+                                        <td><span class="status-badge status-stable">观察中</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024011">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024012">
+                                        <td>CC2024012</td>
+                                        <td>蒋**</td>
+                                        <td>内分泌科</td>
+                                        <td>糖尿病酮症酸中毒</td>
+                                        <td><span class="status-badge status-severe">重症</span></td>
+                                        <td>2024-01-16 10:10</td>
+                                        <td>韩医生</td>
+                                        <td><span class="status-badge status-stable">稳定</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024012">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024013">
+                                        <td>CC2024013</td>
+                                        <td>沈**</td>
+                                        <td>胸外科</td>
+                                        <td>自发性气胸</td>
+                                        <td><span class="status-badge status-moderate">中度</span></td>
+                                        <td>2024-01-16 12:30</td>
+                                        <td>杨医生</td>
+                                        <td><span class="status-badge status-stable">引流中</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024013">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024014">
+                                        <td>CC2024014</td>
+                                        <td>何**</td>
+                                        <td>感染科</td>
+                                        <td>脓毒症</td>
+                                        <td><span class="status-badge status-critical">危重</span></td>
+                                        <td>2024-01-16 14:15</td>
+                                        <td>许医生</td>
+                                        <td><span class="status-badge status-critical">抗感染治疗</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024014">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024015">
+                                        <td>CC2024015</td>
+                                        <td>吕**</td>
+                                        <td>皮肤科</td>
+                                        <td>重症药疹</td>
+                                        <td><span class="status-badge status-moderate">中度</span></td>
+                                        <td>2024-01-16 16:40</td>
+                                        <td>施医生</td>
+                                        <td><span class="status-badge status-stable">治疗中</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024015">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024016">
+                                        <td>CC2024016</td>
+                                        <td>张**</td>
+                                        <td>眼科</td>
+                                        <td>急性青光眼</td>
+                                        <td><span class="status-badge status-moderate">中度</span></td>
+                                        <td>2024-01-16 18:25</td>
+                                        <td>张医生</td>
+                                        <td><span class="status-badge status-stable">降压治疗</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024016">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024017">
+                                        <td>CC2024017</td>
+                                        <td>孔**</td>
+                                        <td>耳鼻喉科</td>
+                                        <td>急性会厌炎</td>
+                                        <td><span class="status-badge status-severe">重症</span></td>
+                                        <td>2024-01-16 20:50</td>
+                                        <td>曹医生</td>
+                                        <td><span class="status-badge status-severe">气管切开</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024017">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024018">
+                                        <td>CC2024018</td>
+                                        <td>严**</td>
+                                        <td>精神科</td>
+                                        <td>急性精神障碍</td>
+                                        <td><span class="status-badge status-moderate">中度</span></td>
+                                        <td>2024-01-16 22:15</td>
+                                        <td>华医生</td>
+                                        <td><span class="status-badge status-stable">镇静治疗</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024018">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024019">
+                                        <td>CC2024019</td>
+                                        <td>金**</td>
+                                        <td>肿瘤科</td>
+                                        <td>肿瘤性肠梗阻</td>
+                                        <td><span class="status-badge status-severe">重症</span></td>
+                                        <td>2024-01-17 00:30</td>
+                                        <td>魏医生</td>
+                                        <td><span class="status-badge status-severe">保守治疗</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024019">查看</button></td>
+                                    </tr>
+                                    <tr class="case-row" data-case-id="CC2024020">
+                                        <td>CC2024020</td>
+                                        <td>陶**</td>
+                                        <td>康复科</td>
+                                        <td>脑卒中后遗症</td>
+                                        <td><span class="status-badge status-moderate">中度</span></td>
+                                        <td>2024-01-17 02:45</td>
+                                        <td>姜医生</td>
+                                        <td><span class="status-badge status-stable">康复训练</span></td>
+                                        <td><button class="btn view-detail-btn" data-case-id="CC2024020">查看</button></td>
+                                    </tr>
+                                </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- 病例详情弹窗 -->
+    <div id="caseDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>病例详情</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="detail-tabs">
+                    <button class="tab-btn active" data-tab="basic">基本信息</button>
+                    <button class="tab-btn" data-tab="diagnosis">诊断信息</button>
+                    <button class="tab-btn" data-tab="treatment">治疗经过</button>
+                    <button class="tab-btn" data-tab="cost">费用信息</button>
+                </div>
+                
+                <div class="tab-content">
+                    <!-- 基本信息 -->
+                    <div id="basic-tab" class="tab-pane active">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>病例编号：</label>
+                                <span id="detail-case-id">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>患者姓名：</label>
+                                <span id="detail-patient-name">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>性别：</label>
+                                <span id="detail-gender">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>年龄：</label>
+                                <span id="detail-age">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>身份证号：</label>
+                                <span id="detail-id-card">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>联系电话：</label>
+                                <span id="detail-phone">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>入院科室：</label>
+                                <span id="detail-department">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>床位号：</label>
+                                <span id="detail-bed-number">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>入院时间：</label>
+                                <span id="detail-admission-time">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>主治医师：</label>
+                                <span id="detail-doctor">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>责任护士：</label>
+                                <span id="detail-nurse">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>紧急联系人：</label>
+                                <span id="detail-emergency-contact">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 诊断信息 -->
+                    <div id="diagnosis-tab" class="tab-pane">
+                        <div class="info-grid">
+                            <div class="info-item full-width">
+                                <label>主要诊断：</label>
+                                <span id="detail-main-diagnosis">-</span>
+                            </div>
+                            <div class="info-item full-width">
+                                <label>次要诊断：</label>
+                                <span id="detail-secondary-diagnosis">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>疾病分类：</label>
+                                <span id="detail-disease-category">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>严重程度：</label>
+                                <span id="detail-severity">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>病情状态：</label>
+                                <span id="detail-condition-status">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>风险等级：</label>
+                                <span id="detail-risk-level">-</span>
+                            </div>
+                            <div class="info-item full-width">
+                                <label>症状描述：</label>
+                                <div id="detail-symptoms" class="text-content">-</div>
+                            </div>
+                            <div class="info-item full-width">
+                                <label>检查结果：</label>
+                                <div id="detail-examination-results" class="text-content">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 治疗经过 -->
+                    <div id="treatment-tab" class="tab-pane">
+                        <div class="treatment-timeline">
+                            <div class="timeline-header">
+                                <h4>治疗时间线</h4>
+                            </div>
+                            <div id="treatment-timeline-content" class="timeline-content">
+                                <!-- 治疗记录将动态生成 -->
+                            </div>
+                        </div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>治疗方案：</label>
+                                <span id="detail-treatment-plan">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>用药情况：</label>
+                                <span id="detail-medication">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>手术记录：</label>
+                                <span id="detail-surgery">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>预计出院：</label>
+                                <span id="detail-expected-discharge">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 费用信息 -->
+                    <div id="cost-tab" class="tab-pane">
+                        <div class="cost-summary">
+                            <div class="cost-card">
+                                <div class="cost-label">总费用</div>
+                                <div class="cost-value" id="detail-total-cost">¥0.00</div>
+                            </div>
+                            <div class="cost-card">
+                                <div class="cost-label">已缴费</div>
+                                <div class="cost-value paid" id="detail-paid-cost">¥0.00</div>
+                            </div>
+                            <div class="cost-card">
+                                <div class="cost-label">待缴费</div>
+                                <div class="cost-value unpaid" id="detail-unpaid-cost">¥0.00</div>
+                            </div>
+                        </div>
+                        <div class="cost-breakdown">
+                            <h4>费用明细</h4>
+                            <div class="cost-items" id="cost-breakdown-content">
+                                <!-- 费用明细将动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">关闭</button>
+                <button class="btn btn-primary" onclick="printCaseDetail()">打印</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 脚本 -->
+    <script src="./js/navigation-loader.js"></script>
+    <script>
+        // 时间显示
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = `当前时间：${timeString}`;
+        }
+
+        // 初始化时间显示
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        
+
+        // 图表初始化
+        function initCharts() {
+            // 病例趋势图
+            const caseTrendChart = echarts.init(document.getElementById('caseTrendChart'));
+            caseTrendChart.setOption({
+                title: {
+                    text: '近7天病例趋势',
+                    textStyle: { fontSize: 14, color: '#333' }
+                },
+                tooltip: { trigger: 'axis' },
+                legend: { data: ['新增病例', '危重病例', '治愈病例'] },
+                xAxis: {
+                    type: 'category',
+                    data: ['1/9', '1/10', '1/11', '1/12', '1/13', '1/14', '1/15']
+                },
+                yAxis: { type: 'value' },
+                series: [
+                    {
+                        name: '新增病例',
+                        type: 'line',
+                        data: [23, 28, 31, 26, 29, 33, 28],
+                        itemStyle: { color: '#0066cc' }
+                    },
+                    {
+                        name: '危重病例',
+                        type: 'line',
+                        data: [8, 12, 15, 11, 14, 16, 13],
+                        itemStyle: { color: '#ff4d4f' }
+                    },
+                    {
+                        name: '治愈病例',
+                        type: 'line',
+                        data: [18, 22, 25, 21, 24, 27, 25],
+                        itemStyle: { color: '#52c41a' }
+                    }
+                ]
+            });
+
+            // 科室分布图
+            const departmentChart = echarts.init(document.getElementById('departmentChart'));
+            departmentChart.setOption({
+                title: {
+                    text: '科室病例分布',
+                    textStyle: { fontSize: 14, color: '#333' }
+                },
+                tooltip: { trigger: 'item' },
+                series: [{
+                    type: 'pie',
+                    radius: '70%',
+                    data: [
+                        { value: 35, name: 'ICU' },
+                        { value: 28, name: '神经外科' },
+                        { value: 22, name: '心内科' },
+                        { value: 18, name: '呼吸科' },
+                        { value: 15, name: '其他科室' }
+                    ],
+                    itemStyle: {
+                        color: function(params) {
+                            const colors = ['#0066cc', '#36cfc9', '#52c41a', '#faad14', '#f759ab'];
+                            return colors[params.dataIndex];
+                        }
+                    }
+                }]
+            });
+
+            // 严重程度分布图
+            const severityChart = echarts.init(document.getElementById('severityChart'));
+            severityChart.setOption({
+                title: {
+                    text: '严重程度分布',
+                    textStyle: { fontSize: 14, color: '#333' }
+                },
+                tooltip: { trigger: 'axis' },
+                xAxis: {
+                    type: 'category',
+                    data: ['危重', '重症', '中等', '轻症']
+                },
+                yAxis: { type: 'value' },
+                series: [{
+                    type: 'bar',
+                    data: [23, 45, 67, 89],
+                    itemStyle: {
+                        color: function(params) {
+                            const colors = ['#ff4d4f', '#fa8c16', '#faad14', '#52c41a'];
+                            return colors[params.dataIndex];
+                        }
+                    }
+                }]
+            });
+
+            // 治疗效果分析图
+            const treatmentChart = echarts.init(document.getElementById('treatmentChart'));
+            treatmentChart.setOption({
+                title: {
+                    text: '治疗效果统计',
+                    textStyle: { fontSize: 14, color: '#333' }
+                },
+                tooltip: { trigger: 'item' },
+                series: [{
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    data: [
+                        { value: 156, name: '治愈' },
+                        { value: 45, name: '好转' },
+                        { value: 23, name: '稳定' },
+                        { value: 8, name: '恶化' }
+                    ],
+                    itemStyle: {
+                        color: function(params) {
+                            const colors = ['#52c41a', '#36cfc9', '#faad14', '#ff4d4f'];
+                            return colors[params.dataIndex];
+                        }
+                    }
+                }]
+            });
+        }
+
+        // 页面加载完成后初始化图表，并注册自适应
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+
+            // 获取图表实例
+            const caseTrendChart = echarts.getInstanceByDom(document.getElementById('caseTrendChart'));
+            const departmentChart = echarts.getInstanceByDom(document.getElementById('departmentChart'));
+            const severityChart = echarts.getInstanceByDom(document.getElementById('severityChart'));
+            const treatmentChart = echarts.getInstanceByDom(document.getElementById('treatmentChart'));
+            window.__criticalCharts = { caseTrendChart, departmentChart, severityChart, treatmentChart };
+
+            // 自适应resize逻辑
+            function debounce(fn, delay) { let t; return function() { clearTimeout(t); t = setTimeout(fn, delay); }; }
+            function resizeCharts() {
+                const charts = window.__criticalCharts || {};
+                Object.values(charts).forEach(c => { try { c && c.resize(); } catch (e) {} });
+            }
+            // 监听窗口变化
+            window.addEventListener('resize', debounce(resizeCharts, 150));
+            // 监听容器变化
+            ['caseTrendChart','departmentChart','severityChart','treatmentChart'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && 'ResizeObserver' in window) {
+                    const ro = new ResizeObserver(debounce(resizeCharts, 100));
+                    ro.observe(el);
+                }
+            });
+            // 初次执行一次
+            resizeCharts();
+            
+            // 模拟数据更新
+            setInterval(function() {
+                // 更新监控数据
+                document.getElementById('onlineStaff').textContent = Math.floor(Math.random() * 20) + 150;
+                document.getElementById('activeCases').textContent = Math.floor(Math.random() * 10) + 20;
+                document.getElementById('emergencyAlerts').textContent = Math.floor(Math.random() * 5);
+            }, 5000);
+
+            // 初始化病例详情弹窗功能
+            initCaseDetailModal();
+        });
+
+        // 病例详情弹窗功能
+        function initCaseDetailModal() {
+            const modal = document.getElementById('caseDetailModal');
+            const closeBtn = modal.querySelector('.close');
+            const tabBtns = modal.querySelectorAll('.tab-btn');
+            const tabPanes = modal.querySelectorAll('.tab-pane');
+
+            // 为所有查看按钮添加点击事件
+            document.querySelectorAll('.view-detail-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const caseId = this.getAttribute('data-case-id');
+                    showCaseDetail(caseId);
+                });
+            });
+
+            // 为表格行添加点击事件
+            document.querySelectorAll('.case-row').forEach(row => {
+                row.addEventListener('click', function() {
+                    const caseId = this.getAttribute('data-case-id');
+                    showCaseDetail(caseId);
+                });
+            });
+
+            // 关闭弹窗
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // 标签页切换
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    switchTab(targetTab);
+                });
+            });
+        }
+
+        // 显示病例详情
+        function showCaseDetail(caseId) {
+            const caseData = getCaseData(caseId);
+            if (!caseData) return;
+
+            // 填充基本信息
+            fillBasicInfo(caseData);
+            // 填充诊断信息
+            fillDiagnosisInfo(caseData);
+            // 填充治疗信息
+            fillTreatmentInfo(caseData);
+            // 填充费用信息
+            fillCostInfo(caseData);
+
+            // 显示弹窗
+            const modal = document.getElementById('caseDetailModal');
+            modal.classList.add('show');
+            modal.style.display = 'flex';
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            const modal = document.getElementById('caseDetailModal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
+        // 切换标签页
+        function switchTab(targetTab) {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+            tabPanes.forEach(pane => pane.classList.remove('active'));
+
+            document.querySelector(`[data-tab="${targetTab}"]`).classList.add('active');
+            document.getElementById(`${targetTab}-tab`).classList.add('active');
+        }
+
+        // 获取病例数据（模拟数据）
+        function getCaseData(caseId) {
+            const caseDatabase = {
+                'CC001': {
+                    id: 'CC001',
+                    name: '张三',
+                    gender: '男',
+                    age: '45岁',
+                    idCard: '440***********1234',
+                    phone: '138****5678',
+                    department: 'ICU',
+                    bedNumber: 'ICU-01',
+                    admissionTime: '2024-01-15 14:30',
+                    doctor: '李医生',
+                    nurse: '王护士',
+                    emergencyContact: '李四 (配偶) 139****9876',
+                    mainDiagnosis: '急性心肌梗死',
+                    secondaryDiagnosis: '高血压病、糖尿病',
+                    diseaseCategory: '心血管疾病',
+                    severity: '危重',
+                    conditionStatus: '病情稳定',
+                    riskLevel: '高风险',
+                    symptoms: '胸痛、呼吸困难、出汗，持续时间约2小时，伴有恶心呕吐症状。',
+                    examinationResults: '心电图显示ST段抬高，心肌酶谱升高，冠脉造影显示前降支完全闭塞。',
+                    treatmentPlan: '急诊PCI术，药物溶栓治疗',
+                    medication: '阿司匹林、氯吡格雷、阿托伐他汀',
+                    surgery: '2024-01-15 经皮冠状动脉介入术',
+                    expectedDischarge: '2024-01-25',
+                    totalCost: 45680.50,
+                    paidCost: 30000.00,
+                    unpaidCost: 15680.50,
+                    costBreakdown: [
+                        { name: '手术费', amount: 15000.00 },
+                        { name: '药品费', amount: 8500.00 },
+                        { name: '检查费', amount: 3200.00 },
+                        { name: '床位费', amount: 2800.00 },
+                        { name: '护理费', amount: 1680.50 },
+                        { name: '其他费用', amount: 14500.00 }
+                    ],
+                    treatmentTimeline: [
+                        { date: '2024-01-15 14:30', content: '🚨 患者急诊入院，胸痛剧烈，血压下降，立即启动抢救程序' },
+                        { date: '2024-01-15 14:45', content: '⚡ 建立静脉通路，心电监护，血氧饱和度监测，紧急抽血化验' },
+                        { date: '2024-01-15 15:15', content: '🩺 心电图显示ST段抬高，心肌酶谱升高，确诊急性ST段抬高型心肌梗死' },
+                        { date: '2024-01-15 15:45', content: '💊 启动抢救用药：阿司匹林、氯吡格雷、肝素抗凝治疗' },
+                        { date: '2024-01-15 16:20', content: '🏥 急诊介入室行PCI术，成功开通前降支血管，植入支架' },
+                        { date: '2024-01-15 18:00', content: '🔬 术后转入CCU监护，持续心电监护，血压逐渐稳定' },
+                        { date: '2024-01-15 22:30', content: '📊 复查心肌酶谱，CK-MB达峰值，心功能评估' },
+                        { date: '2024-01-16 08:00', content: '🌅 晨间查房，胸痛缓解，生命体征平稳，继续CCU监护' },
+                        { date: '2024-01-16 14:00', content: '🔄 复查心电图，ST段回落，调整抗凝和抗血小板治疗' },
+                        { date: '2024-01-17 09:00', content: '📈 病情稳定，心功能好转，转入普通病房' },
+                        { date: '2024-01-17 15:30', content: '🚶 开始床边康复训练，心脏康复指导' },
+                        { date: '2024-01-18 10:00', content: '💊 调整长期用药方案：他汀类、ACEI、β受体阻滞剂' },
+                        { date: '2024-01-19 14:00', content: '📋 出院前教育，制定康复计划，定期随访安排' }
+                    ]
+                },
+                'CC002': {
+                    id: 'CC002',
+                    name: '李四',
+                    gender: '女',
+                    age: '38岁',
+                    idCard: '440***********5678',
+                    phone: '139****1234',
+                    department: '神经外科',
+                    bedNumber: 'NS-12',
+                    admissionTime: '2024-01-16 09:15',
+                    doctor: '陈医生',
+                    nurse: '刘护士',
+                    emergencyContact: '王五 (丈夫) 138****5432',
+                    mainDiagnosis: '脑出血',
+                    secondaryDiagnosis: '高血压病',
+                    diseaseCategory: '神经系统疾病',
+                    severity: '重症',
+                    conditionStatus: '病情好转',
+                    riskLevel: '中风险',
+                    symptoms: '突发头痛、恶心呕吐、意识模糊，右侧肢体无力。',
+                    examinationResults: 'CT显示左侧基底节区出血，出血量约30ml，轻度脑水肿。',
+                    treatmentPlan: '保守治疗，降颅压，止血',
+                    medication: '甘露醇、止血敏、降压药',
+                    surgery: '无',
+                    expectedDischarge: '2024-01-30',
+                    totalCost: 28500.00,
+                    paidCost: 20000.00,
+                    unpaidCost: 8500.00,
+                    costBreakdown: [
+                        { name: '药品费', amount: 12000.00 },
+                        { name: '检查费', amount: 4500.00 },
+                        { name: '床位费', amount: 3200.00 },
+                        { name: '护理费', amount: 2800.00 },
+                        { name: '治疗费', amount: 6000.00 }
+                    ],
+                    treatmentTimeline: [
+                        { date: '2024-01-16 09:15', content: '🚨 患者急诊入院，突发头痛、呕吐、意识模糊，右侧肢体无力' },
+                        { date: '2024-01-16 09:30', content: '⚡ 立即建立静脉通路，心电监护，血压监测，紧急抽血化验' },
+                        { date: '2024-01-16 09:45', content: '🩺 急诊头颅CT检查，显示左侧基底节区出血约30ml，轻度脑水肿' },
+                        { date: '2024-01-16 10:30', content: '🏥 确诊脑出血，立即启动降颅压治疗：甘露醇静滴' },
+                        { date: '2024-01-16 11:00', content: '💊 止血治疗：止血敏、维生素K，严格控制血压' },
+                        { date: '2024-01-16 14:00', content: '📊 神经外科会诊，评估手术指征，暂行保守治疗' },
+                        { date: '2024-01-16 18:00', content: '🔬 复查血常规、凝血功能，调整止血药物剂量' },
+                        { date: '2024-01-17 08:00', content: '🌅 晨间查房，意识较前好转，GCS评分提升' },
+                        { date: '2024-01-17 10:00', content: '🔄 复查头颅CT，出血量稳定，脑水肿减轻' },
+                        { date: '2024-01-17 15:30', content: '📈 血压控制良好，颅内压下降，继续降颅压治疗' },
+                        { date: '2024-01-18 09:00', content: '🧠 神经功能评估，右侧肢体肌力恢复至3级' },
+                        { date: '2024-01-18 14:00', content: '🚶 开始床边康复训练，肢体功能锻炼，语言训练' },
+                        { date: '2024-01-19 10:30', content: '💊 调整用药方案，减少甘露醇用量，加强营养支持' },
+                        { date: '2024-01-20 16:00', content: '📋 康复科会诊，制定系统康复计划' }
+                    ]
+                }
+                // 可以继续添加更多病例数据...
+            };
+
+            // 如果没有找到具体数据，返回默认数据
+            return caseDatabase[caseId] || generateDefaultCaseData(caseId);
+        }
+
+        // 生成详细的治疗时间线
+        function generateDetailedTreatmentTimeline(severity, diagnosis, admissionTime) {
+            const baseDate = new Date(admissionTime);
+            const timeline = [];
+            
+            // 根据严重程度生成不同的治疗经过
+            if (severity === '危重') {
+                return generateCriticalTimeline(baseDate, diagnosis);
+            } else if (severity === '重症') {
+                return generateSevereTimeline(baseDate, diagnosis);
+            } else {
+                return generateModerateTimeline(baseDate, diagnosis);
+            }
+        }
+
+        // 危重患者治疗时间线
+        function generateCriticalTimeline(baseDate, diagnosis) {
+            const timeline = [];
+            let currentDate = new Date(baseDate);
+            
+            // 入院急救阶段
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🚨 患者急诊入院，生命体征不稳定，立即启动抢救程序'
+            });
+            
+            currentDate.setMinutes(currentDate.getMinutes() + 15);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '⚡ 建立静脉通路，心电监护，血氧饱和度监测，紧急抽血化验'
+            });
+            
+            currentDate.setMinutes(currentDate.getMinutes() + 20);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🩺 完成紧急CT/X线检查，确诊' + diagnosis + '，病情危重'
+            });
+            
+            currentDate.setMinutes(currentDate.getMinutes() + 30);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '💊 启动抢救用药：肾上腺素、多巴胺、呼吸兴奋剂等'
+            });
+            
+            currentDate.setHours(currentDate.getHours() + 1);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🏥 转入ICU，呼吸机辅助通气，持续心电监护'
+            });
+            
+            currentDate.setHours(currentDate.getHours() + 2);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🔬 血气分析异常，调整呼吸机参数，补液纠酸'
+            });
+            
+            currentDate.setHours(currentDate.getHours() + 4);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '📊 生命体征逐渐稳定，血压回升，心率规律'
+            });
+            
+            // 第二天
+            currentDate.setDate(currentDate.getDate() + 1);
+            currentDate.setHours(8, 0, 0);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🌅 晨间查房，病情相对稳定，继续ICU监护治疗'
+            });
+            
+            currentDate.setHours(14, 30, 0);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🔄 复查血常规、生化，调整抗感染和营养支持方案'
+            });
+            
+            // 第三天
+            currentDate.setDate(currentDate.getDate() + 1);
+            currentDate.setHours(9, 15, 0);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '📈 病情好转，意识逐渐清醒，呼吸机参数下调'
+            });
+            
+            currentDate.setHours(16, 0, 0);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🫁 成功脱离呼吸机，改为鼻导管吸氧'
+            });
+            
+            // 第四天
+            currentDate.setDate(currentDate.getDate() + 1);
+            currentDate.setHours(10, 0, 0);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🚶 开始床边康复训练，逐步恢复肢体功能'
+            });
+            
+            return timeline;
+        }
+
+        // 重症患者治疗时间线
+        function generateSevereTimeline(baseDate, diagnosis) {
+            const timeline = [];
+            let currentDate = new Date(baseDate);
+            
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🏥 患者入院，病情较重，立即完成入院评估'
+            });
+            
+            currentDate.setMinutes(currentDate.getMinutes() + 30);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🔍 完成血常规、生化、影像学检查，确诊' + diagnosis
+            });
+            
+            currentDate.setHours(currentDate.getHours() + 1);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '💉 开始静脉输液治疗，使用抗生素和对症药物'
+            });
+            
+            currentDate.setHours(currentDate.getHours() + 3);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '📋 制定详细治疗方案，密切监测生命体征'
+            });
+            
+            // 第二天
+            currentDate.setDate(currentDate.getDate() + 1);
+            currentDate.setHours(8, 0, 0);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🌅 晨间查房，病情稳定，继续原治疗方案'
+            });
+            
+            currentDate.setHours(15, 0, 0);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🔬 复查相关指标，根据结果调整用药剂量'
+            });
+            
+            // 第三天
+            currentDate.setDate(currentDate.getDate() + 1);
+            currentDate.setHours(9, 30, 0);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '📊 病情明显好转，炎症指标下降，症状缓解'
+            });
+            
+            currentDate.setHours(14, 0, 0);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🚶 开始下床活动，进行功能锻炼'
+            });
+            
+            return timeline;
+        }
+
+        // 中度患者治疗时间线
+        function generateModerateTimeline(baseDate, diagnosis) {
+            const timeline = [];
+            let currentDate = new Date(baseDate);
+            
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🏥 患者入院，病情中等，完成常规入院检查'
+            });
+            
+            currentDate.setMinutes(currentDate.getMinutes() + 45);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '📋 完成病史采集和体格检查，初步诊断' + diagnosis
+            });
+            
+            currentDate.setHours(currentDate.getHours() + 2);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '💊 开始口服/静脉药物治疗，定期监测'
+            });
+            
+            // 第二天
+            currentDate.setDate(currentDate.getDate() + 1);
+            currentDate.setHours(9, 0, 0);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '🌅 查房，病情稳定，治疗效果良好'
+            });
+            
+            // 第三天
+            currentDate.setDate(currentDate.getDate() + 1);
+            currentDate.setHours(10, 0, 0);
+            timeline.push({
+                date: formatDateTime(currentDate),
+                content: '📈 症状明显改善，准备出院指导'
+            });
+            
+            return timeline;
+        }
+
+        // 格式化日期时间
+        function formatDateTime(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
+
+        // 生成默认病例数据
+        function generateDefaultCaseData(caseId) {
+            const names = ['张三', '李四', '王五', '赵六', '钱七', '孙八', '周九', '吴十'];
+            const departments = ['ICU', '神经外科', '呼吸科', '心内科', '骨科', '普外科'];
+            const diagnoses = ['急性心肌梗死', '脑出血', '重症肺炎', '多发性骨折', '急性阑尾炎', '胆囊炎'];
+            const severities = ['危重', '重症', '中度'];
+            
+            const severity = severities[Math.floor(Math.random() * severities.length)];
+            const diagnosis = diagnoses[Math.floor(Math.random() * diagnoses.length)];
+            const admissionTime = '2024-01-' + Math.floor(Math.random() * 20 + 10) + ' ' + 
+                                 String(Math.floor(Math.random() * 24)).padStart(2, '0') + ':' + 
+                                 String(Math.floor(Math.random() * 60)).padStart(2, '0');
+            
+            return {
+                id: caseId,
+                name: names[Math.floor(Math.random() * names.length)],
+                gender: Math.random() > 0.5 ? '男' : '女',
+                age: Math.floor(Math.random() * 50 + 20) + '岁',
+                idCard: '440***********' + Math.floor(Math.random() * 9999),
+                phone: '138****' + Math.floor(Math.random() * 9999),
+                department: departments[Math.floor(Math.random() * departments.length)],
+                bedNumber: 'B-' + Math.floor(Math.random() * 99 + 1),
+                admissionTime: admissionTime,
+                doctor: '医生' + Math.floor(Math.random() * 10 + 1),
+                nurse: '护士' + Math.floor(Math.random() * 10 + 1),
+                emergencyContact: '联系人 138****' + Math.floor(Math.random() * 9999),
+                mainDiagnosis: diagnosis,
+                secondaryDiagnosis: '高血压病',
+                diseaseCategory: '内科疾病',
+                severity: severity,
+                conditionStatus: severity === '危重' ? '抢救中' : (severity === '重症' ? '病情好转' : '病情稳定'),
+                riskLevel: severity === '危重' ? '高风险' : (severity === '重症' ? '中风险' : '低风险'),
+                symptoms: generateSymptomsBasedOnSeverity(severity, diagnosis),
+                examinationResults: generateExaminationResults(severity, diagnosis),
+                treatmentPlan: generateTreatmentPlan(severity, diagnosis),
+                medication: generateMedication(severity, diagnosis),
+                surgery: severity === '危重' ? '急诊手术' : '无',
+                expectedDischarge: '2024-01-' + Math.floor(Math.random() * 10 + 25),
+                totalCost: severity === '危重' ? Math.floor(Math.random() * 80000 + 50000) : 
+                          (severity === '重症' ? Math.floor(Math.random() * 40000 + 20000) : 
+                           Math.floor(Math.random() * 20000 + 5000)),
+                paidCost: Math.floor(Math.random() * 30000 + 5000),
+                unpaidCost: Math.floor(Math.random() * 20000 + 2000),
+                costBreakdown: generateCostBreakdown(severity),
+                treatmentTimeline: generateDetailedTreatmentTimeline(severity, diagnosis, admissionTime)
+            };
+        }
+
+        // 根据严重程度生成症状描述
+        function generateSymptomsBasedOnSeverity(severity, diagnosis) {
+            if (severity === '危重') {
+                return '患者意识模糊，呼吸急促，血压下降，心率不齐，伴有严重疼痛和多器官功能障碍征象。';
+            } else if (severity === '重症') {
+                return '患者精神萎靡，呼吸困难，血压偏低，心率增快，疼痛明显，需要密切监护。';
+            } else {
+                return '患者精神尚可，轻度不适，生命体征相对稳定，症状可控。';
+            }
+        }
+
+        // 生成检查结果
+        function generateExaminationResults(severity, diagnosis) {
+            if (severity === '危重') {
+                return '影像学检查显示严重病变，血液检查多项指标异常，需要紧急处理。';
+            } else if (severity === '重症') {
+                return '检查结果显示明显异常，炎症指标升高，需要积极治疗。';
+            } else {
+                return '检查结果显示轻度异常，整体情况尚可，需要观察治疗。';
+            }
+        }
+
+        // 生成治疗方案
+        function generateTreatmentPlan(severity, diagnosis) {
+            if (severity === '危重') {
+                return 'ICU监护，呼吸机辅助通气，血管活性药物，抗感染，营养支持';
+            } else if (severity === '重症') {
+                return '住院治疗，抗感染，对症支持，密切监测';
+            } else {
+                return '保守治疗，药物治疗，定期复查';
+            }
+        }
+
+        // 生成用药方案
+        function generateMedication(severity, diagnosis) {
+            if (severity === '危重') {
+                return '肾上腺素、多巴胺、呼吸兴奋剂、广谱抗生素、营养液';
+            } else if (severity === '重症') {
+                return '抗生素、止痛药、营养支持药物、对症药物';
+            } else {
+                return '常规药物治疗，止痛药，维生素';
+            }
+        }
+
+        // 生成费用明细
+        function generateCostBreakdown(severity) {
+            if (severity === '危重') {
+                return [
+                    { name: 'ICU费用', amount: Math.floor(Math.random() * 20000 + 15000) },
+                    { name: '抢救费', amount: Math.floor(Math.random() * 15000 + 10000) },
+                    { name: '药品费', amount: Math.floor(Math.random() * 15000 + 8000) },
+                    { name: '检查费', amount: Math.floor(Math.random() * 8000 + 3000) },
+                    { name: '护理费', amount: Math.floor(Math.random() * 5000 + 2000) },
+                    { name: '其他费用', amount: Math.floor(Math.random() * 10000 + 5000) }
+                ];
+            } else if (severity === '重症') {
+                return [
+                    { name: '住院费', amount: Math.floor(Math.random() * 8000 + 5000) },
+                    { name: '药品费', amount: Math.floor(Math.random() * 10000 + 5000) },
+                    { name: '检查费', amount: Math.floor(Math.random() * 5000 + 2000) },
+                    { name: '治疗费', amount: Math.floor(Math.random() * 6000 + 3000) },
+                    { name: '护理费', amount: Math.floor(Math.random() * 3000 + 1000) }
+                ];
+            } else {
+                return [
+                    { name: '药品费', amount: Math.floor(Math.random() * 5000 + 2000) },
+                    { name: '检查费', amount: Math.floor(Math.random() * 3000 + 1000) },
+                    { name: '床位费', amount: Math.floor(Math.random() * 2000 + 500) },
+                    { name: '护理费', amount: Math.floor(Math.random() * 1500 + 500) },
+                    { name: '治疗费', amount: Math.floor(Math.random() * 3000 + 1000) }
+                ];
+            }
+        }
+
+        // 填充基本信息
+        function fillBasicInfo(data) {
+            document.getElementById('detail-case-id').textContent = data.id;
+            document.getElementById('detail-patient-name').textContent = data.name;
+            document.getElementById('detail-gender').textContent = data.gender;
+            document.getElementById('detail-age').textContent = data.age;
+            document.getElementById('detail-id-card').textContent = data.idCard;
+            document.getElementById('detail-phone').textContent = data.phone;
+            document.getElementById('detail-department').textContent = data.department;
+            document.getElementById('detail-bed-number').textContent = data.bedNumber;
+            document.getElementById('detail-admission-time').textContent = data.admissionTime;
+            document.getElementById('detail-doctor').textContent = data.doctor;
+            document.getElementById('detail-nurse').textContent = data.nurse;
+            document.getElementById('detail-emergency-contact').textContent = data.emergencyContact;
+        }
+
+        // 填充诊断信息
+        function fillDiagnosisInfo(data) {
+            document.getElementById('detail-main-diagnosis').textContent = data.mainDiagnosis;
+            document.getElementById('detail-secondary-diagnosis').textContent = data.secondaryDiagnosis;
+            document.getElementById('detail-disease-category').textContent = data.diseaseCategory;
+            document.getElementById('detail-severity').textContent = data.severity;
+            document.getElementById('detail-condition-status').textContent = data.conditionStatus;
+            document.getElementById('detail-risk-level').textContent = data.riskLevel;
+            document.getElementById('detail-symptoms').textContent = data.symptoms;
+            document.getElementById('detail-examination-results').textContent = data.examinationResults;
+        }
+
+        // 填充治疗信息
+        function fillTreatmentInfo(data) {
+            document.getElementById('detail-treatment-plan').textContent = data.treatmentPlan;
+            document.getElementById('detail-medication').textContent = data.medication;
+            document.getElementById('detail-surgery').textContent = data.surgery;
+            document.getElementById('detail-expected-discharge').textContent = data.expectedDischarge;
+
+            // 填充治疗时间线
+            const timelineContent = document.getElementById('treatment-timeline-content');
+            timelineContent.innerHTML = '';
+            data.treatmentTimeline.forEach(item => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+                timelineItem.innerHTML = `
+                    <div class="timeline-date">${item.date}</div>
+                    <div class="timeline-content-text">${item.content}</div>
+                `;
+                timelineContent.appendChild(timelineItem);
+            });
+        }
+
+        // 填充费用信息
+        function fillCostInfo(data) {
+            document.getElementById('detail-total-cost').textContent = `¥${data.totalCost.toFixed(2)}`;
+            document.getElementById('detail-paid-cost').textContent = `¥${data.paidCost.toFixed(2)}`;
+            document.getElementById('detail-unpaid-cost').textContent = `¥${data.unpaidCost.toFixed(2)}`;
+
+            // 填充费用明细
+            const costBreakdownContent = document.getElementById('cost-breakdown-content');
+            costBreakdownContent.innerHTML = '';
+            data.costBreakdown.forEach(item => {
+                const costItem = document.createElement('div');
+                costItem.className = 'cost-item';
+                costItem.innerHTML = `
+                    <span class="cost-item-name">${item.name}</span>
+                    <span class="cost-item-amount">¥${item.amount.toFixed(2)}</span>
+                `;
+                costBreakdownContent.appendChild(costItem);
+            });
+        }
+
+        // 打印病例详情
+        function printCaseDetail() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

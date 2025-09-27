@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科室医疗服务 - 佛山市南海区中医院数据中心管理平台</title>
+    <link rel="preload" href="./css/style.css" as="style">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/workload-analysis.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <!-- 右侧内容区 -->
+        <main class="workload-analysis">
+                <!-- 页面头部 -->
+                <div class="page-header">
+                    <h2>科室医疗服务<span class="english-title">Department Medical Services</span></h2>
+                    <div class="breadcrumb">
+                        <a href="./index.html">首页</a> &gt; 
+                        <a href="#department-analysis">科主任运营分析</a> &gt; 
+                        <span>科室医疗服务</span>
+                    </div>
+                </div>
+
+                <!-- 筛选控件 -->
+                <div class="filter-controls">
+                    <div class="filter-item">
+                        <label for="time-range">时间范围：</label>
+                        <select id="time-range">
+                            <option value="today">今日</option>
+                            <option value="week">本周</option>
+                            <option value="month" selected>本月</option>
+                            <option value="quarter">本季度</option>
+                            <option value="year">本年</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="department-select">选择科室：</label>
+                        <select id="department-select">
+                            <option value="cardiology">心内科</option>
+                            <option value="orthopedics">骨科</option>
+                            <option value="neurosurgery">神经外科</option>
+                            <option value="digestive">消化内科</option>
+                            <option value="respiratory">呼吸内科</option>
+                            <option value="neurology">神经内科</option>
+                            <option value="obstetrics">妇产科</option>
+                            <option value="pediatrics">儿科</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="workload-type">工作量类型：</label>
+                        <select id="workload-type">
+                            <option value="all" selected>全部</option>
+                            <option value="outpatient">门诊量</option>
+                            <option value="inpatient">住院量</option>
+                            <option value="surgery">手术量</option>
+                            <option value="examination">检查量</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="refresh-btn">刷新数据</button>
+                    <button class="btn btn-default" id="export-btn">导出报告</button>
+                </div>
+
+                <!-- 关键指标卡片 -->
+                <div class="key-indicators">
+                    <div class="indicator-card">
+                        <div class="indicator-value" id="total-outpatient">2,456</div>
+                        <div class="indicator-label">门诊总量<span class="indicator-subtitle">Outpatient Volume</span></div>
+                        <div class="indicator-change positive">+12.5%</div>
+                    </div>
+                    <div class="indicator-card">
+                        <div class="indicator-value" id="total-inpatient">186</div>
+                        <div class="indicator-label">住院总量<span class="indicator-subtitle">Inpatient Volume</span></div>
+                        <div class="indicator-change positive">+8.3%</div>
+                    </div>
+                    <div class="indicator-card">
+                        <div class="indicator-value" id="total-surgery">45</div>
+                        <div class="indicator-label">手术总量<span class="indicator-subtitle">Surgery Volume</span></div>
+                        <div class="indicator-change negative">-2.1%</div>
+                    </div>
+                    <div class="indicator-card">
+                        <div class="indicator-value" id="total-examination">892</div>
+                        <div class="indicator-label">检查总量<span class="indicator-subtitle">Examination Volume</span></div>
+                        <div class="indicator-change positive">+15.7%</div>
+                    </div>
+                    <div class="indicator-card">
+                        <div class="indicator-value" id="avg-daily-workload">98.5</div>
+                        <div class="indicator-label">日均工作量<span class="indicator-subtitle">Daily Average</span></div>
+                        <div class="indicator-change positive">+6.2%</div>
+                    </div>
+                </div>
+
+                <!-- 图表区域 -->
+                <div class="dashboard-grid">
+                    <!-- 工作量趋势图 -->
+                    <div class="dashboard-item">
+                        <h3>工作量趋势分析<span class="chart-subtitle">Workload Trend Analysis</span></h3>
+                        <div id="workload-trend-chart" class="chart-standard"></div>
+                    </div>
+
+                    <!-- 工作量分布图 -->
+                    <div class="dashboard-item">
+                        <h3>工作量类型分布<span class="chart-subtitle">Workload Distribution</span></h3>
+                        <div id="workload-distribution-chart" class="chart-standard"></div>
+                    </div>
+
+                    <!-- 科室工作量对比 -->
+                    <div class="dashboard-item">
+                        <h3>科室工作量对比<span class="chart-subtitle">Department Comparison</span></h3>
+                        <div id="department-comparison-chart" class="chart-standard"></div>
+                    </div>
+
+                    <!-- 医生工作量排名 -->
+                    <div class="dashboard-item">
+                        <h3>医生工作量排名<span class="chart-subtitle">Doctor Ranking</span></h3>
+                        <div id="doctor-workload-chart" class="chart-standard"></div>
+                    </div>
+                </div>
+
+                <!-- 详细数据表格 -->
+                <div class="section">
+                    <div class="section-title">详细工作量数据<span class="table-subtitle">Detailed Workload Data</span></div>
+                    <table class="workload-table">
+                        <thead>
+                            <tr>
+                                <th>医生姓名</th>
+                                <th>门诊量</th>
+                                <th>住院量</th>
+                                <th>手术量</th>
+                                <th>检查量</th>
+                                <th>总工作量</th>
+                                <th>环比变化</th>
+                                <th>工作效率</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workload-table-body">
+                            <tr>
+                                <td>张主任</td>
+                                <td>156</td>
+                                <td>28</td>
+                                <td>12</td>
+                                <td>89</td>
+                                <td>285</td>
+                                <td><span class="trend-indicator trend-up">↑ 8.5%</span></td>
+                                <td>95.2%</td>
+                            </tr>
+                            <tr>
+                                <td>李医生</td>
+                                <td>142</td>
+                                <td>22</td>
+                                <td>8</td>
+                                <td>76</td>
+                                <td>248</td>
+                                <td><span class="trend-indicator trend-up">↑ 12.3%</span></td>
+                                <td>92.8%</td>
+                            </tr>
+                            <tr>
+                                <td>王医生</td>
+                                <td>138</td>
+                                <td>25</td>
+                                <td>10</td>
+                                <td>82</td>
+                                <td>255</td>
+                                <td><span class="trend-indicator trend-down">↓ 3.2%</span></td>
+                                <td>89.6%</td>
+                            </tr>
+                            <tr>
+                                <td>陈医生</td>
+                                <td>129</td>
+                                <td>19</td>
+                                <td>6</td>
+                                <td>68</td>
+                                <td>222</td>
+                                <td><span class="trend-indicator trend-up">↑ 5.7%</span></td>
+                                <td>91.4%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+        </main>
+    </div>
+
+    <script src="./js/common.js"></script>
+    <script src="./js/workload-analysis.js"></script>
+    <!-- 加载统一导航组件 -->
+    <script src="./js/navigation-loader.js?v=20250121-debug"></script>
+</body>
+</html>

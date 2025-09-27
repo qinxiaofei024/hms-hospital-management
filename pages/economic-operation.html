@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经济运行 - 佛山市南海区中医院数据中心管理平台</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/economic-operation.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        /* 经济运行特殊样式 */
+        .economic-operation {
+            padding: 24px;
+        }
+        
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .dashboard-item {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .dashboard-item h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        .chart-standard {
+            height: 300px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .comparison-table th {
+            background-color: #f0f7ff;
+            font-weight: 600;
+            color: #0066cc;
+        }
+        
+        .comparison-table tr:hover {
+            background-color: #fafafa;
+        }
+        
+        .key-indicators {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .indicator-card {
+            padding: 16px;
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .indicator-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0066cc;
+            margin-bottom: 4px;
+        }
+        
+        .indicator-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-item label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .filter-item select {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #fff;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #0066cc;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0052a3;
+        }
+        
+        .btn-default {
+            background-color: #fff;
+            color: #666;
+            border: 1px solid #d9d9d9;
+        }
+        
+        .btn-default:hover {
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        /* 表格数据颜色样式 */
+        .high-usage {
+            color: #ff4d4f;
+            font-weight: 600;
+        }
+        
+        .normal-usage {
+            color: #52c41a;
+        }
+        
+        .low-usage {
+            color: #faad14;
+        }
+        
+        .good-stay {
+            color: #52c41a;
+            font-weight: 600;
+        }
+        
+        .normal-stay {
+            color: #1890ff;
+        }
+        
+        .long-stay {
+            color: #ff4d4f;
+        }
+        
+        .positive-growth {
+            color: #52c41a;
+            font-weight: 600;
+        }
+        
+        .negative-growth {
+            color: #ff4d4f;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <!-- 右侧内容区 -->
+        <main class="economic-operation">
+                <!-- 页面头部 -->
+                <div class="page-header">
+                    <h2>经济运行<span class="english-title">Economic Operation</span></h2>
+                    <div class="breadcrumb">
+                        <a href="./index.html">首页</a> &gt; 
+                        <a href="#operation-analysis">综合运营管理分析平台</a> &gt; 
+                        <span>经济运行</span>
+                    </div>
+                </div>
+
+                <!-- 筛选控件 -->
+                <div class="filter-controls">
+                    <div class="filter-item">
+                        <label for="time-range">时间范围：</label>
+                        <select id="time-range">
+                            <option value="today">今日</option>
+                            <option value="week">本周</option>
+                            <option value="month" selected>本月</option>
+                            <option value="quarter">本季度</option>
+                            <option value="year">本年</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="department-type">科室类型：</label>
+                        <select id="department-type">
+                            <option value="all" selected>全部科室</option>
+                            <option value="internal">内科</option>
+                            <option value="surgery">外科</option>
+                            <option value="specialty">专科</option>
+                            <option value="medical">医技</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="refresh-btn">刷新数据</button>
+                    <button class="btn btn-default" id="export-btn">导出报告</button>
+                    <button class="btn btn-default" id="export-table-btn">导出表格</button>
+                </div>
+
+                <!-- 关键指标卡片 -->
+                <div class="key-indicators">
+                    <div class="indicator-card drillable" data-metric="总收入" data-period="month">
+                        <div class="indicator-value">¥8.5亿</div>
+                        <div class="indicator-label">本月总收入</div>
+                    </div>
+                    <div class="indicator-card drillable" data-metric="净利润" data-period="month">
+                        <div class="indicator-value">¥1.3亿</div>
+                        <div class="indicator-label">本月净利润</div>
+                    </div>
+                    <div class="indicator-card drillable" data-metric="利润率" data-period="month">
+                        <div class="indicator-value">15.3%</div>
+                        <div class="indicator-label">利润率</div>
+                    </div>
+                    <div class="indicator-card drillable" data-metric="床位使用率" data-period="month">
+                        <div class="indicator-value">92.8%</div>
+                        <div class="indicator-label">床位使用率</div>
+                    </div>
+                    <div class="indicator-card drillable" data-metric="平均住院日" data-period="month">
+                        <div class="indicator-value">7.2天</div>
+                        <div class="indicator-label">平均住院日</div>
+                    </div>
+                    <div class="indicator-card drillable" data-metric="均次费用" data-period="month">
+                        <div class="indicator-value">¥18,500</div>
+                        <div class="indicator-label">均次费用</div>
+                    </div>
+                </div>
+
+                <!-- 指标达成率区域 -->
+                <div class="section">
+                    <div class="section-header">
+                        <h3 class="section-title">指标达成率</h3>
+                        <div class="section-actions">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="achievement-rate-toggle">
+                                <span class="toggle-slider"></span>
+                                显示达成率数值
+                            </label>
+                        </div>
+                    </div>
+                    <div id="achievement-rate-container" class="achievement-container">
+                        <!-- 指标达成率内容由JavaScript动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 收入结构分析 -->
+                <div class="section">
+                    <h3 class="section-title">收入结构分析</h3>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <h3>收入类型占比</h3>
+                            <div id="revenueTypeChart" class="chart-standard"></div>
+                        </div>
+                        <div class="dashboard-item">
+                            <h3>收入来源分析</h3>
+                            <div id="revenueSourceChart" class="chart-standard"></div>
+                        </div>
+                    </div>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>收入类型</th>
+                                <th>本月收入</th>
+                                <th>上月收入</th>
+                                <th>环比增长</th>
+                                <th>占比</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>医疗收入</td>
+                                <td>¥1.8亿</td>
+                                <td>¥1.6亿</td>
+                                <td>+12.5%</td>
+                                <td>56.2%</td>
+                            </tr>
+                            <tr>
+                                <td>药品收入</td>
+                                <td>¥1.2亿</td>
+                                <td>¥1.1亿</td>
+                                <td>+9.1%</td>
+                                <td>37.5%</td>
+                            </tr>
+                            <tr>
+                                <td>其他收入</td>
+                                <td>¥0.2亿</td>
+                                <td>¥0.18亿</td>
+                                <td>+11.1%</td>
+                                <td>6.3%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 收入趋势分析 -->
+                <div class="section">
+                    <h3 class="section-title">收入趋势分析</h3>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <h3>月度收入趋势</h3>
+                            <div id="monthlyRevenueChart" class="chart-standard"></div>
+                        </div>
+                        <div class="dashboard-item">
+                            <h3>季度收入预测</h3>
+                            <div id="quarterlyForecastChart" class="chart-standard"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 成本分析 -->
+                <div class="section">
+                    <h3 class="section-title">成本分析</h3>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <h3>成本结构分析</h3>
+                            <div id="costStructureChart" class="chart-standard"></div>
+                        </div>
+                        <div class="dashboard-item">
+                            <h3>收支结余分析</h3>
+                            <div id="profitAnalysisChart" class="chart-standard"></div>
+                        </div>
+                    </div>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>成本类型</th>
+                                <th>本月支出</th>
+                                <th>上月支出</th>
+                                <th>环比增长</th>
+                                <th>占比</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>人力成本</td>
+                                <td>¥1.1亿</td>
+                                <td>¥1.08亿</td>
+                                <td>+1.9%</td>
+                                <td>47.8%</td>
+                            </tr>
+                            <tr>
+                                <td>药品成本</td>
+                                <td>¥0.7亿</td>
+                                <td>¥0.65亿</td>
+                                <td>+7.7%</td>
+                                <td>30.4%</td>
+                            </tr>
+                            <tr>
+                                <td>设备成本</td>
+                                <td>¥0.3亿</td>
+                                <td>¥0.28亿</td>
+                                <td>+7.1%</td>
+                                <td>13.0%</td>
+                            </tr>
+                            <tr>
+                                <td>其他成本</td>
+                                <td>¥0.2亿</td>
+                                <td>¥0.19亿</td>
+                                <td>+5.3%</td>
+                                <td>8.7%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+                <!-- 数据表格 -->
+                <div class="section">
+                    <div class="table-header">
+                        <h3 class="section-title">科室收入明细</h3>
+                        <button class="btn btn-filter">筛选</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>科室名称</th>
+                                    <th>总收入</th>
+                                    <th>医疗收入</th>
+                                    <th>药品收入</th>
+                                    <th>同比增长</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="drillable" data-metric="科室明细" data-period="month">
+                                    <td><span class="department-name clickable" data-department="心内科">心内科</span></td>
+                                    <td>¥320万</td>
+                                    <td>¥210万</td>
+                                    <td>¥110万</td>
+                                    <td>+14.3%</td>
+                                </tr>
+                                <tr class="drillable" data-metric="科室明细" data-period="month">
+                                    <td><span class="department-name clickable" data-department="消化内科">消化内科</span></td>
+                                    <td>¥280万</td>
+                                    <td>¥180万</td>
+                                    <td>¥100万</td>
+                                    <td>+7.7%</td>
+                                </tr>
+                                <tr class="drillable" data-metric="科室明细" data-period="month">
+                                    <td><span class="department-name clickable" data-department="呼吸内科">呼吸内科</span></td>
+                                    <td>¥240万</td>
+                                    <td>¥150万</td>
+                                    <td>¥90万</td>
+                                    <td>+9.1%</td>
+                                </tr>
+                                <tr class="drillable" data-metric="科室明细" data-period="month">
+                                    <td><span class="department-name clickable" data-department="骨科">骨科</span></td>
+                                    <td>¥360万</td>
+                                    <td>¥280万</td>
+                                    <td>¥80万</td>
+                                    <td>+16.1%</td>
+                                </tr>
+                                <tr class="drillable" data-metric="科室明细" data-period="month">
+                                    <td><span class="department-name clickable" data-department="神经外科">神经外科</span></td>
+                                    <td>¥310万</td>
+                                    <td>¥240万</td>
+                                    <td>¥70万</td>
+                                    <td>+6.9%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-footer">
+                        <div class="pagination">
+                            <button class="page-btn prev">上一页</button>
+                            <button class="page-btn active">1</button>
+                            <button class="page-btn">2</button>
+                            <button class="page-btn">3</button>
+                            <button class="page-btn next">下一页</button>
+                        </div>
+                        <div class="page-size">
+                            <select>
+                                <option value="10">10条/页</option>
+                                <option value="20">20条/页</option>
+                                <option value="50">50条/页</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </main>
+    </div>
+
+    <!-- 医生收入明细弹出窗口 -->
+    <div id="doctor-income-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-department-title">科室医生收入明细</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="doctor-income-table-container">
+                    <table class="doctor-income-table">
+                        <thead>
+                            <tr>
+                                <th>医生姓名</th>
+                                <th>职称</th>
+                                <th>门诊收入</th>
+                                <th>住院收入</th>
+                                <th>手术收入</th>
+                                <th>总收入</th>
+                                <th>同比增长</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctor-income-tbody">
+                            <!-- 动态生成的医生收入数据 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="close-modal-btn">关闭</button>
+                <button class="btn btn-primary" id="export-doctor-income-btn">导出</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 医生病种收入详情弹出窗口 -->
+    <div id="doctor-disease-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-doctor-title">医生病种收入详情</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="doctor-disease-table-container">
+                    <table class="doctor-disease-table">
+                        <thead>
+                            <tr>
+                                <th>病种名称</th>
+                                <th>病例数</th>
+                                <th>平均费用</th>
+                                <th>总收入</th>
+                                <th>占比</th>
+                                <th>同比增长</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctor-disease-tbody">
+                            <!-- 动态生成的病种收入数据 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="close-disease-modal-btn">关闭</button>
+                <button class="btn btn-primary" id="export-disease-income-btn">导出</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/common.js?v=20250121-debug"></script>
+    <script src="./js/economic-operation.js?v=20250121-removed-div"></script>
+    <!-- 统一导航组件脚本 -->
+    <script src="./js/navigation-loader.js?v=20250121-debug"></script>
+</body>
+</html>

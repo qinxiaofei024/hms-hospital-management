@@ -1,0 +1,246 @@
+/* 医疗质量组件库样式 */
+
+/* 统计卡片样式 */
+.stat-card-container {
+    display: inline-block;
+    margin: 10px;
+    min-width: 200px;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-left: 4px solid #3498db;
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.stat-card .stat-title {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.stat-card .stat-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.stat-card .stat-change {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.stat-card .stat-change.positive {
+    color: #27ae60;
+}
+
+.stat-card .stat-change.negative {
+    color: #e74c3c;
+}
+
+/* 数据表格样式 */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.data-table th,
+.data-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.data-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.data-table tr:hover {
+    background: #f8f9fa;
+}
+
+.data-table .sortable {
+    cursor: pointer;
+    position: relative;
+}
+
+.data-table .sortable:hover {
+    background: #e9ecef;
+}
+
+/* 通知样式 */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-left: 4px solid #3498db;
+    z-index: 1000;
+    min-width: 300px;
+    animation: slideIn 0.3s ease;
+}
+
+.notification.success {
+    border-left-color: #27ae60;
+}
+
+.notification.warning {
+    border-left-color: #f39c12;
+}
+
+.notification.error {
+    border-left-color: #e74c3c;
+}
+
+.notification .notification-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #2c3e50;
+}
+
+.notification .notification-message {
+    color: #666;
+    font-size: 14px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* 质量指标样式 */
+.quality-indicator {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: inline-block;
+    min-width: 200px;
+}
+
+.quality-indicator .indicator-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 12px;
+}
+
+.quality-indicator .indicator-value {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.quality-indicator .indicator-target {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.quality-indicator .indicator-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.quality-indicator .indicator-status.excellent {
+    background: #d4edda;
+    color: #155724;
+}
+
+.quality-indicator .indicator-status.good {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.quality-indicator .indicator-status.warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.quality-indicator .indicator-status.danger {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* 演示页面特定样式 */
+.demo-controls {
+    margin: 20px 0;
+}
+
+.demo-controls button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.demo-controls button:hover {
+    background: #2980b9;
+}
+
+.code-example {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 16px;
+    margin: 20px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #2c3e50;
+    overflow-x: auto;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .stat-card-container,
+    .quality-indicator {
+        display: block;
+        margin: 10px 0;
+        width: 100%;
+    }
+    
+    .notification {
+        left: 10px;
+        right: 10px;
+        min-width: auto;
+    }
+    
+    .demo-controls button {
+        display: block;
+        width: 100%;
+        margin: 5px 0;
+    }
+}

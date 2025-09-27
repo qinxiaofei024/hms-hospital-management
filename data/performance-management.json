@@ -1,0 +1,329 @@
+{
+  "overview": {
+    "totalDepartments": 15,
+    "totalStaff": 1280,
+    "avgPerformanceScore": 85.6,
+    "excellentStaff": 385,
+    "goodStaff": 512,
+    "qualifiedStaff": 320,
+    "unqualifiedStaff": 63,
+    "completionRate": 92.5,
+    "improvementRate": 8.5
+  },
+  "performanceTrend": {
+    "months": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+    "avgScore": [82.5, 83.2, 84.5, 85.2, 85.8, 86.0, 85.6, 85.8, 86.2, 85.6, 85.8, 85.6],
+    "excellentRate": [28.5, 29.2, 30.5, 31.2, 31.8, 32.0, 31.5, 31.8, 32.2, 31.5, 31.8, 31.5],
+    "unqualifiedRate": [5.5, 5.2, 4.5, 4.2, 3.8, 3.5, 3.8, 3.5, 3.2, 3.8, 3.5, 3.8]
+  },
+  "departmentPerformance": [
+    {
+      "id": "1",
+      "name": "内科",
+      "staffCount": 320,
+      "avgScore": 87.5,
+      "excellentCount": 125,
+      "goodCount": 135,
+      "qualifiedCount": 50,
+      "unqualifiedCount": 10,
+      "completionRate": 95.2,
+      "improvementRate": 7.5,
+      "rank": 3
+    },
+    {
+      "id": "2",
+      "name": "外科",
+      "staffCount": 280,
+      "avgScore": 88.2,
+      "excellentCount": 115,
+      "goodCount": 120,
+      "qualifiedCount": 35,
+      "unqualifiedCount": 10,
+      "completionRate": 94.5,
+      "improvementRate": 6.8,
+      "rank": 2
+    },
+    {
+      "id": "3",
+      "name": "妇产科",
+      "staffCount": 120,
+      "avgScore": 86.5,
+      "excellentCount": 45,
+      "goodCount": 50,
+      "qualifiedCount": 20,
+      "unqualifiedCount": 5,
+      "completionRate": 93.8,
+      "improvementRate": 8.2,
+      "rank": 5
+    },
+    {
+      "id": "4",
+      "name": "儿科",
+      "staffCount": 100,
+      "avgScore": 85.8,
+      "excellentCount": 35,
+      "goodCount": 42,
+      "qualifiedCount": 18,
+      "unqualifiedCount": 5,
+      "completionRate": 92.5,
+      "improvementRate": 9.5,
+      "rank": 7
+    },
+    {
+      "id": "5",
+      "name": "急诊科",
+      "staffCount": 80,
+      "avgScore": 84.2,
+      "excellentCount": 25,
+      "goodCount": 35,
+      "qualifiedCount": 15,
+      "unqualifiedCount": 5,
+      "completionRate": 90.5,
+      "improvementRate": 12.5,
+      "rank": 10
+    },
+    {
+      "id": "6",
+      "name": "影像科",
+      "staffCount": 65,
+      "avgScore": 89.5,
+      "excellentCount": 30,
+      "goodCount": 25,
+      "qualifiedCount": 8,
+      "unqualifiedCount": 2,
+      "completionRate": 96.2,
+      "improvementRate": 5.2,
+      "rank": 1
+    },
+    {
+      "id": "7",
+      "name": "检验科",
+      "staffCount": 55,
+      "avgScore": 87.8,
+      "excellentCount": 25,
+      "goodCount": 22,
+      "qualifiedCount": 6,
+      "unqualifiedCount": 2,
+      "completionRate": 95.5,
+      "improvementRate": 6.5,
+      "rank": 4
+    },
+    {
+      "id": "8",
+      "name": "药剂科",
+      "staffCount": 45,
+      "avgScore": 86.2,
+      "excellentCount": 18,
+      "goodCount": 18,
+      "qualifiedCount": 7,
+      "unqualifiedCount": 2,
+      "completionRate": 92.8,
+      "improvementRate": 8.8,
+      "rank": 6
+    },
+    {
+      "id": "9",
+      "name": "手术室",
+      "staffCount": 75,
+      "avgScore": 85.5,
+      "excellentCount": 28,
+      "goodCount": 32,
+      "qualifiedCount": 12,
+      "unqualifiedCount": 3,
+      "completionRate": 91.5,
+      "improvementRate": 9.2,
+      "rank": 8
+    },
+    {
+      "id": "10",
+      "name": "ICU",
+      "staffCount": 90,
+      "avgScore": 85.2,
+      "excellentCount": 32,
+      "goodCount": 38,
+      "qualifiedCount": 15,
+      "unqualifiedCount": 5,
+      "completionRate": 90.8,
+      "improvementRate": 10.5,
+      "rank": 9
+    }
+  ],
+  "performanceDistribution": {
+    "byScore": [
+      {"name": "优秀 (≥90分)", "count": 385, "percentage": 30.1},
+      {"name": "良好 (80-89分)", "count": 512, "percentage": 40.0},
+      {"name": "合格 (70-79分)", "count": 320, "percentage": 25.0},
+      {"name": "不合格 (<70分)", "count": 63, "percentage": 4.9}
+    ],
+    "byDepartment": [
+      {"name": "内科", "excellent": 125, "good": 135, "qualified": 50, "unqualified": 10},
+      {"name": "外科", "excellent": 115, "good": 120, "qualified": 35, "unqualified": 10},
+      {"name": "妇产科", "excellent": 45, "good": 50, "qualified": 20, "unqualified": 5},
+      {"name": "儿科", "excellent": 35, "good": 42, "qualified": 18, "unqualified": 5},
+      {"name": "急诊科", "excellent": 25, "good": 35, "qualified": 15, "unqualified": 5},
+      {"name": "影像科", "excellent": 30, "good": 25, "qualified": 8, "unqualified": 2},
+      {"name": "检验科", "excellent": 25, "good": 22, "qualified": 6, "unqualified": 2},
+      {"name": "药剂科", "excellent": 18, "good": 18, "qualified": 7, "unqualified": 2},
+      {"name": "手术室", "excellent": 28, "good": 32, "qualified": 12, "unqualified": 3},
+      {"name": "ICU", "excellent": 32, "good": 38, "qualified": 15, "unqualified": 5}
+    ],
+    "byTitle": [
+      {"name": "主任医师", "excellent": 45, "good": 15, "qualified": 5, "unqualified": 0},
+      {"name": "副主任医师", "excellent": 75, "good": 35, "qualified": 10, "unqualified": 0},
+      {"name": "主治医师", "excellent": 120, "good": 75, "qualified": 20, "unqualified": 5},
+      {"name": "住院医师", "excellent": 80, "good": 70, "qualified": 25, "unqualified": 5},
+      {"name": "主任护师", "excellent": 25, "good": 15, "qualified": 5, "unqualified": 0},
+      {"name": "副主任护师", "excellent": 45, "good": 30, "qualified": 8, "unqualified": 2},
+      {"name": "主管护师", "excellent": 150, "good": 80, "qualified": 18, "unqualified": 2},
+      {"name": "护师", "excellent": 100, "good": 65, "qualified": 12, "unqualified": 3},
+      {"name": "护士", "excellent": 65, "good": 55, "qualified": 20, "unqualified": 5}
+    ]
+  },
+  "performanceIndicators": {
+    "medicalQuality": [
+      {"name": "诊断符合率", "target": 95.0, "actual": 96.8, "score": 98.5},
+      {"name": "治疗有效率", "target": 90.0, "actual": 92.5, "score": 95.8},
+      {"name": "手术成功率", "target": 98.0, "actual": 99.2, "score": 98.5},
+      {"name": "院内感染率", "target": 2.0, "actual": 1.8, "score": 96.5},
+      {"name": "并发症发生率", "target": 1.0, "actual": 0.8, "score": 97.5}
+    ],
+    "serviceQuality": [
+      {"name": "患者满意度", "target": 90.0, "actual": 94.2, "score": 96.8},
+      {"name": "投诉处理率", "target": 95.0, "actual": 98.5, "score": 98.5},
+      {"name": "预约成功率", "target": 85.0, "actual": 88.5, "score": 95.8},
+      {"name": "平均等待时间", "target": 30.0, "actual": 25.5, "score": 97.5},
+      {"name": "医患沟通评分", "target": 85.0, "actual": 88.2, "score": 96.2}
+    ],
+    "efficiencyIndicators": [
+      {"name": "平均住院日", "target": 7.0, "actual": 6.8, "score": 95.8},
+      {"name": "床位使用率", "target": 90.0, "actual": 92.5, "score": 98.5},
+      {"name": "床位周转率", "target": 45.0, "actual": 48.5, "score": 97.5},
+      {"name": "检查报告及时率", "target": 95.0, "actual": 97.8, "score": 98.5},
+      {"name": "手术准时率", "target": 90.0, "actual": 92.5, "score": 96.8}
+    ],
+    "managementIndicators": [
+      {"name": "制度执行率", "target": 95.0, "actual": 97.5, "score": 98.5},
+      {"name": "培训完成率", "target": 90.0, "actual": 92.5, "score": 96.8},
+      {"name": "设备完好率", "target": 95.0, "actual": 97.2, "score": 98.5},
+      {"name": "药品管理合格率", "target": 98.0, "actual": 99.2, "score": 98.5},
+      {"name": "文档完整率", "target": 95.0, "actual": 96.8, "score": 97.5}
+    ]
+  },
+  "performanceDetails": [
+    {
+      "id": "1",
+      "name": "张医生",
+      "department": "内科",
+      "title": "主任医师",
+      "totalScore": 95.5,
+      "medicalQualityScore": 96.8,
+      "serviceQualityScore": 94.2,
+      "efficiencyScore": 95.8,
+      "managementScore": 95.2,
+      "rank": 1,
+      "improvementItems": ["科研能力提升", "新技术应用"]
+    },
+    {
+      "id": "2",
+      "name": "李医生",
+      "department": "外科",
+      "title": "副主任医师",
+      "totalScore": 94.2,
+      "medicalQualityScore": 95.8,
+      "serviceQualityScore": 93.5,
+      "efficiencyScore": 94.8,
+      "managementScore": 92.5,
+      "rank": 2,
+      "improvementItems": ["团队协作", "教学能力"]
+    },
+    {
+      "id": "3",
+      "name": "王护士",
+      "department": "妇产科",
+      "title": "主管护师",
+      "totalScore": 93.8,
+      "medicalQualityScore": 92.5,
+      "serviceQualityScore": 95.8,
+      "efficiencyScore": 94.2,
+      "managementScore": 92.8,
+      "rank": 3,
+      "imvementItems": ["专业技能提升", "沟通能力"]
+    },
+    {
+      "id": "4",
+      "name": "赵医生",
+      "department": "儿科",
+      "title": "主治医师",
+      "totalScore": 92.5,
+      "medicalQualityScore": 93.8,
+      "serviceQualityScore": 91.5,
+      "efficiencyScore": 92.8,
+      "managementScore": 92.0,
+      "rank": 4,
+      "improvementItems": ["科研能力", "新技术学习"]
+    },
+    {
+      "id": "5",
+      "name": "刘医生",
+      "department": "急诊科",
+      "title": "住院医师",
+      "totalScore": 88.5,
+      "medicalQualityScore": 89.2,
+      "serviceQualityScore": 87.8,
+      "efficiencyScore": 88.5,
+      "managementScore": 88.2,
+      "rank": 5,
+      "improvementItems": ["临床经验", "应急处理能力"]
+    }
+  ],
+  "keyIndicators": [
+    {
+      "id": "1",
+      "name": "平均绩效分数",
+      "value": "85.6",
+      "unit": "分",
+      "trend": "up",
+      "change": "1.5%"
+    },
+    {
+      "id": "2",
+      "name": "优秀率",
+      "value": "30.1",
+      "unit": "%",
+      "trend": "up",
+      "change": "2.3%"
+    },
+    {
+      "id": "3",
+      "name": "不合格率",
+      "value": "4.9",
+      "unit": "%",
+      "trend": "down",
+      "change": "-0.8%"
+    },
+    {
+      "id": "4",
+      "name": "完成率",
+      "value": "92.5",
+      "unit": "%",
+      "trend": "up",
+      "change": "1.2%"
+    },
+    {
+      "id": "5",
+      "name": "改进率",
+      "value": "8.5",
+      "unit": "%",
+      "trend": "up",
+      "change": "1.5%"
+    },
+    {
+      "id": "6",
+      "name": "医疗质量评分",
+      "value": "96.8",
+      "unit": "分",
+      "trend": "up",
+      "change": "0.8%"
+    }
+  ]
+}

@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科室病种管理 - 佛山市南海区中医院数据中心管理平台</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/economic-benefit.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script>
+        // 设置全局配置
+        window.EconomicBenefitConfig = {
+            initialTab: 'overall'
+        };
+    </script>
+    <style>
+        .benefit-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .benefit-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #0066cc;
+        }
+        
+        .benefit-card h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .benefit-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+        
+        .benefit-trend {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .benefit-trend.positive {
+            color: #52c41a;
+        }
+        
+        .benefit-trend.negative {
+            color: #ff4d4f;
+        }
+        
+        .chart-container {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .chart-content {
+            height: 400px;
+        }
+        
+        .analysis-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e8e8e8;
+        }
+        
+        .tab-button {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .tab-button.active {
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .cost-analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 600px;
+            margin-top: 20px;
+            position: relative;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .data-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+            color: #333;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .data-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        /* 亏损病种行高亮样式 */
+        .data-table .loss-row {
+            background-color: #fff5f5 !important;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .data-table .loss-row:hover {
+            background-color: #fef2f2 !important;
+        }
+        
+        .data-table .loss-row td {
+            color: #374151;
+        }
+        
+        .data-table .loss-row .benefit-amount {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        
+        /* 病种名称链接样式 */
+        .disease-name-link {
+            color: #1976d2;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .disease-name-link:hover {
+            color: #0d47a1;
+            text-decoration: underline;
+        }
+
+        /* 病种筛选下拉框样式 */
+        .disease-filter-container {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .disease-dropdown {
+            position: relative;
+            width: 300px;
+        }
+
+        .dropdown-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-trigger:hover {
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+        }
+
+        .dropdown-trigger.active {
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+        }
+
+        .selected-text {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dropdown-arrow {
+            margin-left: 10px;
+            transition: transform 0.3s;
+            color: #666;
+        }
+
+        .dropdown-trigger.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            animation: dropdownFadeIn 0.2s ease-out;
+        }
+
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-header {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+        }
+
+        .select-all-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .select-all-option input[type="checkbox"] {
+            margin-right: 8px;
+            transform: scale(1.1);
+        }
+
+        .dropdown-options {
+            max-height: 240px;
+            overflow-y: auto;
+        }
+
+        .dropdown-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .dropdown-option:hover {
+            background: #f8f9ff;
+        }
+
+        .dropdown-option.selected {
+            background: #e7f3ff;
+        }
+
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-option input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .option-content {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .option-name {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .option-count {
+            font-size: 12px;
+            color: #666;
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        /* 滚动条样式 */
+        .dropdown-options::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .dropdown-options::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .dropdown-options::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .dropdown-options::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* 搜索框样式 */
+        .search-container {
+            position: relative;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            background: #fafafa;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 35px 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s ease;
+            background: white;
+        }
+
+        .search-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #999;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        /* 搜索结果高亮 */
+        .search-highlight {
+            background-color: #ffeb3b;
+            font-weight: bold;
+            padding: 0 1px;
+            border-radius: 2px;
+        }
+
+        /* 无搜索结果提示 */
+        .no-results {
+            padding: 20px 15px;
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        /* 搜索时的选项高亮 */
+        .dropdown-option.search-matched {
+            background-color: #fff8e1;
+        }
+
+        .dropdown-option.search-matched:hover {
+            background-color: #fff3c4;
+        }
+
+        /* 键盘导航焦点样式 */
+        .dropdown-option.keyboard-focused {
+            background-color: #e3f2fd;
+            outline: 2px solid #007bff;
+            outline-offset: -2px;
+        }
+
+        /* 保本例数列高亮样式 */
+        .breakeven-column {
+            /* 表头保持与其他列一致的背景色 */
+            font-weight: bold;
+            color: #333;
+            position: relative;
+        }
+
+        .breakeven-cell {
+            background-color: #fff3cd !important;
+            font-weight: bold;
+            color: #856404;
+            text-align: center;
+            position: relative;
+        }
+
+        /* ∞符号特殊样式 */
+        .infinity-symbol {
+            font-size: 1.2em;
+            color: #dc3545;
+            font-weight: bold;
+            text-shadow: 0 0 3px rgba(220, 53, 69, 0.3);
+            animation: pulse-infinity 2s infinite;
+        }
+
+        @keyframes pulse-infinity {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        /* 保本例数提示样式 */
+        .breakeven-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1000;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .breakeven-cell:hover .breakeven-tooltip {
+            opacity: 1;
+        }
+
+        /* 数字列渐变背景色样式 */
+        .numeric-cell {
+            transition: background-color 0.3s ease;
+        }
+
+        /* 渐变背景色等级 - 从淡到浓，使用更明显的对比度 */
+        .gradient-level-1 { background-color: rgba(33, 150, 243, 0.08) !important; }
+        .gradient-level-2 { background-color: rgba(33, 150, 243, 0.12) !important; }
+        .gradient-level-3 { background-color: rgba(33, 150, 243, 0.16) !important; }
+        .gradient-level-4 { background-color: rgba(33, 150, 243, 0.22) !important; }
+        .gradient-level-5 { background-color: rgba(33, 150, 243, 0.28) !important; }
+        .gradient-level-6 { background-color: rgba(33, 150, 243, 0.35) !important; }
+        .gradient-level-7 { background-color: rgba(33, 150, 243, 0.42) !important; }
+        .gradient-level-8 { background-color: rgba(33, 150, 243, 0.5) !important; }
+        .gradient-level-9 { background-color: rgba(33, 150, 243, 0.6) !important; }
+        .gradient-level-10 { background-color: rgba(33, 150, 243, 0.7) !important; }
+
+        /* 特殊处理保本例数列，使用黄金分割比例的蓝色背景 */
+        .breakeven-cell {
+            background-color: rgba(33, 150, 243, 0.43) !important;
+        }
+        
+        /* ∞符号特殊标记，使用红色 */
+        .infinity-symbol {
+            color: #dc3545 !important;
+            font-weight: bold;
+        }
+
+        /* 负数值特殊处理 */
+        .negative-value {
+            color: #dc3545 !important;
+            font-weight: bold;
+        }
+
+        /* 增强表格行悬停效果 - 使用统一的蓝色高亮 */
+        #disease-detail-table tbody tr:hover {
+            background-color: rgba(33, 150, 243, 0.35) !important;
+            transform: scale(1.002);
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+            z-index: 10;
+            position: relative;
+        }
+
+        /* 列高亮效果 - 只调整透明度，保持原有背景色 */
+        .column-highlight {
+            opacity: 0.95;
+            transition: opacity 0.2s ease;
+        }
+
+        /* 十字交叉点（行列交汇处）的特殊高亮 - 使用蓝色系 */
+        .cell-focus {
+            background-color: rgba(33, 150, 243, 0.4) !important;
+            border: 2px solid #2196f3;
+            box-shadow: 0 0 8px rgba(33, 150, 243, 0.4);
+            transform: scale(1.005);
+            z-index: 20;
+            position: relative;
+        }
+
+        /* 病种详情弹窗样式 */
+        .disease-detail-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .disease-detail-content {
+            background-color: #fff;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .disease-detail-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .disease-detail-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .disease-detail-close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .disease-detail-close:hover {
+            color: #f0f0f0;
+        }
+
+        .disease-detail-body {
+            padding: 20px;
+        }
+
+        .disease-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .disease-info-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .disease-info-card h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .disease-chart-container {
+            width: 100%;
+            height: 300px;
+            margin-bottom: 20px;
+            min-width: 400px;
+        }
+
+        .department-list {
+            margin-top: 30px;
+        }
+
+        .department-item {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .department-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .department-header {
+            background: #f5f5f5;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .department-header:hover {
+            background: #e8f4fd;
+        }
+
+        .department-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .department-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .department-toggle {
+            font-size: 18px;
+            color: #666;
+            transition: transform 0.3s ease;
+        }
+
+        .department-toggle.expanded {
+            transform: rotate(180deg);
+        }
+
+        .doctor-list {
+            display: none;
+            padding: 20px;
+            background: #fafafa;
+        }
+
+        .doctor-list.show {
+            display: block;
+        }
+
+        .doctor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .doctor-card {
+            background: white;
+            border-radius: 6px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .doctor-card.clickable {
+            cursor: pointer;
+        }
+
+        .doctor-card.clickable:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            border-color: #1976d2;
+        }
+
+        .doctor-card .loss-amount {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .doctor-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .doctor-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 医生画像弹窗样式 */
+        .doctor-profile-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .doctor-profile-content {
+            background-color: #fff;
+            margin: 1% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 95%;
+            max-width: 1400px;
+            max-height: 95vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .doctor-profile-header {
+            background: linear-gradient(135deg, #1976d2, #1565c0);
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .doctor-profile-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .doctor-profile-close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .doctor-profile-close:hover {
+            color: #ffeb3b;
+        }
+
+        .doctor-profile-body {
+            padding: 20px;
+        }
+
+        .doctor-basic-info {
+            margin-bottom: 30px;
+        }
+
+        .doctor-info-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+        }
+
+        .doctor-info-card h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .doctor-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            min-width: 80px;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .info-value.profit {
+            color: #28a745;
+        }
+
+        .info-value.loss {
+            color: #dc3545;
+        }
+
+        .doctor-charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .doctor-chart-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .doctor-chart-card h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .doctor-chart-container {
+            width: 100%;
+            height: 300px;
+            min-height: 300px;
+        }
+
+        .doctor-detail-table {
+            margin-top: 20px;
+        }
+
+        .doctor-detail-table h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .breakeven-analysis {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .breakeven-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .metric-card {
+            text-align: center;
+            padding: 15px;
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+        }
+        
+        .metric-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 表格操作按钮样式 */
+        .table-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #52c41a, #389e0d);
+            color: white;
+        }
+
+        .export-btn:hover {
+            background: linear-gradient(135deg, #389e0d, #237804);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+        }
+
+        .ai-insight-btn {
+            background: linear-gradient(135deg, #1890ff, #096dd9);
+            color: white;
+        }
+
+        .ai-insight-btn:hover {
+            background: linear-gradient(135deg, #096dd9, #0050b3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+        }
+
+        .icon-export::before {
+            content: "📊";
+            font-size: 16px;
+        }
+
+        .icon-ai::before {
+            content: "🤖";
+            font-size: 16px;
+        }
+
+        /* AI洞察对话框样式 */
+        .ai-insight-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .ai-insight-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .ai-insight-header {
+            background: linear-gradient(135deg, #1890ff, #096dd9);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-insight-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .ai-insight-close {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .ai-insight-close:hover {
+            color: #f0f0f0;
+        }
+
+        .ai-insight-body {
+            padding: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .ai-analysis-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .typing-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #1890ff;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        @keyframes typing {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="content-wrapper responsive-wrapper">
+            <!-- 右侧内容区 -->
+            <main class="content">
+                <div class="page-header">
+                    <h2>科室病种管理<span class="english-title">Department Disease Management</span></h2>
+                    <div class="breadcrumb">
+                        <a href="./index.html">首页</a> &gt; 
+                        <a href="#department-analysis">科主任运营分析</a> &gt; 
+                        <span>科室病种管理</span>
+                    </div>
+                    <div class="header-controls">
+                        <select id="timeRange" class="control-select">
+                            <option value="month">本月</option>
+                            <option value="quarter">本季度</option>
+                            <option value="year" selected>本年度</option>
+                            <option value="custom">自定义</option>
+                        </select>
+                        <button class="refresh-btn" onclick="refreshData()">刷新数据</button>
+                        <button class="export-btn" onclick="exportData()">导出报表</button>
+                    </div>
+                </div>
+
+                <!-- 效益概览卡片 -->
+                <div class="benefit-overview">
+                    <div class="benefit-card">
+                        <h3>总收入</h3>
+                        <div class="benefit-value">¥28.7亿</div>
+                        <div class="benefit-trend positive">↑ 8.5% 同比上期</div>
+                    </div>
+                    <div class="benefit-card">
+                        <h3>净利润</h3>
+                        <div class="benefit-value">¥10.1亿</div>
+                        <div class="benefit-trend positive">↑ 18.5% 同比上期</div>
+                    </div>
+                    <div class="benefit-card">
+                        <h3>利润率</h3>
+                        <div class="benefit-value">35.2%</div>
+                        <div class="benefit-trend positive">↑ 35.2% 同比上期</div>
+                    </div>
+                    <div class="benefit-card">
+                        <h3>总成本</h3>
+                        <div class="benefit-value">¥18.6亿</div>
+                        <div class="benefit-trend positive">↑ 5.2% 同比上期</div>
+                    </div>
+                </div>
+
+                <!-- 分析标签页 -->
+                <div class="analysis-tabs">
+                <button class="tab-button active" onclick="switchTab('overall', event)">总体效益</button>
+                <button class="tab-button" onclick="switchTab('outpatient', event)">门诊效益</button>
+                <button class="tab-button" onclick="switchTab('inpatient', event)">住院效益</button>
+                <button class="tab-button" onclick="switchTab('disease', event)">病种效益</button>
+                <button class="tab-button" onclick="switchTab('service', event)">医疗服务项目效益</button>
+                <button class="tab-button" onclick="switchTab('cost', event)">成本分析</button>
+                <button class="tab-button" onclick="switchTab('breakeven', event)">本量利分析</button>
+                <button class="tab-button" onclick="switchTab('efficiency', event)">人员效率与效益分析</button>
+            </div>
+
+                <!-- 总体效益分析 -->
+                <div id="overall" class="tab-content active">
+                    <div class="chart-grid two-columns">
+                        <div class="chart-container">
+                            <div class="chart-title">总体效益趋势分析</div>
+                            <div id="overall-trend-chart" class="chart-content"></div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <div class="chart-title">各科室收益情况</div>
+                            <div id="department-benefit-chart" class="chart-content"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="chart-title">收支配比明细表</div>
+                        <table class="data-table" id="overall-detail-table">
+                            <thead>
+                                <tr>
+                                    <th>科室名称</th>
+                                    <th>收入（万元）</th>
+                                    <th>成本（万元）</th>
+                                    <th>结余（万元）</th>
+                                    <th>结余率（%）</th>
+                                    <th>同比增减（%）</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 门诊效益分析 -->
+                <div id="outpatient" class="tab-content">
+                    <div class="chart-grid two-columns">
+                        <div class="chart-container">
+                            <div class="chart-title">门诊业务收益分析</div>
+                            <div id="outpatient-revenue-chart" class="chart-content"></div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <div class="chart-title">门诊科室排名</div>
+                            <div id="outpatient-ranking-chart" class="chart-content"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="chart-title">门诊效益明细表</div>
+                        <table class="data-table" id="outpatient-detail-table">
+                            <thead>
+                                <tr>
+                                    <th>科室</th>
+                                    <th>门诊收入</th>
+                                    <th>门诊成本</th>
+                                    <th>门诊结余</th>
+                                    <th>门诊结余率</th>
+                                    <th>门诊人次</th>
+                                    <th>均次费用</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 住院效益分析 -->
+                <div id="inpatient" class="tab-content">
+                    <div class="chart-grid two-columns">
+                        <div class="chart-container">
+                            <div class="chart-title">住院业务收益分析</div>
+                            <div id="inpatient-revenue-chart" class="chart-content"></div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <div class="chart-title">住院成本结构分析</div>
+                            <div id="inpatient-cost-chart" class="chart-content"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="chart-title">住院效益明细表</div>
+                        <table class="data-table" id="inpatient-detail-table">
+                            <thead>
+                                <tr>
+                                    <th>科室</th>
+                                    <th>住院收入</th>
+                                    <th>住院成本</th>
+                                    <th>住院结余</th>
+                                    <th>住院结余率</th>
+                                    <th>出院人次</th>
+                                    <th>平均住院日</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 病种效益分析 -->
+                <div id="disease" class="tab-content">
+                    <div class="chart-grid two-columns">
+                        <div class="chart-container">
+                            <div class="chart-title">病种盈亏分析</div>
+                            <div id="disease-benefit-chart" class="chart-content"></div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <div class="chart-title">DRG/DIP效益分析</div>
+                            <div id="drg-benefit-chart" class="chart-content"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="chart-title">病种效益明细表
+                            <div class="table-actions">
+                                <button id="disease-export-btn" class="action-btn export-btn">
+                                    <i class="icon-export"></i>导出
+                                </button>
+                                <button id="disease-ai-insight-btn" class="action-btn ai-insight-btn">
+                                    <i class="icon-ai"></i>AI洞察
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 病种筛选区域 -->
+                        <div class="disease-filter-container">
+                            <div class="disease-dropdown">
+                                <div class="dropdown-trigger" id="disease-dropdown-trigger">
+                                    <span class="selected-text" id="selected-disease-text">已选择全部病种</span>
+                                    <span class="dropdown-arrow">▼</span>
+                                </div>
+                                <div class="dropdown-menu" id="disease-dropdown-menu">
+                                    <div class="search-container">
+                                        <input type="text" class="search-input" id="disease-search-input" placeholder="搜索病种..." autocomplete="off">
+                                        <span class="search-icon">🔍</span>
+                                    </div>
+                                    <div class="dropdown-header">
+                                        <label class="select-all-option">
+                                            <input type="checkbox" id="select-all-diseases" checked>
+                                            <span>全选</span>
+                                        </label>
+                                    </div>
+                                    <div class="dropdown-options" id="disease-dropdown-options">
+                                        <!-- 动态生成选项 -->
+                                    </div>
+                                    <div class="no-results" id="no-search-results" style="display: none;">
+                                        <span>未找到匹配的病种</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <table class="data-table" id="disease-detail-table">
+                            <thead>
+                                <tr>
+                                    <th>病种编码</th>
+                                    <th>病种名称</th>
+                                    <th>病例数</th>
+                                    <th class="breakeven-column">保本例数</th>
+                                    <th>平均收入</th>
+                                    <th>平均成本</th>
+                                    <th>平均结余</th>
+                                    <th>结余率</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 医疗服务项目效益分析 -->
+                <div id="service" class="tab-content">
+                    <div class="chart-grid two-columns">
+                        <div class="chart-container">
+                            <div class="chart-title">医疗服务项目效益分析</div>
+                            <div id="service-benefit-chart" class="chart-content"></div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <div class="chart-title">项目成本构成分析</div>
+                            <div id="service-cost-chart" class="chart-content"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="chart-title">医疗服务项目效益明细表</div>
+                        <table class="data-table" id="service-detail-table">
+                            <thead>
+                                <tr>
+                                    <th>项目编码</th>
+                                    <th>项目名称</th>
+                                    <th>执行数量</th>
+                                    <th>项目收入</th>
+                                    <th>项目成本</th>
+                                    <th>项目结余</th>
+                                    <th>结余率</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 成本分析 -->
+                <div id="cost" class="tab-content">
+                    <div class="chart-grid two-columns">
+                        <div class="chart-container">
+                            <div class="chart-title">全成本分析</div>
+                            <div id="total-cost-chart" class="chart-content"></div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title">直接成本分析</div>
+                            <div id="direct-cost-chart" class="chart-content"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-title">间接成本分析</div>
+                        <div id="indirect-cost-chart" class="chart-content"></div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="chart-title">成本构成项目分析表</div>
+                        <table class="data-table" id="cost-structure-table">
+                            <thead>
+                                <tr>
+                                    <th>成本项目</th>
+                                    <th>本期金额（万元）</th>
+                                    <th>占比（%）</th>
+                                    <th>同期金额（万元）</th>
+                                    <th>同比增减（%）</th>
+                                    <th>趋势</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 本量利分析 -->
+                <div id="breakeven" class="tab-content">
+                    <div class="chart-grid two-columns">
+                        <div class="breakeven-analysis">
+                            <div class="chart-title">门诊科室本量利分析</div>
+                            <div class="breakeven-metrics">
+                                <div class="metric-card">
+                                    <div id="outpatient-breakeven-point-value" class="metric-value">2,850</div>
+                                    <div class="metric-label">门诊保本点（人次/月）</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div id="outpatient-profit-point-value" class="metric-value">3,420</div>
+                                    <div class="metric-label">门诊保利点（人次/月）</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div id="outpatient-unit-contribution-value" class="metric-value">¥285</div>
+                                    <div class="metric-label">门诊单位贡献毛利</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div id="outpatient-margin-value" class="metric-value">68.5%</div>
+                                    <div class="metric-label">门诊边际贡献率</div>
+                                </div>
+                            </div>
+                            <div id="outpatient-breakeven-chart" class="chart-content"></div>
+                        </div>
+                        
+                        <div class="breakeven-analysis">
+                            <div class="chart-title">住院科室本量利分析</div>
+                            <div class="breakeven-metrics">
+                                <div class="metric-card">
+                                    <div id="inpatient-breakeven-point-value" class="metric-value">1,240</div>
+                                    <div class="metric-label">住院保本点（床日/月）</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div id="inpatient-profit-point-value" class="metric-value">1,488</div>
+                                    <div class="metric-label">住院保利点（床日/月）</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div id="inpatient-unit-contribution-value" class="metric-value">¥1,580</div>
+                                    <div class="metric-label">住院单位贡献毛利</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div id="inpatient-margin-value" class="metric-value">72.3%</div>
+                                    <div class="metric-label">住院边际贡献率</div>
+                                </div>
+                            </div>
+                            <div id="inpatient-breakeven-chart" class="chart-content"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 新增的本量利分析坐标系图表 -->
+                    <div class="chart-grid two-columns" style="margin-top: 30px;">
+                        <div class="breakeven-coordinate-analysis">
+                            <div class="chart-title">门诊本量利分析图</div>
+                            <div id="outpatient-breakeven-coordinate-chart" class="chart-content" style="height: 400px;"></div>
+                        </div>
+                        
+                        <div class="breakeven-coordinate-analysis">
+                            <div class="chart-title">住院本量利分析图</div>
+                            <div id="inpatient-breakeven-coordinate-chart" class="chart-content" style="height: 400px;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 人员效率与效益分析 -->
+                <div id="efficiency" class="tab-content">
+                    <div class="efficiency-overview">
+                        <div class="chart-title">人员效率概览</div>
+                        <div class="efficiency-metrics">
+                            <div class="metric-card">
+                                <div id="avg-outpatient-per-doctor-value" class="metric-value">1,240</div>
+                                <div class="metric-label">每医生门急诊人次</div>
+                            </div>
+                            <div class="metric-card">
+                                <div id="avg-inpatient-per-doctor-value" class="metric-value">89</div>
+                                <div class="metric-label">每医生出院人次</div>
+                            </div>
+                            <div class="metric-card">
+                                <div id="avg-income-per-doctor-value" class="metric-value">¥256.8万</div>
+                                <div class="metric-label">每医生收入</div>
+                            </div>
+                            <div class="metric-card">
+                                <div id="avg-profit-per-doctor-value" class="metric-value">¥37.5万</div>
+                                <div class="metric-label">每医生贡献利润</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-grid two-columns">
+                        <div class="efficiency-charts">
+                            <div class="chart-title">科室人员效率对比</div>
+                            <div id="department-efficiency-chart" class="chart-content"></div>
+                        </div>
+                        
+                        <div class="efficiency-charts">
+                            <div class="chart-title">每医生收入构成</div>
+                            <div id="doctor-income-structure-chart" class="chart-content"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <div class="table-title">人员效率与效益分析表
+                            <div class="table-actions">
+                                <button id="export-btn" class="action-btn export-btn">
+                                    <i class="icon-export"></i>导出
+                                </button>
+                                <button id="ai-insight-btn" class="action-btn ai-insight-btn">
+                                    <i class="icon-ai"></i>AI洞察
+                                </button>
+                            </div>
+                        </div>
+                        <table id="efficiency-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>科室名称</th>
+                                    <th>医生人数</th>
+                                    <th>门急诊人次</th>
+                                    <th>每医生门急诊人次</th>
+                                    <th>出院人次</th>
+                                    <th>每医生出院人次</th>
+                                    <th>科室总收入(万元)</th>
+                                    <th>每医生收入(万元)</th>
+                                    <th>科室利润(万元)</th>
+                                    <th>每医生贡献利润(万元)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 数据将通过JavaScript动态填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 病种详情弹窗 -->
+    <div id="disease-detail-modal" class="disease-detail-modal">
+        <div class="disease-detail-content">
+            <div class="disease-detail-header">
+                <h2 class="disease-detail-title" id="disease-detail-title">病种详情</h2>
+                <span class="disease-detail-close" id="disease-detail-close">&times;</span>
+            </div>
+            <div class="disease-detail-body">
+                <!-- 病种基本信息 -->
+                <div class="disease-info-grid">
+                    <div class="disease-info-card">
+                        <h3>收入构成分析</h3>
+                        <div id="disease-revenue-chart" class="disease-chart-container"></div>
+                    </div>
+                    <div class="disease-info-card">
+                        <h3>成本构成分析</h3>
+                        <div id="disease-cost-chart" class="disease-chart-container"></div>
+                    </div>
+                </div>
+
+                <!-- 科室明细 -->
+                <div class="department-list">
+                    <h3>收治科室明细</h3>
+                    <div id="department-details"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 医生画像弹窗 -->
+    <div id="doctor-profile-modal" class="doctor-profile-modal">
+        <div class="doctor-profile-content">
+            <div class="doctor-profile-header">
+                <h2 id="doctor-profile-title">医生医疗行为画像</h2>
+                <span class="doctor-profile-close" id="doctor-profile-close">&times;</span>
+            </div>
+            <div class="doctor-profile-body">
+                <!-- 医生基本信息 -->
+                <div class="doctor-basic-info">
+                    <div class="doctor-info-card">
+                        <h3>基本信息</h3>
+                        <div class="doctor-info-grid">
+                            <div class="info-item">
+                                <span class="info-label">姓名：</span>
+                                <span id="doctor-name-info" class="info-value"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">职称：</span>
+                                <span id="doctor-title-info" class="info-value"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">科室：</span>
+                                <span id="doctor-dept-info" class="info-value"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">总病例数：</span>
+                                <span id="doctor-cases-info" class="info-value"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">平均收入：</span>
+                                <span id="doctor-revenue-info" class="info-value"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">平均成本：</span>
+                                <span id="doctor-cost-info" class="info-value"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">平均结余：</span>
+                                <span id="doctor-benefit-info" class="info-value"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">盈利状态：</span>
+                                <span id="doctor-status-info" class="info-value"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 医生画像图表 -->
+                <div class="doctor-charts-grid">
+                    <div class="doctor-chart-card">
+                        <h3>收入构成分析</h3>
+                        <div id="doctor-revenue-chart" class="doctor-chart-container"></div>
+                    </div>
+                    <div class="doctor-chart-card">
+                        <h3>成本构成分析</h3>
+                        <div id="doctor-cost-chart" class="doctor-chart-container"></div>
+                    </div>
+                    <div class="doctor-chart-card">
+                        <h3>病种分布</h3>
+                        <div id="doctor-disease-chart" class="doctor-chart-container"></div>
+                    </div>
+                    <div class="doctor-chart-card">
+                        <h3>效率指标</h3>
+                        <div id="doctor-efficiency-chart" class="doctor-chart-container"></div>
+                    </div>
+                </div>
+
+                <!-- 医生详细数据表格 -->
+                <div class="doctor-detail-table">
+                    <h3>病种明细</h3>
+                    <div class="table-container">
+                        <table id="doctor-disease-table" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>病种名称</th>
+                                    <th>病例数</th>
+                                    <th>平均收入</th>
+                                    <th>平均成本</th>
+                                    <th>平均结余</th>
+                                    <th>收入占比</th>
+                                    <th>成本占比</th>
+                                </tr>
+                            </thead>
+                            <tbody id="doctor-disease-tbody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI洞察对话框 -->
+    <div id="ai-insight-modal" class="ai-insight-modal">
+        <div class="ai-insight-content">
+            <div class="ai-insight-header">
+                <h2 class="ai-insight-title">🤖 AI洞察分析</h2>
+                <span class="ai-insight-close">&times;</span>
+            </div>
+            <div class="ai-insight-body">
+                <div id="ai-analysis-content" class="ai-analysis-content">
+                    <!-- AI分析内容将在这里动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/common.js"></script>
+
+    <!-- 使用增强版ECharts诊断工具，专门解决不可见图表和尺寸问题 -->
+    <script src="./js/economic-benefit.js?v=20250121-legend-fixed"></script>
+
+    <!-- 加载统一导航组件 -->
+    <script src="./js/navigation-loader.js?v=20250125-fix3"></script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医疗质量安全监测系统 - 功能测试</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .test-header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .test-header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .test-header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .test-content {
+            padding: 30px;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+
+        .test-section h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 1.3em;
+        }
+
+        .page-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .page-link {
+            display: block;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .page-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .test-controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .test-btn {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+
+        .test-results {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            border-left: 5px solid #4CAF50;
+        }
+
+        .test-results h4 {
+            margin: 0 0 15px 0;
+            color: #333;
+        }
+
+        .test-output {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .status-pass { color: #4CAF50; }
+        .status-fail { color: #f44336; }
+        .status-error { color: #ff9800; }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 -->
+    <div id="navigation-container"></div>
+    
+    <div class="test-container">
+        <div class="test-header">
+            <h1>医疗质量安全监测系统</h1>
+            <p>功能测试控制台</p>
+        </div>
+
+        <div class="test-content">
+            <div class="test-section">
+                <h3>📋 系统页面</h3>
+                <div class="page-links">
+                    <a href="pages/diagnosis-treatment-process.html" class="page-link" target="_blank">
+                        🏥 诊疗流程监测
+                    </a>
+                    <a href="pages/surgical-quality-safety.html" class="page-link" target="_blank">
+                        ⚕️ 手术质量安全监测
+                    </a>
+                    <a href="pages/nursing-quality-monitoring.html" class="page-link" target="_blank">
+                        👩‍⚕️ 护理质量监测
+                    </a>
+                    <a href="pages/critical-case-management.html" class="page-link" target="_blank">
+                        🚨 危重病例管理
+                    </a>
+                    <a href="pages/medication-blood-management.html" class="page-link" target="_blank">
+                        💊 药事与血液管理
+                    </a>
+                    <a href="pages/technology-innovation-quality.html" class="page-link" target="_blank">
+                        🔬 技术创新与质量提升
+                    </a>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h3>🧪 测试控制</h3>
+                <div class="test-controls">
+                    <button class="test-btn" onclick="runQuickTest()">快速测试</button>
+                    <button class="test-btn" onclick="runFullTest()">完整测试</button>
+                    <button class="test-btn" onclick="clearResults()">清除结果</button>
+                </div>
+            </div>
+
+            <div class="test-results" id="testResults" style="display: none;">
+                <h4>📊 测试结果</h4>
+                <div class="summary-stats" id="summaryStats"></div>
+                <div class="test-output" id="testOutput"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/echarts.min.js"></script>
+    <script src="./js/navigation-loader.js"></script>
+    <script src="./js/medical-quality-components.js"></script>
+    <script src="./js/medical-charts.js"></script>
+    <script src="medical-quality-system-test.js"></script>
+
+    <script>
+        let testOutput = '';
+        let originalConsoleLog = console.log;
+
+        // 重写console.log来捕获测试输出
+        console.log = function(...args) {
+            const message = args.join(' ');
+            testOutput += message + '\n';
+            
+            // 更新显示
+            const outputElement = document.getElementById('testOutput');
+            if (outputElement) {
+                outputElement.textContent = testOutput;
+                outputElement.scrollTop = outputElement.scrollHeight;
+            }
+            
+            // 调用原始console.log
+            originalConsoleLog.apply(console, args);
+        };
+
+        function showResults() {
+            document.getElementById('testResults').style.display = 'block';
+        }
+
+        function clearResults() {
+            testOutput = '';
+            document.getElementById('testOutput').textContent = '';
+            document.getElementById('summaryStats').innerHTML = '';
+            document.getElementById('testResults').style.display = 'none';
+        }
+
+        function updateSummary(report) {
+            const summaryElement = document.getElementById('summaryStats');
+            summaryElement.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-number status-pass">${report.summary.passed}</div>
+                    <div class="stat-label">通过</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number status-fail">${report.summary.failed}</div>
+                    <div class="stat-label">失败</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number status-error">${report.summary.errors}</div>
+                    <div class="stat-label">错误</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${report.summary.successRate}</div>
+                    <div class="stat-label">成功率</div>
+                </div>
+            `;
+        }
+
+        async function runQuickTest() {
+            clearResults();
+            showResults();
+            
+            console.log('🚀 开始快速测试...');
+            
+            try {
+                const tester = new MedicalQualitySystemTest();
+                await tester.testJavaScriptComponents();
+                const report = tester.generateReport();
+                updateSummary(report);
+                
+                console.log('✅ 快速测试完成！');
+            } catch (error) {
+                console.log('❌ 测试过程中出现错误:', error.message);
+            }
+        }
+
+        async function runFullTest() {
+            clearResults();
+            showResults();
+            
+            console.log('🚀 开始完整测试...');
+            console.log('📝 注意：完整测试需要在各个页面中运行');
+            console.log('💡 建议：打开各个页面并在控制台中运行 window.medicalQualityTester.runAllTests()');
+            
+            try {
+                const tester = new MedicalQualitySystemTest();
+                await tester.testJavaScriptComponents();
+                await tester.testInteractivity();
+                const report = tester.generateReport();
+                updateSummary(report);
+                
+                console.log('✅ 基础测试完成！');
+                console.log('📋 要进行完整的页面测试，请访问各个页面');
+            } catch (error) {
+                console.log('❌ 测试过程中出现错误:', error.message);
+            }
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏥 医疗质量安全监测系统测试控制台已就绪');
+            console.log('📋 点击上方按钮开始测试，或访问各个页面进行完整测试');
+        });
+    </script>
+</body>
+</html>
