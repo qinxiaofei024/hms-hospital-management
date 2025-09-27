@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>经济运行 - 佛山市南海区中医院数据中心管理平台</title>
     <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/economic-operation.css">
+    <link rel="stylesheet" href="css/economic-operation.css">
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
         /* 经济运行特殊样式 */
@@ -195,6 +195,163 @@
             color: #ff4d4f;
             font-weight: 600;
         }
+        
+        /* 指标达成率卡片样式 - 与首页风格一致 */
+         .achievement-container {
+             display: grid !important;
+             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+             gap: 16px !important;
+             padding: 16px 0 !important;
+             margin: 0 !important;
+         }
+         
+         .achievement-item {
+             padding: 20px !important;
+             background-color: #ffffff !important;
+             border-radius: 8px !important;
+             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+             transition: transform 0.3s, box-shadow 0.3s !important;
+             position: relative !important;
+             overflow: hidden !important;
+             border: 1px solid rgba(0, 120, 212, 0.1) !important;
+             cursor: pointer !important;
+         }
+         
+         /* Azure风格的卡片装饰元素 */
+         .achievement-item::before {
+             content: '' !important;
+             position: absolute !important;
+             top: 0 !important;
+             left: 0 !important;
+             right: 0 !important;
+             height: 3px !important;
+             background-color: #0078d4 !important;
+             opacity: 0.8 !important;
+         }
+         
+         .achievement-item:hover {
+             transform: translateY(-2px) !important;
+             box-shadow: 0 4px 16px rgba(0, 120, 212, 0.15) !important;
+             border-color: rgba(0, 120, 212, 0.2) !important;
+         }
+         
+         .achievement-item:hover::before {
+             opacity: 1 !important;
+         }
+         
+         .achievement-name {
+             font-size: 14px !important;
+             color: #666 !important;
+             margin-bottom: 8px !important;
+             text-align: center !important;
+             font-weight: 500 !important;
+         }
+         
+         .achievement-values {
+             text-align: center !important;
+             margin-bottom: 8px !important;
+         }
+         
+         .actual-value {
+             font-size: 28px !important;
+             font-weight: 600 !important;
+             color: #333 !important;
+             margin-bottom: 8px !important;
+             display: block !important;
+             line-height: 1.2 !important;
+         }
+         
+         .target-value {
+             font-size: 12px !important;
+             color: #999 !important;
+             margin-bottom: 8px !important;
+         }
+         
+         .achievement-progress {
+             margin-bottom: 8px !important;
+         }
+         
+         .progress-bar {
+             height: 6px !important;
+             background-color: #f0f0f0 !important;
+             border-radius: 3px !important;
+             overflow: hidden !important;
+             position: relative !important;
+         }
+         
+         .progress-fill {
+             height: 100% !important;
+             border-radius: 3px !important;
+             transition: width 0.8s ease !important;
+             position: relative !important;
+         }
+         
+         .achievement-rate {
+             display: flex !important;
+             align-items: center !important;
+             justify-content: center !important;
+             font-size: 13px !important;
+             margin-bottom: 12px !important;
+             gap: 4px !important;
+         }
+         
+         .achievement-met {
+             color: #107c10 !important;
+             margin-right: 4px !important;
+         }
+         
+         .achievement-not-met {
+             color: #ff8c00 !important;
+             margin-right: 4px !important;
+         }
+         
+         /* 基于达成情况的卡片背景色 */
+         .achievement-item[data-status="up"] {
+             background-color: #f0f7ff !important;
+         }
+         
+         .achievement-item[data-status="down"] {
+             background-color: #fff9f0 !important;
+         }
+         
+         .achievement-item[data-status="stable"] {
+             background-color: #f8f9fa !important;
+         }
+         
+         /* 响应式设计 */
+         @media (max-width: 768px) {
+             .achievement-container {
+                 grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+                 gap: 12px !important;
+             }
+             
+             .achievement-item {
+                 padding: 16px !important;
+             }
+             
+             .actual-value {
+                 font-size: 24px !important;
+             }
+         }
+         
+         @media (max-width: 480px) {
+             .achievement-container {
+                 grid-template-columns: repeat(2, 1fr) !important;
+                 gap: 10px !important;
+             }
+             
+             .achievement-item {
+                 padding: 12px !important;
+             }
+             
+             .actual-value {
+                 font-size: 20px !important;
+             }
+             
+             .achievement-name {
+                 font-size: 12px !important;
+             }
+         }
     </style>
 </head>
 <body>
@@ -245,27 +402,27 @@
                 <!-- 关键指标卡片 -->
                 <div class="key-indicators">
                     <div class="indicator-card drillable" data-metric="总收入" data-period="month">
-                        <div class="indicator-value">¥8.5亿</div>
+                        <div class="indicator-value">¥2.85亿</div>
                         <div class="indicator-label">本月总收入</div>
                     </div>
                     <div class="indicator-card drillable" data-metric="净利润" data-period="month">
-                        <div class="indicator-value">¥1.3亿</div>
+                        <div class="indicator-value">¥1580万</div>
                         <div class="indicator-label">本月净利润</div>
                     </div>
                     <div class="indicator-card drillable" data-metric="利润率" data-period="month">
-                        <div class="indicator-value">15.3%</div>
+                        <div class="indicator-value">5.5%</div>
                         <div class="indicator-label">利润率</div>
                     </div>
                     <div class="indicator-card drillable" data-metric="床位使用率" data-period="month">
-                        <div class="indicator-value">92.8%</div>
+                        <div class="indicator-value">88.5%</div>
                         <div class="indicator-label">床位使用率</div>
                     </div>
                     <div class="indicator-card drillable" data-metric="平均住院日" data-period="month">
-                        <div class="indicator-value">7.2天</div>
+                        <div class="indicator-value">6.8天</div>
                         <div class="indicator-label">平均住院日</div>
                     </div>
                     <div class="indicator-card drillable" data-metric="均次费用" data-period="month">
-                        <div class="indicator-value">¥18,500</div>
+                        <div class="indicator-value">¥8,650</div>
                         <div class="indicator-label">均次费用</div>
                     </div>
                 </div>
@@ -553,7 +710,7 @@
     </div>
 
     <script src="../js/common.js?v=20250121-debug"></script>
-    <script src="../js/economic-operation.js?v=20250121-removed-div"></script>
+    <script src="../js/economic-operation.js?v=20250121-fixed-data"></script>
     <!-- 统一导航组件脚本 -->
     <script src="../js/navigation-loader.js?v=20250121-debug"></script>
 </body>

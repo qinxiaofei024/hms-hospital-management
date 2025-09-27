@@ -271,42 +271,51 @@ function guapai(obj) {
 		series: [{
 			name: '处理完成',
 			type: 'bar',
-			color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
-				offset: 0,
-				color: '#3E3CB5'
-			}, {
-				offset: 1,
-				color: '#D66BFD'
-			}]),
+			color: '#8B5CF6',  // 扁平紫色
+			itemStyle: {
+				borderRadius: 0,  // 去掉圆角
+				shadowBlur: 0,    // 去掉阴影
+				shadowColor: 'transparent'
+			},
 			data: [200, 330, 440, 550, 660, 770, 880]
 		}, {
 			name: '正在处理',
 			type: 'bar',
-			color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
-				offset: 0,
-				color: '#0D52A1'
-			}, {
-				offset: 1,
-				color: '#09F6FD'
-			}]),
+			color: '#06B6D4',  // 扁平青色
+			itemStyle: {
+				borderRadius: 0,  // 去掉圆角
+				shadowBlur: 0,    // 去掉阴影
+				shadowColor: 'transparent'
+			},
 			data: [880, 770, 660, 550, 440, 330, 220]
 		}, {
 			name: '正在等待',
 			type: 'bar',
-			color: new echarts.graphic.LinearGradient(0, 0, 1, 0, //颜色线性渐变:Linear，（径向渐变：Radial）
-				[{
-					offset: 0,
-					color: '#025B71'
-				}, {
-					offset: 1,
-					color: '#3BFE91'
-				}]
-			),
+			color: '#10B981',  // 扁平绿色
+			itemStyle: {
+				borderRadius: 0,  // 去掉圆角
+				shadowBlur: 0,    // 去掉阴影
+				shadowColor: 'transparent'
+			},
 			//barGap:0,                                           //条形组中各条形图之间的距离
 			//barCategoryGap:100,                                   //条形组之间的距离
 			data: [550, 420, 360, 750, 460, 660, 290],
 			//barWidth:30,
 			// barMaxWidth:30
+		}, {
+			name: '趋势线',
+			type: 'line',
+			smooth: true,  // 平滑曲线
+			color: '#F59E0B',  // 橙色趋势线
+			lineStyle: {
+				type: 'dashed',  // 虚线
+				width: 3
+			},
+			symbol: 'none',  // 不显示数据点
+			data: [576, 506, 486, 616, 520, 586, 463],  // 趋势数据（三个系列的平均值）
+			emphasis: {
+				focus: 'series'
+			}
 		}]
 	};
 	// 使用刚指定的配置项和数据显示图表。
@@ -502,10 +511,30 @@ function guapaizhanbi(obj, Index) {
 			// 	symbolSize: [100, 100]
 			// }
 		},
+		geo: {
+			map: 'china',
+			roam: false,
+			itemStyle: {
+				areaColor: '#1e3a8a',
+				borderColor: '#3b82f6',
+				borderWidth: 2
+			},
+			emphasis: {
+				itemStyle: {
+					areaColor: '#2563eb'
+				}
+			},
+			label: {
+				show: true,
+				color: '#fff',
+				fontSize: 16
+			}
+		},
 		series: [{
 			type: 'map',
 			color: "red",
 			mapType: 'china',
+			geoIndex: 0,
 			roam: "false", //是否开启缩放平移
 			label: { //标签字体样式
 				position: "inside",
@@ -639,6 +668,150 @@ function guapaizhanbi(obj, Index) {
 				name: '澳门',
 				value: Math.round(Math.random() * 100)
 			}]
+		}, {
+			name: '飞线动画',
+			type: 'lines',
+			coordinateSystem: 'geo',
+			zlevel: 2,
+			effect: {
+				show: true,
+				period: 4,
+				trailLength: 0.8,
+				color: '#FFD700',
+				symbolSize: 6,
+				symbol: 'arrow'
+			},
+			lineStyle: {
+				color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
+					offset: 0, color: '#00FFFF'
+				}, {
+					offset: 0.5, color: '#0080FF'
+				}, {
+					offset: 1, color: '#FF6B6B'
+				}], false),
+				width: 2,
+				opacity: 0.8,
+				curveness: 0.3
+			},
+			data: [
+				// 从北京出发的飞线
+				{coords: [[116.46, 39.92], [121.48, 31.22]]}, // 北京到上海
+				{coords: [[116.46, 39.92], [113.23, 23.16]]}, // 北京到广州
+				{coords: [[116.46, 39.92], [104.06, 30.67]]}, // 北京到成都
+				{coords: [[116.46, 39.92], [108.95, 34.27]]}, // 北京到西安
+				{coords: [[116.46, 39.92], [126.63, 45.75]]}, // 北京到哈尔滨
+				{coords: [[116.46, 39.92], [117.20, 39.13]]}, // 北京到天津
+				{coords: [[116.46, 39.92], [106.50, 29.59]]}, // 北京到重庆
+				{coords: [[116.46, 39.92], [87.68, 43.77]]}, // 北京到乌鲁木齐
+				// 从上海出发的飞线
+				{coords: [[121.48, 31.22], [113.23, 23.16]]}, // 上海到广州
+				{coords: [[121.48, 31.22], [104.06, 30.67]]}, // 上海到成都
+				{coords: [[121.48, 31.22], [114.31, 30.52]]}, // 上海到武汉
+				{coords: [[121.48, 31.22], [118.78, 32.04]]}, // 上海到南京
+				{coords: [[121.48, 31.22], [120.19, 30.26]]}, // 上海到杭州
+				{coords: [[121.48, 31.22], [125.35, 43.88]]}, // 上海到长春
+				// 从广州出发的飞线
+				{coords: [[113.23, 23.16], [104.06, 30.67]]}, // 广州到成都
+				{coords: [[113.23, 23.16], [108.33, 22.84]]}, // 广州到南宁
+				{coords: [[113.23, 23.16], [120.19, 30.26]]}, // 广州到杭州
+				{coords: [[113.23, 23.16], [110.35, 20.02]]}, // 广州到海口
+				{coords: [[113.23, 23.16], [112.44, 23.05]]}, // 广州到佛山
+				{coords: [[113.23, 23.16], [119.30, 26.08]]}, // 广州到福州
+				// 从深圳出发的飞线
+				{coords: [[114.07, 22.62], [121.48, 31.22]]}, // 深圳到上海
+				{coords: [[114.07, 22.62], [116.46, 39.92]]}, // 深圳到北京
+				{coords: [[114.07, 22.62], [104.06, 30.67]]}, // 深圳到成都
+				{coords: [[114.07, 22.62], [113.54, 22.20]]}, // 深圳到珠海
+				{coords: [[114.07, 22.62], [113.33, 22.13]]}, // 深圳到中山
+				// 从成都出发的飞线
+				{coords: [[104.06, 30.67], [106.50, 29.59]]}, // 成都到重庆
+				{coords: [[104.06, 30.67], [102.73, 25.04]]}, // 成都到昆明
+				{coords: [[104.06, 30.67], [101.74, 36.56]]}, // 成都到西宁
+				{coords: [[104.06, 30.67], [103.73, 36.03]]}, // 成都到兰州
+				// 从西安出发的飞线
+				{coords: [[108.95, 34.27], [112.53, 37.87]]}, // 西安到太原
+				{coords: [[108.95, 34.27], [111.65, 40.82]]}, // 西安到呼和浩特
+				{coords: [[108.95, 34.27], [106.27, 38.47]]}, // 西安到银川
+				// 东北地区飞线
+				{coords: [[126.63, 45.75], [125.35, 43.88]]}, // 哈尔滨到长春
+				{coords: [[125.35, 43.88], [123.38, 41.80]]}, // 长春到沈阳
+				{coords: [[123.38, 41.80], [121.59, 38.91]]}, // 沈阳到大连
+				// 华东地区飞线
+				{coords: [[118.78, 32.04], [120.19, 30.26]]}, // 南京到杭州
+				{coords: [[120.19, 30.26], [119.30, 26.08]]}, // 杭州到福州
+				{coords: [[119.30, 26.08], [118.11, 24.49]]}, // 福州到厦门
+				// 西南地区飞线
+				{coords: [[102.73, 25.04], [108.33, 22.84]]}, // 昆明到南宁
+				{coords: [[106.50, 29.59], [108.33, 22.84]]}, // 重庆到南宁
+				{coords: [[102.73, 25.04], [91.11, 29.97]]}, // 昆明到拉萨
+			]
+		}, {
+			name: '重要城市',
+			type: 'effectScatter',
+			coordinateSystem: 'geo',
+			zlevel: 2,
+			rippleEffect: {
+				brushType: 'stroke'
+			},
+			label: {
+				show: true,
+				position: 'right',
+				formatter: '{b}',
+				color: '#fff',
+				fontSize: 12
+			},
+			symbolSize: function (val) {
+				return val[2] / 10;
+			},
+			itemStyle: {
+				color: '#F4E925',
+				shadowBlur: 10,
+				shadowColor: '#333'
+			},
+			data: [
+				// 一线城市
+				{name: '北京', value: [116.46, 39.92, 100]},
+				{name: '上海', value: [121.48, 31.22, 95]},
+				{name: '广州', value: [113.23, 23.16, 90]},
+				{name: '深圳', value: [114.07, 22.62, 85]},
+				// 新一线城市
+				{name: '成都', value: [104.06, 30.67, 80]},
+				{name: '重庆', value: [106.50, 29.59, 78]},
+				{name: '杭州', value: [120.19, 30.26, 76]},
+				{name: '武汉', value: [114.31, 30.52, 74]},
+				{name: '西安', value: [108.95, 34.27, 72]},
+				{name: '天津', value: [117.20, 39.13, 70]},
+				{name: '苏州', value: [120.62, 31.32, 68]},
+				{name: '南京', value: [118.78, 32.04, 66]},
+				// 二线城市
+				{name: '昆明', value: [102.73, 25.04, 64]},
+				{name: '福州', value: [119.30, 26.08, 62]},
+				{name: '厦门', value: [118.11, 24.49, 60]},
+				{name: '哈尔滨', value: [126.63, 45.75, 58]},
+				{name: '长春', value: [125.35, 43.88, 56]},
+				{name: '沈阳', value: [123.38, 41.80, 54]},
+				{name: '大连', value: [121.59, 38.91, 52]},
+				{name: '济南', value: [117.00, 36.65, 50]},
+				{name: '青岛', value: [120.33, 36.07, 48]},
+				{name: '郑州', value: [113.60, 34.76, 46]},
+				{name: '长沙', value: [113.00, 28.21, 44]},
+				{name: '合肥', value: [117.27, 31.86, 42]},
+				{name: '南昌', value: [115.89, 28.68, 40]},
+				{name: '太原', value: [112.53, 37.87, 38]},
+				{name: '石家庄', value: [114.48, 38.03, 36]},
+				{name: '呼和浩特', value: [111.65, 40.82, 34]},
+				{name: '乌鲁木齐', value: [87.68, 43.77, 32]},
+				{name: '兰州', value: [103.73, 36.03, 30]},
+				{name: '西宁', value: [101.74, 36.56, 28]},
+				{name: '银川', value: [106.27, 38.47, 26]},
+				{name: '拉萨', value: [91.11, 29.97, 24]},
+				// 华南地区
+				{name: '南宁', value: [108.33, 22.84, 22]},
+				{name: '海口', value: [110.35, 20.02, 20]},
+				{name: '佛山', value: [112.44, 23.05, 18]},
+				{name: '珠海', value: [113.54, 22.20, 16]},
+				{name: '中山', value: [113.33, 22.13, 14]}
+			]
 		}],
 	};
 	myChart.setOption(option);
@@ -1244,37 +1417,33 @@ function guapaizhanbi(obj, Index) {
 				axisLine: { // 坐标轴线  
 					lineStyle: { // 属性lineStyle控制线条样式  
 						color: [
-							[0.2, '#83B15A'],
-							[0.4, '#DE9B32'],
-							[0.6, '#50CDF6'],
-							[0.8, '#1D9FF2'],
-							[1, '#BF4746']
+							[0.2, '#10B981'],  // 扁平绿色
+							[0.4, '#F59E0B'],  // 扁平橙色
+							[0.6, '#06B6D4'],  // 扁平青色
+							[0.8, '#3B82F6'],  // 扁平蓝色
+							[1, '#EF4444']     // 扁平红色
 						],
-						width: 10, //圆环宽度（坐标轴宽度）
+						width: 8, //圆环宽度（坐标轴宽度）
 					}
 				},
 				axisTick: { // 坐标轴小标记
-					length: 15, // 属性length控制线长
+					length: 12, // 属性length控制线长
 					lineStyle: { // 属性lineStyle控制线条样式
-						color: 'auto'
+						color: '#64748B',  // 扁平灰色
+						width: 2
 					}
 				},
 				splitLine: { // 分隔线
-					length: 20, // 属性length控制线长
+					length: 16, // 属性length控制线长
 					lineStyle: { // 属性lineStyle（详见lineStyle）控制线条样式
-						color: 'auto'
+						color: '#64748B',  // 扁平灰色
+						width: 2
 					}
 				},
 				axisLabel: {
-					//backgroundColor: 'auto', //字块背景色
-					//borderRadius: 20, //字块圆角
-					color: 'auto', //文字颜色
+					color: '#E2E8F0', //扁平浅灰色文字
 					fontSize: 12,
-					padding: 0,
-					textShadowBlur: 20,
-					textShadowOffsetX: 1,
-					textShadowOffsetY: 1,
-					textShadowColor: '#fff'
+					padding: 0
 				},
 				title: {
 					// 其余属性默认使用全局文本样式，详见TEXTSTYLE
@@ -1289,31 +1458,30 @@ function guapaizhanbi(obj, Index) {
 						var num = (value / 325) * 100;
 						return value + "\n\n占比 " + num.toFixed(2) + "%";
 					},
-					fontWeight: 'bolder',
-					borderRadius: 3, //圆角
-					backgroundColor: '#1D2088', //背景
-					borderColor: '#00A0E9', //边框
-					shadowBlur: 5,
-					shadowColor: '#00A0E9',
+					fontWeight: 'normal',  // 改为正常字重
+					borderRadius: 0, //去掉圆角
+					backgroundColor: 'transparent', //透明背景
+					borderColor: 'transparent', //透明边框
+					shadowBlur: 0,  // 去掉阴影
+					shadowColor: 'transparent',
 					shadowOffsetX: 0,
-					shadowOffsetY: 1,
-					borderWidth: 2,
-					//textBorderColor: '#62D4FB',
-					textBorderWidth: 2,
-					textShadowBlur: 2,
-					textShadowColor: '#62D4FB',
+					shadowOffsetY: 0,
+					borderWidth: 0,  // 去掉边框
+					textBorderWidth: 0,  // 去掉文字边框
+					textShadowBlur: 0,   // 去掉文字阴影
+					textShadowColor: 'transparent',
 					textShadowOffsetX: 0,
-					textShadowOffsetY: 1,
+					textShadowOffsetY: 0,
 					fontFamily: 'Arial',
 					fontSize: 16,
 					width: 30,
 					height: 12,
-					color: '#62D4FB',
+					color: '#F8FAFC',  // 扁平白色文字
 					rich: {},
 				},
 				data: [{
 					value: datas,
-					name: '今日入驻'
+					name: ''
 				}]
 			}]
 		};
@@ -1838,14 +2006,27 @@ function guapaizhanbi(obj, Index) {
 				fontSize: 18,
 				position: "top"
 			},
-			color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
-				offset: 0,
-				color: '#3E3CB5'
-			}, {
-				offset: 1,
-				color: '#D66BFD'
-			}]),
+			color: '#8B5CF6',  // 扁平紫色
+			itemStyle: {
+				borderRadius: 0,  // 去掉圆角
+				shadowBlur: 0,    // 去掉阴影
+				shadowColor: 'transparent'
+			},
 			data: [200, 330, 440, 550, 660, 770, 880]
+		}, {
+			name: '趋势线',
+			type: 'line',
+			smooth: true,  // 平滑曲线
+			color: '#F59E0B',  // 橙色趋势线
+			lineStyle: {
+				type: 'dashed',  // 虚线
+				width: 3
+			},
+			symbol: 'none',  // 不显示数据点
+			data: [200, 330, 440, 550, 660, 770, 880],  // 与柱状图相同的趋势数据
+			emphasis: {
+				focus: 'series'
+			}
 		}]
 	};
 	// 使用刚指定的配置项和数据显示图表。
@@ -1863,6 +2044,8 @@ function guapaizhanbi(obj, Index) {
 		option.series[0].data[4] = Math.round(Math.random() * 1000)
 		option.series[0].data[5] = Math.round(Math.random() * 1000)
 		option.series[0].data[6] = Math.round(Math.random() * 1000)
+		// 更新趋势线数据
+		option.series[1].data = [...option.series[0].data]
 		W = Math.round(Math.random() * 10) * 78;
 		H = W / 13;
 		if (H < 8) {

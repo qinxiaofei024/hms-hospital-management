@@ -789,12 +789,12 @@
             
             // 指标达成率数据
             var achievementRateData = [
-                {name: '总收入', actual: '5.5亿', target: '5.8亿', rate: 94.8},
-                {name: '净利润', actual: '0.3亿', target: '0.35亿', rate: 85.7},
-                {name: '利润率', actual: 5.5, target: 6.0, rate: 91.7},
-                {name: '床位使用率', actual: 92.8, target: 90.0, rate: 103.1},
-                {name: '平均住院日', actual: 7.2, target: 7.5, rate: 104.0},
-                {name: '均次费用', actual: 18500, target: 18000, rate: 102.8}
+                {name: '总收入', actual: '2.85亿', target: '3.0亿', rate: 95.0},
+                {name: '净利润', actual: '1580万', target: '2000万', rate: 79.0},
+                {name: '利润率', actual: '5.5%', target: '6.7%', rate: 82.1},
+                {name: '床位利用率', actual: '88.5%', target: '85.0%', rate: 104.1},
+                {name: '平均住院日', actual: '6.8天', target: '7.2天', rate: 105.9},
+                {name: '次均费用', actual: '8650元', target: '8200元', rate: 105.5}
             ];
             
             // 对比表格数据
@@ -1735,12 +1735,12 @@
             
             // 检查achievementData是否存在且是数组
             if (!achievementData || !Array.isArray(achievementData)) {
-                achievementContainer.innerHTML = '<p>暂无指标达成率数据</p>';
+                achievementContainer.innerHTML = '<div class="no-data-message">暂无指标达成率数据</div>';
                 return;
             }
             
             var html = '';
-            achievementData.forEach(function(item) {
+            achievementData.forEach(function(item, index) {
                 var rateClass = item.rate >= 100 ? 'achievement-met' : 'achievement-not-met';
                 var iconClass = item.rate >= 100 ? 'icon-success' : 'icon-warning';
                 
@@ -1748,44 +1748,77 @@
                 var actualDisplay = item.actual;
                 var targetDisplay = item.target;
                 
-                // 对于数值类型，添加适当的格式化
-                if (typeof item.actual === 'number') {
-                    if (item.name === '利润率' || item.name === '床位使用率') {
-                        actualDisplay = item.actual.toFixed(1) + '%';
-                        targetDisplay = item.target.toFixed(1) + '%';
-                    } else if (item.name === '平均住院日') {
-                        actualDisplay = item.actual.toFixed(1) + '天';
-                        targetDisplay = item.target.toFixed(1) + '天';
-                    } else if (item.name === '均次费用') {
-                        actualDisplay = '¥' + item.actual.toLocaleString();
-                        targetDisplay = '¥' + item.target.toLocaleString();
-                    }
+                // 现在所有数据都是字符串格式，直接使用
+                if (item.name === '总收入' || item.name === '净利润') {
+                    // 收入和利润已经包含单位，直接显示
+                    actualDisplay = item.actual;
+                    targetDisplay = item.target;
+                } else if (item.name === '利润率' || item.name === '床位利用率') {
+                    // 百分比数据已经包含%符号
+                    actualDisplay = item.actual;
+                    targetDisplay = item.target;
+                } else if (item.name === '平均住院日') {
+                    // 天数数据已经包含单位
+                    actualDisplay = item.actual;
+                    targetDisplay = item.target;
+                } else if (item.name === '次均费用') {
+                    // 费用数据已经包含单位
+                    actualDisplay = item.actual;
+                    targetDisplay = item.target;
+                }
+                
+                // 计算进度条颜色渐变
+                var progressColor = '#ff7875'; // 默认红色
+                var progressGradient = '';
+                if (item.rate >= 100) {
+                    progressGradient = 'linear-gradient(90deg, #52c41a 0%, #73d13d 100%)'; // 绿色渐变
+                } else if (item.rate >= 80) {
+                    progressGradient = 'linear-gradient(90deg, #faad14 0%, #ffc53d 100%)'; // 黄色渐变
+                } else if (item.rate >= 60) {
+                    progressGradient = 'linear-gradient(90deg, #fa8c16 0%, #ffa940 100%)'; // 橙色渐变
                 } else {
-                    // 对于字符串类型（如总收入、净利润），直接使用
-                    actualDisplay = '¥' + item.actual;
-                    targetDisplay = '¥' + item.target;
+                    progressGradient = 'linear-gradient(90deg, #ff7875 0%, #ff9c6e 100%)'; // 红色渐变
+                }
+                
+                // 确定卡片状态
+                var cardStatus = 'stable';
+                if (item.rate >= 100) {
+                    cardStatus = 'up';
+                } else if (item.rate < 85) {
+                    cardStatus = 'down';
                 }
                 
                 html += `
-                    <div class="achievement-item drillable" data-metric="${item.name}达成率" data-period="${timeRangeValue}">
+                    <div class="achievement-item drillable" data-metric="${item.name}达成率" data-period="${timeRangeValue}" data-status="${cardStatus}" style="animation-delay: ${index * 0.1}s">
                         <div class="achievement-name">${item.name}</div>
                         <div class="achievement-values">
                             <span class="actual-value">${actualDisplay}</span>
-                            <span class="target-value">/ ${targetDisplay}</span>
-                        </div>
-                        <div class="achievement-rate ${rateClass}" style="display: none;">
-                            <span class="${iconClass}">${item.rate.toFixed(1)}%</span>
+                            <span class="target-value">目标: ${targetDisplay}</span>
                         </div>
                         <div class="achievement-progress">
                             <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${Math.min(item.rate, 100)}%; background-color: ${item.rate >= 100 ? '#52c41a' : '#fa8c16'}"></div>
+                                <div class="progress-fill" style="width: ${Math.min(item.rate, 100)}%; background: ${progressGradient};"></div>
                             </div>
+                        </div>
+                        <div class="achievement-rate ${rateClass}">
+                            <span class="${iconClass}">${item.rate.toFixed(1)}%</span>
                         </div>
                     </div>
                 `;
             });
             
             achievementContainer.innerHTML = html;
+            
+            // 添加进入动画
+            setTimeout(() => {
+                const items = achievementContainer.querySelectorAll('.achievement-item');
+                items.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+            }, 50);
         }
     };
     

@@ -805,7 +805,181 @@
     }
 
 
+@media (max-width: 768px) {
+    /* 图表容器响应式 */
+    .chart-container {
+        height: 300px;
+        padding: 15px;
+    }
+    
+    .chart-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .half-width {
+        width: 100%;
+    }
+    
+    /* 表格容器响应式 */
+    .table-container {
+        overflow-x: auto;
+        max-height: 400px;
+    }
+    
+    .data-table {
+        min-width: 600px;
+        font-size: 12px;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: 8px 6px;
+    }
+    
+    /* 概览卡片响应式 */
+    .performance-overview {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+    }
+    
+    .overview-card {
+        padding: 15px;
+    }
+    
+    .card-value {
+        font-size: 1.8rem;
+    }
+}
+
 @media (max-width: 480px) {
+    /* 控制面板响应式 */
+    .control-panel {
+        padding: 15px;
+        gap: 12px;
+    }
+    
+    .time-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .year-select, .granularity-select, .level-select {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    /* 图表进一步优化 */
+    .chart-container {
+        height: 250px;
+        padding: 10px;
+    }
+    
+    .chart-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .chart-header h3 {
+        font-size: 14px;
+    }
+    
+    /* 表格进一步优化 */
+    .data-table {
+        font-size: 11px;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: 6px 4px;
+    }
+    
+    /* 概览卡片进一步优化 */
+    .performance-overview {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .overview-card {
+        padding: 12px;
+    }
+    
+    .card-content h3 {
+        font-size: 14px;
+    }
+    
+    .en-subtitle {
+        font-size: 10px;
+    }
+    
+    .card-value {
+        font-size: 1.5rem;
+    }
+    
+    .card-trend {
+        font-size: 11px;
+    }
+    
+    .card-status {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+    
+    /* 监测网格响应式 */
+    .monitoring-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    /* 预测网格响应式 */
+    .prediction-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    /* 弹窗响应式 */
+    .modal-content {
+        width: 95%;
+        margin: 5% auto;
+        max-height: 90vh;
+    }
+    
+    .modal-header {
+        padding: 15px;
+    }
+    
+    .modal-body {
+        padding: 15px;
+        max-height: 70vh;
+    }
+    
+    .modal-chart {
+        height: 200px;
+    }
+    
+    /* 报告选项响应式 */
+    .report-options {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .report-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
     .warning-summary {
         flex-direction: column;
         gap: 8px;
@@ -818,35 +992,73 @@
     
     .department-select {
         min-width: auto;
+        width: 100%;
     }
 }
 /* 响应式布局规则 - content-wrapper */
 .content-wrapper.responsive-wrapper {
-    margin-left: 250px;
+    margin-left: var(--sidebar-width, 200px);
     transition: margin-left 0.3s ease;
+    width: calc(100% - var(--sidebar-width, 200px));
+    max-width: calc(100% - var(--sidebar-width, 200px));
+}
+
+.main-content {
+    margin-left: var(--sidebar-width, 200px);
+    transition: margin-left 0.3s ease, padding 0.3s ease, width 0.3s ease;
+    width: calc(100% - var(--sidebar-width, 200px));
+    max-width: calc(100% - var(--sidebar-width, 200px));
 }
 
 @media (max-width: 1200px) {
     .content-wrapper.responsive-wrapper {
-        margin-left: 200px;
-        padding: 15px;
+        margin-left: var(--sidebar-width, 200px);
+        transition: margin-left 0.3s ease;
+        width: calc(100% - var(--sidebar-width, 200px));
+        max-width: calc(100% - var(--sidebar-width, 200px));
+    }
+    
+    .main-content {
+        margin-left: var(--sidebar-width, 200px);
+        transition: margin-left 0.3s ease, padding 0.3s ease, width 0.3s ease;
+        width: calc(100% - var(--sidebar-width, 200px));
+        max-width: calc(100% - var(--sidebar-width, 200px));
     }
 }
 
 @media (max-width: 992px) {
     .content-wrapper.responsive-wrapper {
-        margin-left: 0;
-        padding: 10px;
+        margin-left: var(--sidebar-width, 200px);
+        transition: margin-left 0.3s ease;
+        width: calc(100% - var(--sidebar-width, 200px));
+        max-width: calc(100% - var(--sidebar-width, 200px));
+    }
+    
+    .main-content {
+        margin-left: var(--sidebar-width, 200px);
+        transition: margin-left 0.3s ease, padding 0.3s ease, width 0.3s ease;
+        width: calc(100% - var(--sidebar-width, 200px));
+        max-width: calc(100% - var(--sidebar-width, 200px));
     }
 }
 
 @media (max-width: 768px) {
+    :root {
+        --sidebar-width: 64px;
+    }
+    
     .content-wrapper.responsive-wrapper {
-        margin-left: 0;
+        margin-left: var(--sidebar-width, 64px);
         padding: 8px;
+        width: calc(100% - var(--sidebar-width, 64px));
+        max-width: calc(100% - var(--sidebar-width, 64px));
     }
     
     .main-content {
+        margin-left: var(--sidebar-width, 64px);
+        padding: 0 10px;
+        width: calc(100% - var(--sidebar-width, 64px));
+        max-width: calc(100% - var(--sidebar-width, 64px));
         flex-direction: column;
     }
     
@@ -860,10 +1072,23 @@
     }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 480px) {
+    :root {
+        --sidebar-width: 0px;
+    }
+    
     .content-wrapper.responsive-wrapper {
-        margin-left: 0;
+        margin-left: var(--sidebar-width, 0px);
         padding: 5px;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .main-content {
+        margin-left: var(--sidebar-width, 0px);
+        padding: 0 5px;
+        width: 100%;
+        max-width: 100%;
     }
     
     .page-header h1 {

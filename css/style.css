@@ -7,7 +7,7 @@
 
 :root {
     --header-height: 48px;
-    --sidebar-width: 240px;
+    --sidebar-width: 200px;
 }
 
 body {
@@ -263,9 +263,9 @@ body {
     flex: 1;
     overflow-x: hidden;
     position: relative;
-    width: calc(100% - var(--sidebar-width, 240px));
-    max-width: calc(100% - var(--sidebar-width, 240px));
-    margin-left: var(--sidebar-width, 240px);
+    width: calc(100% - var(--sidebar-width, 200px));
+    max-width: calc(100% - var(--sidebar-width, 200px));
+    margin-left: var(--sidebar-width, 200px);
     margin-top: var(--header-height, 48px);
     min-height: calc(100vh - var(--header-height, 48px));
     padding: 0 20px;
@@ -278,7 +278,7 @@ body {
 
 /* 左侧菜单 */
 .sidebar {
-    width: var(--sidebar-width, 240px);
+    width: var(--sidebar-width, 200px);
     background-color: #fff;
     border-right: 1px solid #e8e8e8;
     height: calc(100vh - var(--header-height, 48px));
@@ -341,20 +341,20 @@ body {
 @media (max-width: 1200px) {
     .main-content {
         padding: 0 15px;
-        margin-left: var(--sidebar-width, 240px);
+        margin-left: var(--sidebar-width, 200px);
         margin-top: var(--header-height, 48px);
         min-height: calc(100vh - var(--header-height, 48px));
-        width: calc(100% - var(--sidebar-width, 240px));
-        max-width: calc(100% - var(--sidebar-width, 240px));
+        width: calc(100% - var(--sidebar-width, 200px));
+        max-width: calc(100% - var(--sidebar-width, 200px));
     }
 }
 
 @media (max-width: 992px) {
     .main-content {
-        margin-left: var(--sidebar-width, 240px);
+        margin-left: var(--sidebar-width, 200px);
         padding: 0 10px;
-        width: calc(100% - var(--sidebar-width, 240px));
-        max-width: calc(100% - var(--sidebar-width, 240px));
+        width: calc(100% - var(--sidebar-width, 200px));
+        max-width: calc(100% - var(--sidebar-width, 200px));
     }
     
     /* 调整图表容器宽度 */
@@ -983,7 +983,7 @@ body.sidebar-collapsed .content-wrapper {
 .sidebar-toggle,
 .toggle-sidebar-btn {
     position: fixed !important;
-    left: var(--sidebar-width, 240px) !important;
+    left: var(--sidebar-width, 200px) !important;
     top: var(--header-height, 48px) !important;
     z-index: 1001 !important;
     width: 24px !important;

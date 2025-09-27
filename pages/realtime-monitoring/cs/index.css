@@ -1,5 +1,5 @@
 *{padding:0;margin:0;list-style: none; max-height: 99999px; }
-.content{position: relative;width:3840px;height:2160px;box-sizing:border-box;padding-bottom: 35px; background:url("./images/beijing.png") no-repeat; overflow: hidden; font-size:30px;}
+.content{position: relative;width:3840px;height:2160px;box-sizing:border-box;padding-bottom: 35px; background:url("../images/beijing.png") no-repeat; overflow: hidden; font-size:30px;}
 .rel{position: relative;}
 html{width:3840px;height:2160px;}
 .clear{ clear:both; }
@@ -19,9 +19,9 @@ html{width:3840px;height:2160px;}
 .animation10{left: 50%; top:80%; transform:scale(1.5); }
 .animation10 div{ animation-direction:reverse; }
 .animation div{ position: absolute; top: 0;left: 0;width:618px; height:618px;  border-radius:50%; animation:move linear infinite;opacity: .3;filter:alpha(opacity=30);}
-.animation .animate1{ background:url("./images/1.png") no-repeat; background-size: 100%; animation-duration:30s;}
-.animation .animate2{ background:url("./images/2.png") no-repeat; background-size: 100%;  animation-duration:20s; animation-direction:reverse;}
-.animation .animate3{ background:url("./images/3.png") no-repeat; background-size: 100%;  animation-duration:15s; }
+.animation .animate1{ background:url("../images/1.png") no-repeat; background-size: 100%; animation-duration:30s;}
+.animation .animate2{ background:url("../images/2.png") no-repeat; background-size: 100%;  animation-duration:20s; animation-direction:reverse;}
+.animation .animate3{ background:url("../images/3.png") no-repeat; background-size: 100%;  animation-duration:15s; }
 .fanzhuan .animate1{ animation-direction:reverse; animation-duration:25s;}
 .fanzhuan .animate2{ animation-direction:normal; animation-duration:15s;}
 .fanzhuan .animate3{ animation-direction:reverse; animation-duration:10s;}
@@ -131,7 +131,7 @@ text{ font-size:18px; display:inline-block;}
 .liushuihaoul span{display: inline-block;float:left;width:208px;line-height: 50px;font-size:18px;text-overflow: ellipsis; overflow: hidden; white-space:nowrap;vertical-align: middle;text-align: center;}
 .default{ height:58px; color:#fff;line-height: 58px;margin-top:26px;font-size:24px;}
 .default span{ display: inline-block; float:left;width:208px; text-align: center;}
-.bodyRightTopBG{ margin-left:8px;width:1248px;height:370px;background: url("./images/001.png") no-repeat; }
+.bodyRightTopBG{ margin-left:8px;width:1248px;height:370px;background: url("../images/001.png") no-repeat; }
 .liushuihaoul{height:308px;overflow: hidden;position: relative;}
 .winwatch{float:left;width:1162px;height:804px;margin-right: 36px;}
 .pinjiawatch{height:804px;float:left;width:1375px;}
