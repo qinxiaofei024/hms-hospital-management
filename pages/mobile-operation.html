@@ -571,10 +571,67 @@
             background-color: #f5f7fa;
         }
         
-        @media (max-width: 768px) {
+        /* 响应式布局优化 */
+        @media (max-width: 1400px) {
+            .mobile-devices-row {
+                gap: 20px;
+            }
+            
+            .device-display {
+                width: 340px;
+                height: 680px;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .mobile-devices-row {
+                gap: 15px;
+                justify-content: space-around;
+            }
+            
             .device-display {
                 width: 320px;
                 height: 640px;
+            }
+            
+            .mobile-operation-container {
+                padding: 15px;
+                margin: 15px 0;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .mobile-devices-row {
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+            
+            .device-display {
+                width: 360px;
+                height: 720px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-operation-container {
+                padding: 10px;
+                margin: 10px 0;
+            }
+            
+            .mobile-devices-row {
+                gap: 20px;
+            }
+            
+            .device-display {
+                width: 300px;
+                height: 600px;
+                border-width: 8px;
+            }
+            
+            .device-notch {
+                width: 120px;
+                height: 20px;
             }
             
             .analysis-charts {
@@ -585,6 +642,114 @@
             .data-table td {
                 padding: 8px;
                 font-size: 12px;
+            }
+            
+            .device-label {
+                font-size: 14px;
+            }
+            
+            .device-description {
+                font-size: 12px;
+                max-width: 300px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .mobile-operation-container {
+                padding: 8px;
+                margin: 8px 0;
+                border-radius: 6px;
+            }
+            
+            .mobile-devices-row {
+                gap: 15px;
+            }
+            
+            .device-display {
+                width: 280px;
+                height: 560px;
+                border-width: 6px;
+                border-radius: 20px;
+            }
+            
+            .device-notch {
+                width: 100px;
+                height: 18px;
+                border-radius: 0 0 10px 10px;
+            }
+            
+            .device-status-bar {
+                height: 25px;
+                padding: 0 15px;
+                font-size: 10px;
+            }
+            
+            .mobile-card {
+                margin-bottom: 8px;
+                padding: 12px;
+            }
+            
+            .mobile-card-title {
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+            
+            .mobile-stat-value {
+                font-size: 16px;
+            }
+            
+            .mobile-stat-label {
+                font-size: 10px;
+            }
+            
+            .mobile-list-text {
+                font-size: 11px;
+            }
+            
+            .mobile-list-value {
+                font-size: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .device-display {
+                width: 260px;
+                height: 520px;
+            }
+            
+            .device-label {
+                font-size: 13px;
+            }
+            
+            .device-description {
+                font-size: 11px;
+                max-width: 260px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .mobile-operation-container {
+                padding: 5px;
+                margin: 5px 0;
+            }
+            
+            .device-display {
+                width: 240px;
+                height: 480px;
+                border-width: 4px;
+                border-radius: 15px;
+            }
+            
+            .device-notch {
+                width: 80px;
+                height: 15px;
+                border-radius: 0 0 8px 8px;
+            }
+            
+            .device-status-bar {
+                height: 20px;
+                padding: 0 10px;
+                font-size: 9px;
             }
         }
 
@@ -604,6 +769,117 @@
             margin-bottom: 24px;
             padding-bottom: 12px;
             border-bottom: 2px solid #f0f0f0;
+        }
+        
+        /* PC端信息发布中心响应式样式 */
+        @media (max-width: 1200px) {
+            .pc-message-center {
+                margin: 30px 0;
+                padding: 25px;
+            }
+            
+            .pc-message-center h2 {
+                font-size: 22px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .pc-message-center {
+                margin: 20px 0;
+                padding: 20px;
+                border-radius: 8px;
+            }
+            
+            .pc-message-center h2 {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .message-center-container {
+                padding: 15px;
+            }
+            
+            .message-item {
+                padding: 15px;
+            }
+            
+            .message-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .message-title {
+                font-size: 14px;
+            }
+            
+            .message-status {
+                align-self: flex-end;
+                font-size: 11px;
+                padding: 3px 10px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .pc-message-center {
+                margin: 15px 0;
+                padding: 15px;
+                border-radius: 6px;
+            }
+            
+            .pc-message-center h2 {
+                font-size: 18px;
+                margin-bottom: 16px;
+            }
+            
+            .message-center-container {
+                padding: 12px;
+                border-radius: 6px;
+            }
+            
+            .message-list {
+                gap: 12px;
+            }
+            
+            .message-item {
+                padding: 12px;
+                border-radius: 6px;
+            }
+            
+            .message-title {
+                font-size: 13px;
+                line-height: 1.4;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .pc-message-center {
+                margin: 10px 0;
+                padding: 12px;
+            }
+            
+            .pc-message-center h2 {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .message-center-container {
+                padding: 10px;
+            }
+            
+            .message-item {
+                padding: 10px;
+            }
+            
+            .message-title {
+                font-size: 12px;
+            }
+            
+            .message-status {
+                font-size: 10px;
+                padding: 2px 8px;
+                min-width: 50px;
+            }
         }
 
         .message-center-container {
@@ -711,6 +987,102 @@
         .message-meta span {
             display: flex;
             align-items: center;
+        }
+
+        /* 消息操作按钮样式 */
+        .message-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 60px;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .review-btn {
+            background: #e6f7ff;
+            color: #1890ff;
+            border: 1px solid #91d5ff;
+        }
+
+        .review-btn:hover:not(:disabled) {
+            background: #bae7ff;
+            border-color: #69c0ff;
+        }
+
+        .approve-btn {
+            background: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+
+        .approve-btn:hover:not(:disabled) {
+            background: #d9f7be;
+            border-color: #95de64;
+        }
+
+        .reject-btn {
+            background: #fff2f0;
+            color: #ff4d4f;
+            border: 1px solid #ffccc7;
+        }
+
+        .reject-btn:hover:not(:disabled) {
+            background: #ffebe8;
+            border-color: #ffa39e;
+        }
+
+        .edit-btn {
+            background: #fff7e6;
+            color: #fa8c16;
+            border: 1px solid #ffd591;
+        }
+
+        .edit-btn:hover:not(:disabled) {
+            background: #ffe7ba;
+            border-color: #ffb84d;
+        }
+
+        .archive-btn {
+            background: #f5f5f5;
+            color: #666;
+            border: 1px solid #d9d9d9;
+        }
+
+        .archive-btn:hover:not(:disabled) {
+            background: #e8e8e8;
+            border-color: #bfbfbf;
+        }
+
+        .unarchive-btn {
+            background: #e6fffb;
+            color: #13c2c2;
+            border: 1px solid #87e8de;
+        }
+
+        .unarchive-btn:hover:not(:disabled) {
+            background: #b5f5ec;
+            border-color: #5cdbd3;
         }
 
         /* 消息弹窗样式 */
@@ -1003,6 +1375,463 @@
             width: 100%;
         }
 
+        /* 企业微信样式 */
+        .wechat-header {
+            background: #07c160;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .wechat-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .wechat-logo {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .wechat-search {
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .wechat-message-list {
+            background: #f7f7f7;
+            height: calc(100% - 120px);
+            overflow-y: auto;
+        }
+
+        .wechat-chat-item {
+            background: white;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .wechat-chat-item:hover {
+            background: #f0f0f0;
+        }
+
+        .wechat-chat-item.has-new-message {
+            background: #f0f9ff;
+        }
+
+        .wechat-avatar {
+            width: 48px;
+            height: 48px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .avatar-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .wechat-chat-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .wechat-chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .wechat-chat-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .wechat-chat-time {
+            font-size: 12px;
+            color: #999;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        .wechat-chat-preview {
+            font-size: 14px;
+            color: #666;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .wechat-unread-badge {
+            position: absolute;
+            top: 8px;
+            right: 16px;
+            background: #ff4d4f;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 12px;
+            min-width: 18px;
+            text-align: center;
+            line-height: 14px;
+        }
+
+        .wechat-bottom-nav {
+            background: white;
+            border-top: 1px solid #e5e5e5;
+            display: flex;
+            height: 60px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .wechat-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .wechat-nav-item:hover {
+            background: #f0f0f0;
+        }
+
+        .wechat-nav-item.active {
+            color: #07c160;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            color: #666;
+        }
+
+        .wechat-nav-item.active .nav-label {
+            color: #07c160;
+        }
+
+        /* 核心指标弹窗样式 */
+        .indicator-data-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .indicator-data-section h4 {
+            margin: 0 0 16px 0;
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .indicator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .indicator-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .indicator-item label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .indicator-item .form-input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .preview-btn {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .preview-btn:hover {
+            background: #138496;
+        }
+
+        /* 微信消息详情弹窗样式 */
+        #wechatDetailModal {
+            display: none; /* 初始隐藏 */
+        }
+        
+        .wechat-detail-modal {
+            max-width: 400px;
+            width: 100%;
+            max-height: calc(100% - 80px); /* 减去状态栏和微信头部的高度 */
+            overflow-y: auto;
+            background: #f7f7f7;
+            border-radius: 0;
+            position: absolute;
+            top: 80px; /* 从微信头部下方开始 */
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: 0;
+            z-index: 1000;
+        }
+
+        /* 为第二个手机屏幕添加相对定位 */
+        #wechat-device .device-display {
+            position: relative;
+        }
+
+        .wechat-detail-header {
+            background: #393a3f;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .wechat-back-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wechat-back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .wechat-detail-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .wechat-action-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .wechat-action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .wechat-detail-content {
+            padding: 16px;
+            background: #f7f7f7;
+        }
+
+        .indicator-message-bubble {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-sender {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .sender-avatar {
+            margin-right: 12px;
+        }
+
+        .sender-info {
+            flex: 1;
+        }
+
+        .sender-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .indicator-detail-card {
+            padding: 16px;
+        }
+
+        .indicator-card-header {
+            margin-bottom: 16px;
+        }
+
+        .indicator-card-header h4 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .indicator-date {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .indicator-card-content p {
+            margin: 0 0 20px 0;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .indicator-metrics {
+            margin-bottom: 20px;
+        }
+
+        .metric-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .metric-item {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .metric-trend {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .metric-trend.up {
+            color: #52c41a;
+        }
+
+        .metric-trend.down {
+            color: #ff4d4f;
+        }
+
+        .metric-chart {
+            height: 30px;
+            display: flex;
+            align-items: end;
+        }
+
+        .mini-chart {
+            display: flex;
+            align-items: end;
+            gap: 2px;
+            height: 20px;
+        }
+
+        .chart-bar {
+            width: 8px;
+            background: #1890ff;
+            border-radius: 1px;
+            min-height: 2px;
+        }
+
+        .metric-progress {
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #52c41a;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .mini-line-chart {
+            height: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .indicator-summary {
+            background: #f0f7ff;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #1890ff;
+        }
+
+        .summary-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1890ff;
+            margin-bottom: 8px;
+        }
+
+        .summary-content {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -1183,8 +2012,8 @@
                         <div class="device-description">提供医院整体运营数据、预警信息和决策支持</div>
                     </div>
 
-                    <!-- 医生端 -->
-                    <div class="mobile-device-frame">
+                    <!-- 企业微信端 -->
+                    <div class="mobile-device-frame" id="wechat-device">
                         <div class="device-display">
                             <div class="device-notch"></div>
                             <div class="device-status-bar">
@@ -1204,91 +2033,124 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="device-header doctor">
-                                <h3>医生工作站</h3>
-                                <div class="device-time">14:30</div>
+                            <div class="wechat-header">
+                                <div class="wechat-title">
+                                    <div class="wechat-logo">企业微信</div>
+                                    <div class="wechat-search">🔍</div>
+                                </div>
                             </div>
                             <div class="device-content">
-                                <!-- 医生信息卡片 -->
-                                <div class="mobile-card">
-                                    <div class="mobile-card-title">
-                                        <i class="icon-user"></i>张医生 · 骨科
+                                <!-- 企业微信消息列表 -->
+                                <div class="wechat-message-list">
+                                    <!-- 医院运营群 -->
+                                    <div class="wechat-chat-item" id="wechat-indicator-chat">
+                                        <div class="wechat-avatar">
+                                            <div class="avatar-icon" style="background: #07c160;">医</div>
+                                        </div>
+                                        <div class="wechat-chat-content">
+                                            <div class="wechat-chat-header">
+                                                <div class="wechat-chat-name">医院运营群</div>
+                                                <div class="wechat-chat-time">14:25</div>
+                                            </div>
+                                            <div class="wechat-chat-preview">今日核心指标已更新，请查看</div>
+                                        </div>
+                                        <!-- 小红点将通过JavaScript动态添加 -->
                                     </div>
-                                    <div class="mobile-stats">
-                                        <div class="mobile-stat-item">
-                                            <div class="mobile-stat-value">28</div>
-                                            <div class="mobile-stat-label">今日门诊</div>
+
+                                    <!-- 科室主任群 -->
+                                    <div class="wechat-chat-item">
+                                        <div class="wechat-avatar">
+                                            <div class="avatar-icon" style="background: #1485ee;">科</div>
                                         </div>
-                                        <div class="mobile-stat-item">
-                                            <div class="mobile-stat-value">12</div>
-                                            <div class="mobile-stat-label">住院患者</div>
+                                        <div class="wechat-chat-content">
+                                            <div class="wechat-chat-header">
+                                                <div class="wechat-chat-name">科室主任群</div>
+                                                <div class="wechat-chat-time">13:45</div>
+                                            </div>
+                                            <div class="wechat-chat-preview">月度绩效考核通知</div>
                                         </div>
-                                        <div class="mobile-stat-item">
-                                            <div class="mobile-stat-value">3</div>
-                                            <div class="mobile-stat-label">待手术</div>
+                                    </div>
+
+                                    <!-- 质控管理群 -->
+                                    <div class="wechat-chat-item">
+                                        <div class="wechat-avatar">
+                                            <div class="avatar-icon" style="background: #ff9500;">质</div>
+                                        </div>
+                                        <div class="wechat-chat-content">
+                                            <div class="wechat-chat-header">
+                                                <div class="wechat-chat-name">质控管理群</div>
+                                                <div class="wechat-chat-time">12:30</div>
+                                            </div>
+                                            <div class="wechat-chat-preview">医疗质量安全提醒</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 护理部群 -->
+                                    <div class="wechat-chat-item">
+                                        <div class="wechat-avatar">
+                                            <div class="avatar-icon" style="background: #ff6b6b;">护</div>
+                                        </div>
+                                        <div class="wechat-chat-content">
+                                            <div class="wechat-chat-header">
+                                                <div class="wechat-chat-name">护理部群</div>
+                                                <div class="wechat-chat-time">11:20</div>
+                                            </div>
+                                            <div class="wechat-chat-preview">护理质量指标通报</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 设备管理群 -->
+                                    <div class="wechat-chat-item">
+                                        <div class="wechat-avatar">
+                                            <div class="avatar-icon" style="background: #9c88ff;">设</div>
+                                        </div>
+                                        <div class="wechat-chat-content">
+                                            <div class="wechat-chat-header">
+                                                <div class="wechat-chat-name">设备管理群</div>
+                                                <div class="wechat-chat-time">10:15</div>
+                                            </div>
+                                            <div class="wechat-chat-preview">设备维护计划提醒</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 财务管理群 -->
+                                    <div class="wechat-chat-item">
+                                        <div class="wechat-avatar">
+                                            <div class="avatar-icon" style="background: #ffa726;">财</div>
+                                        </div>
+                                        <div class="wechat-chat-content">
+                                            <div class="wechat-chat-header">
+                                                <div class="wechat-chat-name">财务管理群</div>
+                                                <div class="wechat-chat-time">昨天</div>
+                                            </div>
+                                            <div class="wechat-chat-preview">月度财务报表已生成</div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- 今日排班卡片 -->
-                                <div class="mobile-card">
-                                    <div class="mobile-card-title">
-                                        <i class="icon-calendar"></i>今日排班
-                                    </div>
-                                    <div class="mobile-list-item">
-                                        <div class="mobile-list-left">
-                                            <div class="mobile-list-icon" style="background-color: #e6f7ff; color: #1890ff;">门</div>
-                                            <div class="mobile-list-text">门诊 <span class="mobile-badge">8:00-12:00</span></div>
-                                        </div>
-                                        <div class="mobile-list-value">进行中</div>
-                                    </div>
-                                    <div class="mobile-list-item">
-                                        <div class="mobile-list-left">
-                                            <div class="mobile-list-icon" style="background-color: #f6ffed; color: #52c41a;">手</div>
-                                            <div class="mobile-list-text">手术 <span class="mobile-badge warning">14:00-16:00</span></div>
-                                        </div>
-                                        <div class="mobile-list-value">待开始</div>
-                                    </div>
-                                    <div class="mobile-list-item">
-                                        <div class="mobile-list-left">
-                                            <div class="mobile-list-icon" style="background-color: #fff2e8; color: #fa8c16;">查</div>
-                                            <div class="mobile-list-text">查房 <span class="mobile-badge info">16:30-17:30</span></div>
-                                        </div>
-                                        <div class="mobile-list-value">待开始</div>
-                                    </div>
+                            </div>
+                            
+                            <!-- 企业微信底部导航 -->
+                            <div class="wechat-bottom-nav">
+                                <div class="wechat-nav-item active">
+                                    <div class="nav-icon">💬</div>
+                                    <div class="nav-label">消息</div>
                                 </div>
-
-                                <!-- 患者列表卡片 -->
-                                <div class="mobile-card">
-                                    <div class="mobile-card-title">
-                                        <i class="icon-patient"></i>待诊患者
-                                    </div>
-                                    <div class="mobile-list-item">
-                                        <div class="mobile-list-left">
-                                            <div class="mobile-list-icon" style="background-color: #f9f0ff; color: #722ed1;">李</div>
-                                            <div class="mobile-list-text">李明 · 复诊</div>
-                                        </div>
-                                        <div class="mobile-list-value">3号</div>
-                                    </div>
-                                    <div class="mobile-list-item">
-                                        <div class="mobile-list-left">
-                                            <div class="mobile-list-icon" style="background-color: #f9f0ff; color: #722ed1;">王</div>
-                                            <div class="mobile-list-text">王芳 · 初诊</div>
-                                        </div>
-                                        <div class="mobile-list-value">4号</div>
-                                    </div>
-                                    <div class="mobile-list-item">
-                                        <div class="mobile-list-left">
-                                            <div class="mobile-list-icon" style="background-color: #f9f0ff; color: #722ed1;">张</div>
-                                            <div class="mobile-list-text">张伟 · 复诊</div>
-                                        </div>
-                                        <div class="mobile-list-value">5号</div>
-                                    </div>
+                                <div class="wechat-nav-item">
+                                    <div class="nav-icon">📞</div>
+                                    <div class="nav-label">通讯录</div>
+                                </div>
+                                <div class="wechat-nav-item">
+                                    <div class="nav-icon">📱</div>
+                                    <div class="nav-label">工作台</div>
+                                </div>
+                                <div class="wechat-nav-item">
+                                    <div class="nav-icon">👤</div>
+                                    <div class="nav-label">我</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="device-label">医生端</div>
-                        <div class="device-description">提供患者管理、排班信息、诊疗记录等功能</div>
+                        <div class="device-label">企业微信端</div>
+                        <div class="device-description">医院核心指标推送、运营数据通知、管理决策支持</div>
                     </div>
 
                     <!-- 护士端 -->
@@ -1575,20 +2437,30 @@
                                     <span class="message-time">2024-01-15 14:30</span>
                                     <span class="message-target">目标：全院</span>
                                 </div>
+                                <div class="message-actions">
+                                    <button class="action-btn review-btn" onclick="event.stopPropagation(); reviewMessage(this)">审核</button>
+                                    <button class="action-btn edit-btn" onclick="event.stopPropagation(); editMessage(this)">编辑</button>
+                                    <button class="action-btn archive-btn" onclick="event.stopPropagation(); archiveMessage(this)">归档</button>
+                                </div>
                             </div>
                             
-                            <div class="message-item">
+                            <div class="message-item clickable" onclick="openCoreIndicatorModal(this)">
                                 <div class="message-header">
-                                    <div class="message-title">会议通知：月度科室主任会议</div>
-                                    <div class="message-status published">已发布</div>
+                                    <div class="message-title">医院核心指标发布：今日运营数据</div>
+                                    <div class="message-status pending">待发布</div>
                                 </div>
                                 <div class="message-content">
-                                    定于本周五下午3点在行政楼会议室召开月度科室主任会议，请各科室主任准时参加。
+                                    今日医院核心运营指标已统计完成，包括门诊量、住院率、床位使用率、收入指标等关键数据，请及时推送至企业微信。
                                 </div>
                                 <div class="message-meta">
-                                    <span class="message-author">院办 - 李主任</span>
-                                    <span class="message-time">2024-01-14 09:15</span>
-                                    <span class="message-target">目标：科室主任</span>
+                                    <span class="message-author">运营管理科 - 陈主任</span>
+                                    <span class="message-time">2024-01-15 14:25</span>
+                                    <span class="message-target">目标：企业微信群</span>
+                                </div>
+                                <div class="message-actions">
+                                    <button class="action-btn review-btn" onclick="event.stopPropagation(); reviewMessage(this)">审核</button>
+                                    <button class="action-btn edit-btn" onclick="event.stopPropagation(); editMessage(this)">编辑</button>
+                                    <button class="action-btn archive-btn" onclick="event.stopPropagation(); archiveMessage(this)">归档</button>
                                 </div>
                             </div>
 
@@ -1605,6 +2477,11 @@
                                     <span class="message-time">2024-01-13 16:45</span>
                                     <span class="message-target">目标：医护人员</span>
                                 </div>
+                                <div class="message-actions">
+                                    <button class="action-btn review-btn" onclick="event.stopPropagation(); reviewMessage(this)">审核</button>
+                                    <button class="action-btn edit-btn" onclick="event.stopPropagation(); editMessage(this)">编辑</button>
+                                    <button class="action-btn archive-btn" onclick="event.stopPropagation(); archiveMessage(this)">归档</button>
+                                </div>
                             </div>
 
                             <div class="message-item">
@@ -1620,6 +2497,11 @@
                                     <span class="message-time">2024-01-12 11:20</span>
                                     <span class="message-target">目标：护理部</span>
                                 </div>
+                                <div class="message-actions">
+                                    <button class="action-btn review-btn" onclick="event.stopPropagation(); reviewMessage(this)" disabled>审核</button>
+                                    <button class="action-btn edit-btn" onclick="event.stopPropagation(); editMessage(this)" disabled>编辑</button>
+                                    <button class="action-btn unarchive-btn" onclick="event.stopPropagation(); unarchiveMessage(this)">取消归档</button>
+                                </div>
                             </div>
 
                             <div class="message-item">
@@ -1634,6 +2516,11 @@
                                     <span class="message-author">设备科 - 陈工程师</span>
                                     <span class="message-time">2024-01-11 14:10</span>
                                     <span class="message-target">目标：放射科</span>
+                                </div>
+                                <div class="message-actions">
+                                    <button class="action-btn approve-btn" onclick="event.stopPropagation(); approveMessage(this)">通过审核</button>
+                                    <button class="action-btn reject-btn" onclick="event.stopPropagation(); rejectMessage(this)">拒绝审核</button>
+                                    <button class="action-btn edit-btn" onclick="event.stopPropagation(); editMessage(this)">编辑</button>
                                 </div>
                             </div>
                         </div>
@@ -1687,6 +2574,250 @@
                             <button class="modal-btn withdraw-btn" onclick="withdrawMessage()">撤回</button>
                             <button class="modal-btn archive-btn" onclick="archiveMessage()">归档</button>
                             <button class="modal-btn cancel-btn" onclick="closeMessageModal()">取消</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 核心指标发布弹窗 -->
+                <div id="coreIndicatorModal" class="message-modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>医院核心指标发布</h3>
+                            <span class="modal-close" onclick="closeCoreIndicatorModal()">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="indicator-form">
+                                <div class="form-group">
+                                    <label>发布标题：</label>
+                                    <input type="text" id="indicatorTitle" class="form-input" value="医院核心指标发布：今日运营数据">
+                                </div>
+                                <div class="form-group">
+                                    <label>发布内容：</label>
+                                    <textarea id="indicatorContent" class="form-textarea">今日医院核心运营指标已统计完成，包括门诊量、住院率、床位使用率、收入指标等关键数据。</textarea>
+                                </div>
+                                
+                                <!-- 核心指标数据 -->
+                                <div class="indicator-data-section">
+                                    <h4>今日核心指标数据</h4>
+                                    <div class="indicator-grid">
+                                        <div class="indicator-item">
+                                            <label>门诊量：</label>
+                                            <input type="number" id="outpatientCount" class="form-input" value="1,247">
+                                        </div>
+                                        <div class="indicator-item">
+                                            <label>住院率：</label>
+                                            <input type="text" id="admissionRate" class="form-input" value="85.6%">
+                                        </div>
+                                        <div class="indicator-item">
+                                            <label>床位使用率：</label>
+                                            <input type="text" id="bedOccupancyRate" class="form-input" value="92.3%">
+                                        </div>
+                                        <div class="indicator-item">
+                                            <label>手术台次：</label>
+                                            <input type="number" id="surgeryCount" class="form-input" value="45">
+                                        </div>
+                                        <div class="indicator-item">
+                                            <label>急诊量：</label>
+                                            <input type="number" id="emergencyCount" class="form-input" value="156">
+                                        </div>
+                                        <div class="indicator-item">
+                                            <label>收入（万元）：</label>
+                                            <input type="text" id="revenue" class="form-input" value="342.8">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>推送目标：</label>
+                                    <select id="indicatorTarget" class="form-select">
+                                        <option value="wechat-all">企业微信-全院群</option>
+                                        <option value="wechat-management">企业微信-管理层群</option>
+                                        <option value="wechat-operation">企业微信-运营群</option>
+                                        <option value="wechat-department">企业微信-科室主任群</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>推送时间：</label>
+                                    <select id="indicatorSchedule" class="form-select">
+                                        <option value="immediate">立即推送</option>
+                                        <option value="scheduled">定时推送</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="modal-btn preview-btn" onclick="previewCoreIndicator()">预览</button>
+                            <button class="modal-btn publish-btn" onclick="publishCoreIndicator()">发布到企业微信</button>
+                            <button class="modal-btn withdraw-btn" onclick="withdrawCoreIndicator()" style="display: none; background: #ff4d4f;">消息撤回</button>
+                            <button class="modal-btn cancel-btn" onclick="closeCoreIndicatorModal()">取消</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 微信消息详情弹窗 -->
+                <div id="wechatDetailModal" class="modal">
+                    <div class="modal-content wechat-detail-modal">
+                        <div class="wechat-detail-header">
+                            <button class="wechat-back-btn" onclick="closeWechatDetailModal()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                                </svg>
+                            </button>
+                            <h3>医院核心指标推送</h3>
+                            <div class="wechat-detail-actions">
+                                <button class="wechat-action-btn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="1"/>
+                                        <circle cx="19" cy="12" r="1"/>
+                                        <circle cx="5" cy="12" r="1"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="wechat-detail-content">
+                            <div class="indicator-message-bubble">
+                                <div class="message-sender">
+                                    <div class="sender-avatar">
+                                        <div style="width: 40px; height: 40px; background: #1890ff; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">指标</div>
+                                    </div>
+                                    <div class="sender-info">
+                                        <div class="sender-name">医院核心指标推送</div>
+                                        <div class="message-time" id="detailMessageTime">刚刚</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="indicator-detail-card">
+                                    <div class="indicator-card-header">
+                                        <h4 id="detailIndicatorTitle">医院核心指标发布：今日运营数据</h4>
+                                        <div class="indicator-date" id="detailIndicatorDate"></div>
+                                    </div>
+                                    
+                                    <div class="indicator-card-content">
+                                        <p id="detailIndicatorContent">今日医院运营核心指标数据已更新，请各部门关注相关指标变化。</p>
+                                        
+                                        <div class="indicator-metrics">
+                                            <div class="metric-row">
+                                                <div class="metric-item">
+                                                    <div class="metric-label">门诊人次</div>
+                                                    <div class="metric-value" id="detailOutpatientCount">1,256</div>
+                                                    <div class="metric-chart">
+                                                        <div class="mini-chart">
+                                                            <div class="chart-bar" style="height: 60%"></div>
+                                                            <div class="chart-bar" style="height: 80%"></div>
+                                                            <div class="chart-bar" style="height: 100%"></div>
+                                                            <div class="chart-bar" style="height: 75%"></div>
+                                                            <div class="chart-bar" style="height: 90%"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="metric-item">
+                                                    <div class="metric-label">入院率</div>
+                                                    <div class="metric-value" id="detailAdmissionRate">85.6%</div>
+                                                    <div class="metric-trend up">↗ +2.3%</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="metric-row">
+                                                <div class="metric-item">
+                                                    <div class="metric-label">床位使用率</div>
+                                                    <div class="metric-value" id="detailBedOccupancy">92.3%</div>
+                                                    <div class="metric-progress">
+                                                        <div class="progress-bar" style="width: 92.3%"></div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="metric-item">
+                                                    <div class="metric-label">手术台次</div>
+                                                    <div class="metric-value" id="detailSurgeryCount">45</div>
+                                                    <div class="metric-trend down">↘ -3台</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="metric-row">
+                                                <div class="metric-item">
+                                                    <div class="metric-label">急诊人次</div>
+                                                    <div class="metric-value" id="detailEmergencyCount">128</div>
+                                                    <div class="metric-chart">
+                                                        <div class="mini-line-chart">
+                                                            <svg width="60" height="30" viewBox="0 0 60 30">
+                                                                <polyline points="0,25 15,20 30,15 45,18 60,12" stroke="#52c41a" stroke-width="2" fill="none"/>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="metric-item">
+                                                    <div class="metric-label">营收金额</div>
+                                                    <div class="metric-value" id="detailRevenue">¥2,456,789</div>
+                                                    <div class="metric-trend up">↗ +15.2%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="indicator-summary">
+                                            <div class="summary-title">数据分析</div>
+                                            <div class="summary-content">
+                                                今日各项指标整体表现良好，门诊量稳步增长，床位使用率保持高位运行。建议关注手术台次下降情况，及时调整排班安排。
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 消息编辑模态框 -->
+                <div id="editMessageModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>编辑消息</h3>
+                            <span class="modal-close" onclick="closeEditMessageModal()">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="edit-form">
+                                <div class="form-group">
+                                    <label>消息标题：</label>
+                                    <input type="text" id="editMessageTitle" class="form-input" placeholder="请输入消息标题">
+                                </div>
+                                <div class="form-group">
+                                    <label>消息内容：</label>
+                                    <textarea id="editMessageContent" class="form-textarea" rows="6" placeholder="请输入消息内容"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>消息类型：</label>
+                                    <select id="editMessageType" class="form-select">
+                                        <option value="notification">通知公告</option>
+                                        <option value="indicator">核心指标</option>
+                                        <option value="training">培训通知</option>
+                                        <option value="safety">安全提醒</option>
+                                        <option value="maintenance">设备维护</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>推送目标：</label>
+                                    <select id="editPushTarget" class="form-select">
+                                        <option value="wechat-all">企业微信-全院群</option>
+                                        <option value="wechat-management">企业微信-管理层群</option>
+                                        <option value="wechat-operation">企业微信-运营群</option>
+                                        <option value="wechat-department">企业微信-科室主任群</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>推送时间：</label>
+                                    <select id="editPushTime" class="form-select">
+                                        <option value="immediate">立即推送</option>
+                                        <option value="scheduled">定时推送</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="modal-btn save-btn" onclick="saveEditedMessage()">保存</button>
+                            <button class="modal-btn preview-btn" onclick="previewEditedMessage()">预览</button>
+                            <button class="modal-btn cancel-btn" onclick="closeEditMessageModal()">取消</button>
                         </div>
                     </div>
                 </div>
@@ -2318,12 +3449,506 @@
             }, 3000);
         }
 
+        // 核心指标弹窗功能
+        function openCoreIndicatorModal(element) {
+            const modal = document.getElementById('coreIndicatorModal');
+            modal.style.display = 'block';
+            
+            // 设置默认数据
+            document.getElementById('indicatorTitle').value = '医院核心指标发布：今日运营数据';
+            document.getElementById('indicatorContent').value = '今日医院运营核心指标数据已更新，请各部门关注相关指标变化。';
+            
+            // 设置默认指标数据
+            document.getElementById('outpatientCount').value = '1,256';
+            document.getElementById('admissionRate').value = '85.6%';
+            document.getElementById('bedOccupancyRate').value = '92.3%';
+            document.getElementById('surgeryCount').value = '45';
+            document.getElementById('emergencyCount').value = '128';
+            document.getElementById('revenue').value = '¥2,456,789';
+            
+            // 检查当前发布状态，设置按钮显示
+            const publishBtn = modal.querySelector('.publish-btn');
+            const withdrawBtn = modal.querySelector('.withdraw-btn');
+            
+            // 检查是否已发布（通过查看PC端状态）
+            let isPublished = false;
+            const messageItems = document.querySelectorAll('.message-item');
+            messageItems.forEach(item => {
+                const titleElement = item.querySelector('.message-title');
+                if (titleElement && titleElement.textContent.includes('医院核心指标发布')) {
+                    const statusElement = item.querySelector('.message-status');
+                    if (statusElement && statusElement.textContent === '已发布') {
+                        isPublished = true;
+                    }
+                }
+            });
+            
+            if (isPublished) {
+                publishBtn.style.display = 'none';
+                withdrawBtn.style.display = 'inline-block';
+            } else {
+                publishBtn.style.display = 'inline-block';
+                withdrawBtn.style.display = 'none';
+            }
+        }
+
+        function closeCoreIndicatorModal() {
+            const modal = document.getElementById('coreIndicatorModal');
+            modal.style.display = 'none';
+        }
+
+        function previewCoreIndicator() {
+            const title = document.getElementById('indicatorTitle').value;
+            const content = document.getElementById('indicatorContent').value;
+            const outpatientCount = document.getElementById('outpatientCount').value;
+            const admissionRate = document.getElementById('admissionRate').value;
+            const bedOccupancy = document.getElementById('bedOccupancy').value;
+            const surgeryCount = document.getElementById('surgeryCount').value;
+            const emergencyCount = document.getElementById('emergencyCount').value;
+            const revenue = document.getElementById('revenue').value;
+            
+            // 创建指标数据对象
+            const indicatorData = {
+                outpatientCount,
+                admissionRate,
+                bedOccupancy,
+                surgeryCount,
+                emergencyCount,
+                revenue
+            };
+            
+            // 直接显示详情弹窗作为预览
+            showIndicatorDetail(title, content, indicatorData);
+        }
+
+        function publishCoreIndicator() {
+            console.log('publishCoreIndicator function called');
+            
+            const title = document.getElementById('indicatorTitle').value;
+            const content = document.getElementById('indicatorContent').value;
+            const pushTarget = document.getElementById('indicatorTarget').value;
+            const pushTime = document.getElementById('indicatorSchedule').value;
+            
+            console.log('Form values:', { title, content, pushTarget, pushTime });
+            
+            // 获取指标数据
+            const indicatorData = {
+                outpatientCount: document.getElementById('outpatientCount').value,
+                admissionRate: document.getElementById('admissionRate').value,
+                bedOccupancy: document.getElementById('bedOccupancyRate').value,
+                surgeryCount: document.getElementById('surgeryCount').value,
+                emergencyCount: document.getElementById('emergencyCount').value,
+                revenue: document.getElementById('revenue').value
+            };
+            
+            // 更新PC端状态
+            const messageItems = document.querySelectorAll('.message-item');
+            messageItems.forEach(item => {
+                const titleElement = item.querySelector('.message-title');
+                if (titleElement && titleElement.textContent.includes('医院核心指标发布')) {
+                    const statusElement = item.querySelector('.message-status');
+                    statusElement.textContent = '已发布';
+                    statusElement.className = 'message-status published';
+                }
+            });
+            
+            // 显示撤回按钮，隐藏发布按钮
+            const publishBtn = document.querySelector('.publish-btn');
+            const withdrawBtn = document.querySelector('.withdraw-btn');
+            if (publishBtn && withdrawBtn) {
+                publishBtn.style.display = 'none';
+                withdrawBtn.style.display = 'inline-block';
+            }
+            
+            // 发送到企业微信界面
+            setTimeout(() => {
+                addIndicatorToWeChatDevice(title, content, indicatorData);
+            }, 1000);
+            
+            showToast('核心指标发布成功！', 'success');
+        }
+
+        function withdrawCoreIndicator() {
+            // 更新PC端状态为待发布
+            const messageItems = document.querySelectorAll('.message-item');
+            messageItems.forEach(item => {
+                const titleElement = item.querySelector('.message-title');
+                if (titleElement && titleElement.textContent.includes('医院核心指标发布')) {
+                    const statusElement = item.querySelector('.message-status');
+                    statusElement.textContent = '待发布';
+                    statusElement.className = 'message-status pending';
+                }
+            });
+            
+            // 隐藏撤回按钮，显示发布按钮
+            const publishBtn = document.querySelector('.publish-btn');
+            const withdrawBtn = document.querySelector('.withdraw-btn');
+            if (publishBtn && withdrawBtn) {
+                publishBtn.style.display = 'inline-block';
+                withdrawBtn.style.display = 'none';
+            }
+            
+            // 移除企业微信设备上的小红点
+            const indicatorChat = document.getElementById('wechat-indicator-chat');
+            if (indicatorChat) {
+                const unreadBadge = indicatorChat.querySelector('.wechat-unread-badge');
+                if (unreadBadge) {
+                    unreadBadge.remove();
+                }
+                // 移除点击事件
+                indicatorChat.onclick = null;
+                indicatorChat.style.cursor = 'default';
+                
+                // 恢复原始预览内容
+                const previewElement = indicatorChat.querySelector('.wechat-chat-preview');
+                if (previewElement) {
+                    previewElement.textContent = '今日核心指标已更新，请查看';
+                }
+            }
+            
+            showToast('核心指标消息已撤回', 'success');
+            closeCoreIndicatorModal();
+        }
+
+        function addIndicatorToWeChatDevice(title, content, indicatorData) {
+            // 找到企业微信设备（通过ID直接查找）
+            const wechatDevice = document.getElementById('wechat-device');
+            
+            if (wechatDevice) {
+                // 找到医院运营群聊天项
+                const indicatorChat = document.getElementById('wechat-indicator-chat');
+                if (indicatorChat) {
+                    // 更新时间
+                    const currentTime = new Date();
+                    const timeText = `${currentTime.getHours().toString().padStart(2, '0')}:${currentTime.getMinutes().toString().padStart(2, '0')}`;
+                    const timeElement = indicatorChat.querySelector('.wechat-chat-time');
+                    if (timeElement) {
+                        timeElement.textContent = timeText;
+                    }
+                    
+                    // 更新预览内容
+                    const previewElement = indicatorChat.querySelector('.wechat-chat-preview');
+                    if (previewElement) {
+                        previewElement.textContent = title;
+                    }
+                    
+                    // 添加小红点（如果不存在）
+                    let unreadBadge = indicatorChat.querySelector('.wechat-unread-badge');
+                    if (!unreadBadge) {
+                        unreadBadge = document.createElement('div');
+                        unreadBadge.className = 'wechat-unread-badge';
+                        unreadBadge.textContent = '1';
+                        indicatorChat.appendChild(unreadBadge);
+                    }
+                    
+                    // 添加点击事件（移除之前的事件监听器）
+                    indicatorChat.onclick = null;
+                    indicatorChat.style.cursor = 'pointer';
+                    indicatorChat.onclick = () => {
+                        showIndicatorDetail(title, content, indicatorData);
+                        // 点击后移除小红点
+                        const badge = indicatorChat.querySelector('.wechat-unread-badge');
+                        if (badge) {
+                            badge.remove();
+                        }
+                        
+                        // 添加震动效果
+                        wechatDevice.classList.add('vibrate');
+                        setTimeout(() => wechatDevice.classList.remove('vibrate'), 300);
+                        
+                        // 播放通知声音
+                        playNotificationSound();
+                        
+                        showToast('查看核心指标详情', 'info');
+                    };
+                    
+                    showToast('核心指标已推送到企业微信', 'success');
+                }
+            }
+        }
+
+        // 微信消息详情弹窗功能
+        function showIndicatorDetail(title, content, indicatorData) {
+            const modal = document.getElementById('wechatDetailModal');
+            const wechatDevice = document.getElementById('wechat-device');
+            const deviceDisplay = wechatDevice.querySelector('.device-display');
+            
+            // 将弹窗移动到第二个手机屏幕内
+            if (modal.parentNode !== deviceDisplay) {
+                deviceDisplay.appendChild(modal);
+            }
+            
+            modal.style.display = 'block';
+            
+            // 设置当前时间
+            const currentTime = new Date();
+            const timeText = `${currentTime.getHours().toString().padStart(2, '0')}:${currentTime.getMinutes().toString().padStart(2, '0')}`;
+            const dateText = `${currentTime.getFullYear()}年${(currentTime.getMonth() + 1)}月${currentTime.getDate()}日`;
+            
+            // 更新弹窗内容
+            document.getElementById('detailMessageTime').textContent = timeText;
+            document.getElementById('detailIndicatorTitle').textContent = title;
+            document.getElementById('detailIndicatorDate').textContent = dateText;
+            document.getElementById('detailIndicatorContent').textContent = content;
+            
+            // 更新指标数据
+            if (indicatorData) {
+                document.getElementById('detailOutpatientCount').textContent = indicatorData.outpatientCount;
+                document.getElementById('detailAdmissionRate').textContent = indicatorData.admissionRate;
+                document.getElementById('detailBedOccupancy').textContent = indicatorData.bedOccupancy;
+                document.getElementById('detailSurgeryCount').textContent = indicatorData.surgeryCount;
+                document.getElementById('detailEmergencyCount').textContent = indicatorData.emergencyCount;
+                document.getElementById('detailRevenue').textContent = indicatorData.revenue;
+                
+                // 更新床位使用率进度条
+                const progressBar = modal.querySelector('.progress-bar');
+                if (progressBar) {
+                    const occupancyValue = parseFloat(indicatorData.bedOccupancy.replace('%', ''));
+                    progressBar.style.width = occupancyValue + '%';
+                }
+                
+                // 添加动画效果到图表
+                setTimeout(() => {
+                    animateCharts();
+                }, 300);
+            }
+        }
+
+        function animateCharts() {
+            // 为柱状图添加动画
+            const chartBars = document.querySelectorAll('.chart-bar');
+            chartBars.forEach((bar, index) => {
+                bar.style.transform = 'scaleY(0)';
+                bar.style.transformOrigin = 'bottom';
+                bar.style.transition = 'transform 0.6s ease';
+                
+                setTimeout(() => {
+                    bar.style.transform = 'scaleY(1)';
+                }, index * 100);
+            });
+            
+            // 为进度条添加动画
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                const targetWidth = bar.style.width;
+                bar.style.width = '0%';
+                bar.style.transition = 'width 1s ease';
+                
+                setTimeout(() => {
+                    bar.style.width = targetWidth;
+                }, 500);
+            });
+        }
+
+        function closeWechatDetailModal() {
+            const modal = document.getElementById('wechatDetailModal');
+            modal.style.display = 'none';
+        }
+
         // 点击模态框外部关闭
         window.onclick = function(event) {
-            const modal = document.getElementById('messageModal');
-            if (event.target === modal) {
+            const messageModal = document.getElementById('messageModal');
+            const coreIndicatorModal = document.getElementById('coreIndicatorModal');
+            const wechatDetailModal = document.getElementById('wechatDetailModal');
+            const editMessageModal = document.getElementById('editMessageModal');
+            
+            if (event.target === messageModal) {
                 closeMessageModal();
             }
+            if (event.target === coreIndicatorModal) {
+                closeCoreIndicatorModal();
+            }
+            if (event.target === wechatDetailModal) {
+                closeWechatDetailModal();
+            }
+            if (event.target === editMessageModal) {
+                closeEditMessageModal();
+            }
+        }
+
+        // 消息操作函数
+        function reviewMessage(button) {
+            const messageItem = button.closest('.message-item');
+            const titleElement = messageItem.querySelector('.message-title');
+            const statusElement = messageItem.querySelector('.message-status');
+            
+            // 更新状态为审核中
+            statusElement.textContent = '审核中';
+            statusElement.className = 'message-status reviewing';
+            
+            // 更新按钮
+            const actionsDiv = messageItem.querySelector('.message-actions');
+            actionsDiv.innerHTML = `
+                <button class="action-btn approve-btn" onclick="event.stopPropagation(); approveMessage(this)">通过审核</button>
+                <button class="action-btn reject-btn" onclick="event.stopPropagation(); rejectMessage(this)">拒绝审核</button>
+                <button class="action-btn edit-btn" onclick="event.stopPropagation(); editMessage(this)">编辑</button>
+            `;
+            
+            showToast('消息已提交审核', 'info');
+        }
+
+        function approveMessage(button) {
+            const messageItem = button.closest('.message-item');
+            const statusElement = messageItem.querySelector('.message-status');
+            
+            // 更新状态为待发布
+            statusElement.textContent = '待发布';
+            statusElement.className = 'message-status pending';
+            
+            // 更新按钮
+            const actionsDiv = messageItem.querySelector('.message-actions');
+            actionsDiv.innerHTML = `
+                <button class="action-btn review-btn" onclick="event.stopPropagation(); reviewMessage(this)">审核</button>
+                <button class="action-btn edit-btn" onclick="event.stopPropagation(); editMessage(this)">编辑</button>
+                <button class="action-btn archive-btn" onclick="event.stopPropagation(); archiveMessage(this)">归档</button>
+            `;
+            
+            showToast('消息审核通过', 'success');
+        }
+
+        function rejectMessage(button) {
+            const messageItem = button.closest('.message-item');
+            const statusElement = messageItem.querySelector('.message-status');
+            
+            // 更新状态为草稿
+            statusElement.textContent = '草稿';
+            statusElement.className = 'message-status draft';
+            
+            // 更新按钮
+            const actionsDiv = messageItem.querySelector('.message-actions');
+            actionsDiv.innerHTML = `
+                <button class="action-btn review-btn" onclick="event.stopPropagation(); reviewMessage(this)">审核</button>
+                <button class="action-btn edit-btn" onclick="event.stopPropagation(); editMessage(this)">编辑</button>
+                <button class="action-btn archive-btn" onclick="event.stopPropagation(); archiveMessage(this)">归档</button>
+            `;
+            
+            showToast('消息审核被拒绝，已退回草稿', 'warning');
+        }
+
+        function editMessage(button) {
+            const messageItem = button.closest('.message-item');
+            const titleElement = messageItem.querySelector('.message-title');
+            const contentElement = messageItem.querySelector('.message-content');
+            const statusElement = messageItem.querySelector('.message-status');
+            
+            // 填充编辑表单
+            document.getElementById('editMessageTitle').value = titleElement.textContent;
+            document.getElementById('editMessageContent').value = contentElement ? contentElement.textContent : '';
+            
+            // 根据消息标题推断消息类型
+            const title = titleElement.textContent;
+            let messageType = 'notification';
+            if (title.includes('核心指标') || title.includes('运营数据')) {
+                messageType = 'indicator';
+            } else if (title.includes('培训') || title.includes('学习')) {
+                messageType = 'training';
+            } else if (title.includes('安全') || title.includes('提醒')) {
+                messageType = 'safety';
+            } else if (title.includes('设备') || title.includes('维护')) {
+                messageType = 'maintenance';
+            }
+            document.getElementById('editMessageType').value = messageType;
+            
+            // 存储当前编辑的消息元素
+            window.currentEditingMessage = messageItem;
+            
+            // 显示编辑模态框
+            document.getElementById('editMessageModal').style.display = 'flex';
+            
+            showToast(`正在编辑消息："${titleElement.textContent}"`, 'info');
+        }
+
+        function closeEditMessageModal() {
+            document.getElementById('editMessageModal').style.display = 'none';
+            window.currentEditingMessage = null;
+        }
+
+        function saveEditedMessage() {
+            const title = document.getElementById('editMessageTitle').value;
+            const content = document.getElementById('editMessageContent').value;
+            const messageType = document.getElementById('editMessageType').value;
+            
+            if (!title.trim() || !content.trim()) {
+                showToast('请填写完整的消息标题和内容', 'error');
+                return;
+            }
+            
+            if (window.currentEditingMessage) {
+                // 更新消息内容
+                const titleElement = window.currentEditingMessage.querySelector('.message-title');
+                const contentElement = window.currentEditingMessage.querySelector('.message-content');
+                const statusElement = window.currentEditingMessage.querySelector('.message-status');
+                
+                titleElement.textContent = title;
+                if (contentElement) {
+                    contentElement.textContent = content;
+                }
+                
+                // 更新状态为草稿
+                statusElement.textContent = '草稿';
+                statusElement.className = 'message-status draft';
+                
+                // 更新按钮
+                const actionsDiv = window.currentEditingMessage.querySelector('.message-actions');
+                actionsDiv.innerHTML = `
+                    <button class="action-btn review-btn" onclick="event.stopPropagation(); reviewMessage(this)">审核</button>
+                    <button class="action-btn edit-btn" onclick="event.stopPropagation(); editMessage(this)">编辑</button>
+                    <button class="action-btn archive-btn" onclick="event.stopPropagation(); archiveMessage(this)">归档</button>
+                `;
+                
+                showToast('消息已保存', 'success');
+                closeEditMessageModal();
+            }
+        }
+
+        function previewEditedMessage() {
+            const title = document.getElementById('editMessageTitle').value;
+            const content = document.getElementById('editMessageContent').value;
+            
+            if (!title.trim() || !content.trim()) {
+                showToast('请填写完整的消息标题和内容', 'error');
+                return;
+            }
+            
+            showToast('预览功能开发中...', 'info');
+        }
+
+        function archiveMessage(button) {
+            const messageItem = button.closest('.message-item');
+            const statusElement = messageItem.querySelector('.message-status');
+            
+            // 更新状态为已归档
+            statusElement.textContent = '已归档';
+            statusElement.className = 'message-status archived';
+            
+            // 更新按钮
+            const actionsDiv = messageItem.querySelector('.message-actions');
+            actionsDiv.innerHTML = `
+                <button class="action-btn review-btn" onclick="event.stopPropagation(); reviewMessage(this)" disabled>审核</button>
+                <button class="action-btn edit-btn" onclick="event.stopPropagation(); editMessage(this)" disabled>编辑</button>
+                <button class="action-btn unarchive-btn" onclick="event.stopPropagation(); unarchiveMessage(this)">取消归档</button>
+            `;
+            
+            showToast('消息已归档', 'info');
+        }
+
+        function unarchiveMessage(button) {
+            const messageItem = button.closest('.message-item');
+            const statusElement = messageItem.querySelector('.message-status');
+            
+            // 更新状态为草稿
+            statusElement.textContent = '草稿';
+            statusElement.className = 'message-status draft';
+            
+            // 更新按钮
+            const actionsDiv = messageItem.querySelector('.message-actions');
+            actionsDiv.innerHTML = `
+                <button class="action-btn review-btn" onclick="event.stopPropagation(); reviewMessage(this)">审核</button>
+                <button class="action-btn edit-btn" onclick="event.stopPropagation(); editMessage(this)">编辑</button>
+                <button class="action-btn archive-btn" onclick="event.stopPropagation(); archiveMessage(this)">归档</button>
+            `;
+            
+            showToast('消息已取消归档', 'success');
         }
     </script>
 

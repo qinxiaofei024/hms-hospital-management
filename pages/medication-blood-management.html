@@ -19,17 +19,15 @@
         }
 
         .page-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: transparent;
+            color: #333;
             padding: 30px;
-            border-radius: 12px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
-        .page-header h1 {
+        .page-header h2 {
             margin: 0;
-            font-size: 2.2rem;
+            font-size: 1.4rem;
             font-weight: 600;
         }
 
@@ -69,75 +67,7 @@
         }
 
         /* 实时监控面板 */
-        .real-time-panel {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        }
 
-        .real-time-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e9ecef;
-        }
-
-        .real-time-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .last-update {
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-
-        .real-time-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .real-time-item {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            border-left: 4px solid #007bff;
-        }
-
-        .real-time-item.medication {
-            border-left-color: #28a745;
-        }
-
-        .real-time-item.blood {
-            border-left-color: #dc3545;
-        }
-
-        .real-time-item.adverse {
-            border-left-color: #ffc107;
-        }
-
-        .real-time-item.inventory {
-            border-left-color: #17a2b8;
-        }
-
-        .real-time-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-
-        .real-time-label {
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
 
         /* 统计卡片 */
         .stats-grid {
@@ -186,25 +116,25 @@
         }
 
         .stat-title {
-            font-size: 1rem;
+            font-size: 14px;
             color: #6c757d;
             font-weight: 500;
         }
 
         .stat-icon {
-            font-size: 2rem;
+            font-size: 1.5rem;
             opacity: 0.8;
         }
 
         .stat-value {
-            font-size: 2.5rem;
+            font-size: 28px;
             font-weight: 700;
             color: #2c3e50;
             margin-bottom: 10px;
         }
 
         .stat-change {
-            font-size: 0.9rem;
+            font-size: 13px;
             font-weight: 500;
         }
 
@@ -619,9 +549,9 @@
                 padding: 20px;
             }
             
-            .page-header h1 {
-                font-size: 1.8rem;
-            }
+            .page-header h2 {
+            font-size: 1.2rem;
+        }
             
             .stats-grid {
                 grid-template-columns: 1fr;
@@ -654,7 +584,7 @@
                     <div class="pharmacy-blood-container">
                         <!-- 页面标题 -->
                         <div class="page-header">
-                            <h1>药事与血液管理</h1>
+                            <h2>药事与血液管理</h2>
                             <div class="subtitle">Pharmacy and Blood Management</div>
                         </div>
 
@@ -669,31 +599,7 @@
                             </ul>
                         </div>
 
-                        <!-- 实时监控面板 -->
-                        <div class="real-time-panel">
-                            <div class="real-time-header">
-                                <div class="real-time-title">实时监控数据</div>
-                                <div class="last-update">最后更新: <span id="lastUpdate">--:--:--</span></div>
-                            </div>
-                            <div class="real-time-grid">
-                                <div class="real-time-item medication">
-                                    <div class="real-time-value" id="activePrescriptions">--</div>
-                                    <div class="real-time-label">活跃处方数</div>
-                                </div>
-                                <div class="real-time-item blood">
-                                    <div class="real-time-value" id="bloodUnitsAvailable">--</div>
-                                    <div class="real-time-label">血液库存单位</div>
-                                </div>
-                                <div class="real-time-item adverse">
-                                    <div class="real-time-value" id="adverseEvents">--</div>
-                                    <div class="real-time-label">今日不良事件</div>
-                                </div>
-                                <div class="real-time-item inventory">
-                                    <div class="real-time-value" id="inventoryTurnover">--</div>
-                                    <div class="real-time-label">库存周转率</div>
-                                </div>
-                            </div>
-                        </div>
+
 
                         <!-- 统计卡片区域 -->
                         <div class="stats-grid" id="statsGrid">
@@ -811,7 +717,6 @@
                     // 确保ECharts已加载
                     await Common.ensureEcharts();
                     
-                    this.generateRealTimeData();
                     this.generateStatCards();
                     this.generateIndicatorList();
                     this.generateDrugInteractions();
@@ -819,7 +724,6 @@
                     this.generateDataTable();
                     this.initCharts();
                     this.bindEvents();
-                    this.startRealTimeUpdates();
                     
                     console.log('药物与血液管理监控页面初始化完成');
                 } catch (error) {
@@ -827,14 +731,7 @@
                 }
             }
 
-            generateRealTimeData() {
-                const data = window.medicalDataSimulator.generatePharmacyBloodData();
-                document.getElementById('activePrescriptions').textContent = data.activePrescriptions;
-                document.getElementById('bloodUnitsAvailable').textContent = data.bloodUnitsAvailable;
-                document.getElementById('adverseEvents').textContent = data.adverseEvents;
-                document.getElementById('inventoryTurnover').textContent = data.inventoryTurnover + '%';
-                document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
-            }
+
 
             generateStatCards() {
                 const stats = [
@@ -1341,20 +1238,173 @@
                 return filters[filter].some(keyword => deptName.includes(keyword));
             }
 
-            startRealTimeUpdates() {
-                setInterval(() => {
-                    this.generateRealTimeData();
-                }, 30000); // 每30秒更新一次
+
+        }
+
+        // 简化的表格初始化函数
+        function initSimpleTable() {
+            console.log('开始初始化药事与血液管理表格...');
+            
+            const departments = [
+                {
+                    name: '心血管内科',
+                    medicationRate: '98.5%',
+                    bloodCompliance: '99.2%',
+                    adverseMonitoring: '95.8%',
+                    antibioticIntensity: '35.2',
+                    transfusionCheck: '100%',
+                    rating: 'excellent'
+                },
+                {
+                    name: '神经外科',
+                    medicationRate: '96.8%',
+                    bloodCompliance: '98.9%',
+                    adverseMonitoring: '93.5%',
+                    antibioticIntensity: '42.1',
+                    transfusionCheck: '99.8%',
+                    rating: 'excellent'
+                },
+                {
+                    name: '重症医学科',
+                    medicationRate: '95.2%',
+                    bloodCompliance: '98.1%',
+                    adverseMonitoring: '91.7%',
+                    antibioticIntensity: '45.8',
+                    transfusionCheck: '99.5%',
+                    rating: 'good'
+                },
+                {
+                    name: '急诊科',
+                    medicationRate: '93.7%',
+                    bloodCompliance: '97.3%',
+                    adverseMonitoring: '89.2%',
+                    antibioticIntensity: '48.5',
+                    transfusionCheck: '99.1%',
+                    rating: 'warning'
+                },
+                {
+                    name: '呼吸内科',
+                    medicationRate: '94.9%',
+                    bloodCompliance: '98.6%',
+                    adverseMonitoring: '92.8%',
+                    antibioticIntensity: '41.3',
+                    transfusionCheck: '99.7%',
+                    rating: 'good'
+                },
+                {
+                    name: '消化内科',
+                    medicationRate: '97.1%',
+                    bloodCompliance: '98.4%',
+                    adverseMonitoring: '94.2%',
+                    antibioticIntensity: '37.9',
+                    transfusionCheck: '99.9%',
+                    rating: 'excellent'
+                }
+            ];
+
+            const ratingText = {
+                'excellent': '优秀',
+                'good': '良好',
+                'warning': '待改进',
+                'danger': '需改进'
+            };
+
+            const tableBodyElement = document.getElementById('dataTableBody');
+            console.log('表格元素:', tableBodyElement);
+            
+            if (tableBodyElement) {
+                tableBodyElement.innerHTML = departments.map(dept => `
+                    <tr>
+                        <td>${dept.name}</td>
+                        <td>${dept.medicationRate}</td>
+                        <td>${dept.bloodCompliance}</td>
+                        <td>${dept.adverseMonitoring}</td>
+                        <td>${dept.antibioticIntensity}</td>
+                        <td>${dept.transfusionCheck}</td>
+                        <td><span class="status-badge ${dept.rating}">${ratingText[dept.rating]}</span></td>
+                    </tr>
+                `).join('');
+                console.log('药事与血液管理表格数据填充完成');
+            } else {
+                console.error('未找到dataTableBody元素');
+            }
+        }
+
+        // 立即生成统计卡片的函数
+        function initStatCards() {
+            const stats = [
+                {
+                    title: '合理用药率',
+                    value: '96.2%',
+                    change: '↑ 1.8% 较上月',
+                    changeType: 'positive',
+                    icon: '💊',
+                    type: 'medication'
+                },
+                {
+                    title: '血液制品使用合规率',
+                    value: '98.7%',
+                    change: '↑ 0.5% 较上月',
+                    changeType: 'positive',
+                    icon: '🩸',
+                    type: 'blood'
+                },
+                {
+                    title: '药物不良反应监测率',
+                    value: '92.4%',
+                    change: '↓ 0.3% 较上月',
+                    changeType: 'negative',
+                    icon: '⚠️',
+                    type: 'adverse'
+                },
+                {
+                    title: '抗菌药物使用强度',
+                    value: '38.5',
+                    change: '↓ 2.1 较上月',
+                    changeType: 'positive',
+                    icon: '🦠',
+                    type: 'antibiotic'
+                }
+            ];
+
+            const statsGrid = document.getElementById('statsGrid');
+            if (statsGrid) {
+                statsGrid.innerHTML = stats.map(stat => `
+                    <div class="stat-card ${stat.type}" data-stat="${stat.title}">
+                        <div class="stat-header">
+                            <div class="stat-title">${stat.title}</div>
+                            <div class="stat-icon">${stat.icon}</div>
+                        </div>
+                        <div class="stat-value">${stat.value}</div>
+                        <div class="stat-change ${stat.changeType}">${stat.change}</div>
+                    </div>
+                `).join('');
+                console.log('统计卡片数据填充完成');
+            } else {
+                console.error('未找到statsGrid元素');
             }
         }
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 初始化数据模拟器
-            window.medicalDataSimulator = new MedicalDataSimulator();
+            console.log('DOM加载完成，开始初始化...');
             
-            const monitor = new PharmacyBloodMonitor();
-            console.log('药事与血液管理页面初始化完成');
+            // 立即初始化表格和统计卡片
+            initSimpleTable();
+            initStatCards();
+            
+            // 延迟初始化其他组件
+            setTimeout(() => {
+                try {
+                    // 初始化数据模拟器
+                    window.medicalDataSimulator = new MedicalDataSimulator();
+                    
+                    const monitor = new PharmacyBloodMonitor();
+                    console.log('药事与血液管理页面初始化完成');
+                } catch (error) {
+                    console.error('页面初始化失败:', error);
+                }
+            }, 1000);
         });
     </script>
 </body>

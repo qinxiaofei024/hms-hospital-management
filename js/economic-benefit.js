@@ -607,7 +607,9 @@ class EconomicBenefitPage {
     checkChartContainers() {
         const containers = [
             'overall-trend-chart',
-            'department-benefit-chart'
+            'department-benefit-chart',
+            'department-efficiency-chart',
+            'doctor-income-structure-chart'
         ];
         
         let allValid = true;
@@ -2687,6 +2689,10 @@ class EconomicBenefitPage {
         this.initDepartmentEfficiencyChart();
         this.initDoctorIncomeStructureChart();
         this.updateEfficiencyIndicators();
+        
+        // 更新效率表格
+        const efficiencyData = this.currentData?.efficiencyData || this.generateEfficiencyData();
+        this.updateEfficiencyTable(efficiencyData);
     }
     
     // 初始化科室效率对比图表

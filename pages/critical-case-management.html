@@ -90,35 +90,8 @@
             margin: 0;
         }
         
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-            margin-bottom: 24px;
-            transition: all 0.3s ease;
-        }
-        
         /* 响应式布局 */
-        @media (max-width: 1400px) {
-            .dashboard-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 20px;
-            }
-        }
-        
-        @media (max-width: 1000px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-                gap: 18px;
-            }
-        }
-        
         @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-            
             .page-header {
                 padding: 20px 16px;
                 margin-bottom: 20px;
@@ -130,10 +103,6 @@
         }
         
         @media (max-width: 480px) {
-            .dashboard-grid {
-                gap: 12px;
-            }
-            
             .page-header {
                 padding: 16px 12px;
                 margin-bottom: 16px;
@@ -146,38 +115,6 @@
             .breadcrumb {
                 font-size: 12px;
             }
-        }
-        
-        .dashboard-item {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 24px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
-            border: 1px solid #f0f0f0;
-        }
-        
-        .dashboard-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .dashboard-item h3 {
-            margin: 0 0 16px 0;
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .dashboard-item h3::before {
-            content: '';
-            width: 4px;
-            height: 20px;
-            background-color: #0078d4;
-            border-radius: 2px;
         }
         
         .chart-standard {
@@ -196,121 +133,9 @@
             .chart-standard { height: 220px; }
         }
         
-        .key-indicators {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-            transition: all 0.3s ease;
-        }
+
         
-        /* 指标卡片响应式布局 */
-        @media (max-width: 1400px) {
-            .key-indicators {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 14px;
-            }
-        }
-        
-        @media (max-width: 1200px) {
-            .key-indicators {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 14px;
-            }
-        }
-        
-        @media (max-width: 900px) {
-            .key-indicators {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-                margin-bottom: 20px;
-            }
-        }
-        
-        @media (max-width: 600px) {
-            .key-indicators {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-                margin-bottom: 16px;
-            }
-        }
-            
-            .indicator-card {
-                padding: 16px;
-            }
-            
-            .indicator-value {
-                font-size: 24px;
-            }
-            
-            .indicator-label {
-                font-size: 13px;
-            }
-        
-        
-        @media (max-width: 480px) {
-            .key-indicators {
-                grid-template-columns: 1fr;
-                gap: 10px;
-                margin-bottom: 16px;
-            }
-            
-            .indicator-card {
-                padding: 14px;
-            }
-            
-            .indicator-value {
-                font-size: 22px;
-            }
-            
-            .indicator-label {
-                font-size: 12px;
-            }
-        }
-        
-        .indicator-card {
-            background-color: #f0f7ff;
-            color: #333;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid #e6f2ff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        }
-        
-        .indicator-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .indicator-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #0066cc;
-            margin-bottom: 8px;
-        }
-        
-        .indicator-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-        
-        .indicator-change {
-            font-size: 12px;
-            margin-top: 4px;
-        }
-        
-        .positive {
-            color: #52c41a;
-        }
-        
-        .negative {
-            color: #ff4d4f;
-        }
+
         
         .monitoring-panel {
             background: linear-gradient(135deg, #0066cc 0%, #0078d4 100%);
@@ -325,118 +150,11 @@
             margin-bottom: 16px;
         }
         
-        .monitoring-stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            transition: all 0.3s ease;
-        }
+
         
-        /* 监控面板响应式布局 */
-        @media (max-width: 1200px) {
-            .monitoring-stats {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 14px;
-            }
-        }
+
         
-        @media (max-width: 900px) {
-            .monitoring-stats {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 14px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .monitoring-panel {
-                padding: 16px;
-                margin-bottom: 20px;
-            }
-            
-            .monitoring-stats {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-            
-            .monitoring-stat {
-                padding: 10px;
-            }
-            
-            .monitoring-stat-value {
-                font-size: 20px;
-            }
-            
-            .monitoring-stat-label {
-                font-size: 11px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .monitoring-panel {
-                padding: 14px;
-                margin-bottom: 16px;
-            }
-            
-            .monitoring-stats {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-            
-            .monitoring-stat {
-                padding: 8px;
-            }
-            
-            .monitoring-stat-value {
-                font-size: 18px;
-            }
-        }
-        
-        /* 仪表板项目响应式布局 */
-        @media (max-width: 768px) {
-            .dashboard-item {
-                padding: 20px;
-            }
-            
-            .dashboard-item h3 {
-                font-size: 16px;
-            }
-            
-            .chart-standard {
-                height: 250px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .dashboard-item {
-                padding: 16px;
-            }
-            
-            .dashboard-item h3 {
-                font-size: 15px;
-            }
-            
-            .chart-standard {
-                height: 200px;
-            }
-        }
-        
-        .monitoring-stat {
-            text-align: center;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-        }
-        
-        .monitoring-stat-value {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .monitoring-stat-label {
-            font-size: 12px;
-            opacity: 0.9;
-        }
+
         
         .case-table {
             background: white;
@@ -496,6 +214,43 @@
         .data-table {
             width: 100%;
             border-collapse: collapse;
+        }
+        
+        /* 英文点缀样式 */
+        .english-title {
+            font-size: 0.7em;
+            color: #666;
+            font-weight: 400;
+            margin-left: 8px;
+        }
+        
+        .english-subtitle {
+            font-size: 0.75em;
+            color: #888;
+            font-weight: 400;
+            margin-left: 8px;
+            opacity: 0.8;
+        }
+        
+        .english-label {
+            font-size: 0.7em;
+            color: #999;
+            font-weight: 400;
+            margin-left: 4px;
+            opacity: 0.7;
+        }
+        
+        /* 深色主题下的英文点缀 */
+        [data-theme="dark"] .english-title {
+            color: #aaa;
+        }
+        
+        [data-theme="dark"] .english-subtitle {
+            color: #999;
+        }
+        
+        [data-theme="dark"] .english-label {
+            color: #888;
         }
         
         .data-table th,
@@ -1071,67 +826,72 @@
 
                         <!-- 实时监控面板 -->
                         <div class="monitoring-panel">
-                            <h3>实时监控</h3>
-                            <div class="monitoring-stats">
-                                <div class="monitoring-stat">
-                                    <div class="monitoring-stat-value" id="onlineStaff">156</div>
-                                    <div class="monitoring-stat-label">在线医护</div>
+                            <h3>实时监控 <span class="english-subtitle">Real-time Monitoring</span></h3>
+                            <div class="overview-cards">
+                                <div class="card" data-status="normal">
+                                    <div class="card-title">在线医护 <span class="english-label">Online Staff</span></div>
+                                    <div class="card-value" id="onlineStaff">156</div>
+                                    <div class="card-trend up">正常运行</div>
                                 </div>
-                                <div class="monitoring-stat">
-                                    <div class="monitoring-stat-value" id="activeCases">23</div>
-                                    <div class="monitoring-stat-label">活跃病例</div>
+                                <div class="card" data-status="warning">
+                                    <div class="card-title">活跃病例 <span class="english-label">Active Cases</span></div>
+                                    <div class="card-value" id="activeCases">23</div>
+                                    <div class="card-trend up">+2 较昨日</div>
                                 </div>
-                                <div class="monitoring-stat">
-                                    <div class="monitoring-stat-value" id="emergencyAlerts">2</div>
-                                    <div class="monitoring-stat-label">紧急警报</div>
+                                <div class="card" data-status="error">
+                                    <div class="card-title">紧急警报 <span class="english-label">Emergency Alerts</span></div>
+                                    <div class="card-value" id="emergencyAlerts">2</div>
+                                    <div class="card-trend down">需要关注</div>
                                 </div>
-                                <div class="monitoring-stat">
-                                    <div class="monitoring-stat-value" id="bedOccupancy">89%</div>
-                                    <div class="monitoring-stat-label">床位占用率</div>
+                                <div class="card" data-status="success">
+                                    <div class="card-title">床位占用率 <span class="english-label">Bed Occupancy</span></div>
+                                    <div class="card-value" id="bedOccupancy">89%</div>
+                                    <div class="card-trend up">+2% 较昨日</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- 关键指标 -->
-                        <div class="key-indicators">
-                            <div class="indicator-card">
-                                <div class="indicator-value">342</div>
-                                <div class="indicator-label">总病例数</div>
-                                <div class="indicator-change positive">+12 较昨日</div>
+                        <h3>关键指标 <span class="english-subtitle">Key Indicators</span></h3>
+                        <div class="overview-cards">
+                            <div class="card" data-status="normal">
+                                <div class="card-title">总病例数 <span class="english-label">Total Cases</span></div>
+                                <div class="card-value">342</div>
+                                <div class="card-trend up">+12 较昨日</div>
                             </div>
-                            <div class="indicator-card">
-                                <div class="indicator-value">89</div>
-                                <div class="indicator-label">危重病例</div>
-                                <div class="indicator-change negative">+3 较昨日</div>
+                            <div class="card" data-status="warning">
+                                <div class="card-title">危重病例 <span class="english-label">Critical Cases</span></div>
+                                <div class="card-value">89</div>
+                                <div class="card-trend up">+3 较昨日</div>
                             </div>
-                            <div class="indicator-card">
-                                <div class="indicator-value">28</div>
-                                <div class="indicator-label">今日新增</div>
-                                <div class="indicator-change positive">+5 较昨日</div>
+                            <div class="card" data-status="success">
+                                <div class="card-title">今日新增 <span class="english-label">New Today</span></div>
+                                <div class="card-value">28</div>
+                                <div class="card-trend up">+5 较昨日</div>
                             </div>
-                            <div class="indicator-card">
-                                <div class="indicator-value">94.2%</div>
-                                <div class="indicator-label">治愈率</div>
-                                <div class="indicator-change positive">+0.8% 较上月</div>
+                            <div class="card" data-status="success">
+                                <div class="card-title">治愈率 <span class="english-label">Recovery Rate</span></div>
+                                <div class="card-value">94.2%</div>
+                                <div class="card-trend up">+0.8% 较上月</div>
                             </div>
                         </div>
 
                         <!-- 图表分析 -->
-                        <div class="dashboard-grid">
-                            <div class="dashboard-item">
-                                <h3>病例趋势分析</h3>
+                        <div class="charts-container">
+                            <div class="chart-item">
+                                <h3>病例趋势分析 <span class="english-subtitle">Case Trend Analysis</span></h3>
                                 <div id="caseTrendChart" class="chart-standard"></div>
                             </div>
-                            <div class="dashboard-item">
-                                <h3>科室分布</h3>
+                            <div class="chart-item">
+                                <h3>科室分布 <span class="english-subtitle">Department Distribution</span></h3>
                                 <div id="departmentChart" class="chart-standard"></div>
                             </div>
-                            <div class="dashboard-item">
-                                <h3>严重程度分布</h3>
+                            <div class="chart-item">
+                                <h3>严重程度分布 <span class="english-subtitle">Severity Distribution</span></h3>
                                 <div id="severityChart" class="chart-standard"></div>
                             </div>
-                            <div class="dashboard-item">
-                                <h3>治疗效果分析</h3>
+                            <div class="chart-item">
+                                <h3>治疗效果分析 <span class="english-subtitle">Treatment Effectiveness</span></h3>
                                 <div id="treatmentChart" class="chart-standard"></div>
                             </div>
                         </div>
@@ -1139,7 +899,7 @@
                         <!-- 病例列表 -->
                         <div class="case-table">
                             <div class="table-header">
-                                <div class="table-title">实时病例监控</div>
+                                <div class="table-title">实时病例监控 <span class="english-subtitle">Real-time Case Monitoring</span></div>
                                 <div class="table-actions">
                                     <button class="btn">筛选</button>
                                     <button class="btn">导出</button>

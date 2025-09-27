@@ -15,28 +15,33 @@
     <style>
         /* 科室病种管理页面特定样式 */
         .main-content {
-            padding: 0 2px !important; /* 大幅减少左右内边距，几乎贴边 */
+            padding: 20px !important; /* 恢复合适的内边距 */
             max-width: none !important; /* 移除最大宽度限制 */
-            margin-left: 160px !important; /* 极大幅度减少左边距，从240px减少到160px */
+            margin-left: var(--sidebar-width, 200px) !important; /* 使用CSS变量确保与导航栏对齐 */
+            width: calc(100% - var(--sidebar-width, 200px)) !important; /* 确保宽度计算正确 */
+            transition: margin-left 0.3s ease, width 0.3s ease; /* 添加过渡效果 */
         }
         
         .disease-container {
-            padding: 20px 8px; /* 大幅减少左右内边距 */
+            padding: 24px; /* 恢复合适的内边距 */
             background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 12px; /* 增加圆角以匹配现代设计 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* 优化阴影效果 */
             margin-bottom: 24px;
             width: 100%; /* 确保容器占满可用宽度 */
             max-width: none; /* 移除最大宽度限制 */
+            border: 1px solid rgba(0, 120, 212, 0.1); /* 添加边框 */
         }
         
         .disease-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             padding-bottom: 16px;
-            border-bottom: 2px solid #f5f5f5;
+            border-bottom: 1px solid #e8e8e8;
+            flex-wrap: wrap; /* 添加换行支持 */
+            gap: 16px; /* 添加间距 */
         }
         
         .disease-header h2 {
@@ -167,8 +172,8 @@
         }
         
         .card-title {
-            font-size: 10px; /* 从14px再缩小30%到10px */
-            font-weight: 600;
+            font-size: 18px; /* 增大疾病名字字体 */
+            font-weight: 700; /* 加粗疾病名字 */
             margin-bottom: 16px;
             color: #333;
             padding-bottom: 12px;
@@ -201,7 +206,7 @@
         }
         
         .stat-value {
-            font-size: 11px; /* 从16px再缩小30%到11px */
+            font-size: 14px; /* 调整指标数值字体大小 */
             font-weight: 600;
             color: #0078d4;
             margin-bottom: 6px;
@@ -209,7 +214,7 @@
         }
         
         .stat-label {
-            font-size: 7px; /* 从10px再缩小30%到7px */
+            font-size: 12px; /* 调整指标标签字体大小 */
             color: #666;
             font-weight: 500;
             margin-bottom: 4px;
@@ -227,6 +232,12 @@
 
         /* 响应式设计 */
         @media (max-width: 1200px) {
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 16px !important;
+            }
+            
             .card-grid {
                 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
                 gap: 14px;
@@ -240,6 +251,46 @@
             .chart-container {
                 height: 280px;
                 padding: 16px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 12px !important;
+            }
+            
+            .disease-container {
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+            
+            .disease-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .disease-card {
+                padding: 16px;
+            }
+            
+            .card-title {
+                font-size: 16px;
+            }
+            
+            .stat-value {
+                font-size: 12px;
+            }
+            
+            .stat-label {
+                font-size: 10px;
             }
         }
 
@@ -1402,27 +1453,27 @@
                 <h2>临床路径管理总体概览</h2>
             </div>
             <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-bottom: 40px;">
-                <div class="disease-card" style="text-align: center; background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%); color: white; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);">
+                <div class="disease-card" style="text-align: center; background: #0078d4; color: white; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);">
                     <div class="stat-value" style="font-size: 28px; color: white; margin-bottom: 8px; font-weight: 600;">15</div>
                     <div class="stat-label" style="color: rgba(255,255,255,0.9); font-size: 13px;">管理病种总数</div>
                 </div>
-                <div class="disease-card" style="text-align: center; background: linear-gradient(135deg, #0078d4 0%, #40e0d0 100%); color: white; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);">
+                <div class="disease-card" style="text-align: center; background: #20c997; color: white; box-shadow: 0 4px 12px rgba(32, 201, 151, 0.3);">
                     <div class="stat-value" style="font-size: 28px; color: white; margin-bottom: 8px; font-weight: 600;">87.2%</div>
                     <div class="stat-label" style="color: rgba(255,255,255,0.9); font-size: 13px;">平均入径率</div>
                 </div>
-                <div class="disease-card" style="text-align: center; background: linear-gradient(135deg, #005a9e 0%, #0078d4 100%); color: white; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);">
+                <div class="disease-card" style="text-align: center; background: #28a745; color: white; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);">
                     <div class="stat-value" style="font-size: 28px; color: white; margin-bottom: 8px; font-weight: 600;">82.5%</div>
                     <div class="stat-label" style="color: rgba(255,255,255,0.9); font-size: 13px;">平均完成率</div>
                 </div>
-                <div class="disease-card" style="text-align: center; background: linear-gradient(135deg, #40e0d0 0%, #0078d4 100%); color: white; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);">
+                <div class="disease-card" style="text-align: center; background: #ffc107; color: white; box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);">
                     <div class="stat-value" style="font-size: 28px; color: white; margin-bottom: 8px; font-weight: 600;">17.5%</div>
                     <div class="stat-label" style="color: rgba(255,255,255,0.9); font-size: 13px;">平均变异率</div>
                 </div>
-                <div class="disease-card" style="text-align: center; background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%); color: white; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);">
+                <div class="disease-card" style="text-align: center; background: #6f42c1; color: white; box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);">
                     <div class="stat-value" style="font-size: 28px; color: white; margin-bottom: 8px; font-weight: 600;">9.8天</div>
                     <div class="stat-label" style="color: rgba(255,255,255,0.9); font-size: 13px;">平均住院日</div>
                 </div>
-                <div class="disease-card" style="text-align: center; background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%); color: #333; border: 1px solid #e8e8e8; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                <div class="disease-card" style="text-align: center; background: #ffffff; color: #333; border: 1px solid #e8e8e8; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <div class="stat-value" style="font-size: 28px; color: #0078d4; margin-bottom: 8px; font-weight: 600;">¥16,890</div>
                     <div class="stat-label" style="color: #666; font-size: 13px;">平均例均费用</div>
                 </div>
