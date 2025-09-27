@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECharts 测试页面</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <h1>ECharts 测试页面</h1>
+    <div id="test-chart" style="width: 800px; height: 400px; border: 1px solid #ccc; margin: 20px;"></div>
+    
+    <script>
+        console.log('Test page loading...');
+        console.log('ECharts available:', typeof echarts !== 'undefined');
+        
+        window.addEventListener('load', function() {
+            console.log('Window loaded');
+            
+            setTimeout(function() {
+                console.log('Starting chart initialization...');
+                
+                const container = document.getElementById('test-chart');
+                console.log('Container:', container);
+                
+                if (!container) {
+                    console.error('Container not found');
+                    return;
+                }
+                
+                console.log('Container dimensions:', {
+                    width: container.offsetWidth,
+                    height: container.offsetHeight
+                });
+                
+                try {
+                    console.log('Creating chart instance...');
+                    const chart = echarts.init(container);
+                    console.log('Chart instance created:', chart);
+                    
+                    const option = {
+                        title: {
+                            text: 'ECharts 测试图表'
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: [{
+                            data: [120, 200, 150, 80, 70, 110, 130],
+                            type: 'bar'
+                        }]
+                    };
+                    
+                    console.log('Setting chart option...');
+                    chart.setOption(option);
+                    console.log('Chart option set successfully!');
+                    
+                } catch (error) {
+                    console.error('Error creating chart:', error);
+                    console.error('Error stack:', error.stack);
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

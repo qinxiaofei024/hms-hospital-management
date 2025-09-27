@@ -1,0 +1,31 @@
+{
+  "name": "hms-frontend",
+  "version": "1.0.0",
+  "description": "HDCP Hospital Data Center Platform",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:protected": "node build-protected.js",
+    "build:production": "npm run build:protected",
+    "preview": "vite preview",
+    "serve": "python -m http.server 8000"
+  },
+  "keywords": [
+    "hms",
+    "hospital",
+    "frontend",
+    "vite"
+  ],
+  "author": "Qin",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "archiver": "^7.0.1",
+    "javascript-obfuscator": "^4.1.1",
+    "rollup-plugin-obfuscator": "^1.1.0",
+    "terser": "^5.44.0",
+    "vite": "^5.0.0",
+    "vite-plugin-obfuscator": "^1.0.5"
+  }
+}

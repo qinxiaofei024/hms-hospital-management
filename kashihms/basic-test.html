@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        #navigation-container { border: 2px solid #007bff; min-height: 100px; padding: 10px; background: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <h1>Basic JavaScript Test</h1>
+    
+    <div id="test-results"></div>
+    
+    <h2>Navigation Container</h2>
+    <div id="navigation-container"></div>
+    
+    <script>
+        function addResult(message, isSuccess = true) {
+            const div = document.createElement('div');
+            div.className = `test-result ${isSuccess ? 'success' : 'error'}`;
+            div.textContent = message;
+            document.getElementById('test-results').appendChild(div);
+            console.log(message);
+        }
+        
+        // 基本JavaScript测试
+        addResult('✓ JavaScript 正常执行');
+        
+        // 测试fetch功能
+        fetch('components/nav.html')
+            .then(response => {
+                addResult(`✓ Fetch 响应状态: ${response.status}`);
+                return response.text();
+            })
+            .then(html => {
+                addResult(`✓ 获取到 HTML 内容，长度: ${html.length} 字符`);
+                document.getElementById('navigation-container').innerHTML = html;
+                addResult('✓ HTML 内容已注入到容器');
+            })
+            .catch(error => {
+                addResult(`✗ Fetch 失败: ${error.message}`, false);
+            });
+        
+        // 检查navigation-loader.js是否加载
+        setTimeout(() => {
+            if (typeof NavigationLoader !== 'undefined') {
+                addResult('✓ NavigationLoader 类已定义');
+                
+                if (window.navigationLoader) {
+                    addResult('✓ 全局 navigationLoader 实例存在');
+                } else {
+                    addResult('✗ 全局 navigationLoader 实例不存在', false);
+                }
+            } else {
+                addResult('✗ NavigationLoader 类未定义', false);
+            }
+        }, 1000);
+        
+        // 监听导航加载事件
+        document.addEventListener('navigationLoaded', function(event) {
+            addResult('✓ 收到 navigationLoaded 事件');
+        });
+        
+        // 错误监听
+        window.addEventListener('error', function(event) {
+            addResult(`✗ JavaScript 错误: ${event.error.message}`, false);
+        });
+    </script>
+    
+    <!-- 加载navigation-loader -->
+    <script src="js/navigation-loader.js"></script>
+</body>
+</html>

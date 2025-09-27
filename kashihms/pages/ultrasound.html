@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超声医学运营分析 - 喀什地区第一人民医院数据中心管理平台</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/medical-analysis.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/ultrasound.js"></script>
+    
+    <!-- 页面布局覆盖：统一与 index 风格，卡片一行四个，图表一行三个 -->
+    <style>
+      /* 桌面端确保概览卡片单行四列显示 */
+      .overview-cards { grid-template-columns: repeat(4, 1fr) !important; }
+      /* 图表区默认已是三列，这里显式声明并保证间距一致 */
+      .charts-section { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 24px !important; }
+      /* 小屏延续响应式：不覆写 medical-analysis.css 中的媒体查询 */
+      
+      /* 新增：设备状态区域统一为卡片+网格布局 */
+      .equipment-status { display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr)); gap: 20px; margin: 12px 0 24px; }
+      .equipment-card { position: relative; }
+      .equipment-card .card-header { margin-bottom: 8px; }
+      .equipment-name.card-title { font-size: 16px; }
+      .equipment-usage.card-value { font-size: 24px; }
+      .equipment-status-text { position: absolute; top: 16px; right: 16px; padding: 4px 10px; border-radius: 12px; font-size: 12px; }
+      .equipment-status-text.status-normal { background: #e6f7ff; color: #1890ff; }
+      .equipment-status-text.status-warning { background: #fffbe6; color: #faad14; }
+      .equipment-status-text.status-error { background: #fff5f5; color: #f5222d; }
+      @media (max-width: 1200px) { .equipment-status { grid-template-columns: repeat(2, minmax(220px, 1fr)); } }
+      @media (max-width: 768px)  { .equipment-status { grid-template-columns: 1fr; } }
+    </style>
+    </style>
+    <style>
+      /* 统一：顶部概览卡采用标准 .card 风格，保持与图表卡一致 */
+      .overview-cards .overview-card {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 120, 212, 0.1);
+      }
+      /* 覆盖页面样式中的多彩条与高度，统一为标准.card 顶部细条 */
+      .overview-cards .overview-card::before {
+        background-color: #0078d4;
+        height: 3px;
+      }
+      /* 取消 style.css 中对不同卡片的背景色和左边框差异，确保风格一致 */
+      .overview-cards .card {
+        background-color: #ffffff !important;
+        border-left: none !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid rgba(0, 120, 212, 0.1) !important;
+      }
+      .overview-cards .card::before { background-color: #0078d4 !important; }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content" style="margin-left: 0;">
+        <div class="content-wrapper" style="margin-left: 240px;">
+            <!-- 右侧内容区 -->
+            <div class="content-area">
+            <div class="page-header">
+                <h1>超声医学运营分析</h1>
+                <div class="page-actions">
+                    <div class="filter-section">
+                        <div class="filter-group">
+                            <label for="time-range">时间范围:</label>
+                            <select id="time-range">
+                                <option value="month">本月</option>
+                                <option value="quarter">本季度</option>
+                                <option value="half-year">半年</option>
+                                <option value="year">全年</option>
+                                <option value="custom">自定义</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="department">科室:</label>
+                            <select id="department">
+                                <option value="all">全部</option>
+                                <option value="abdominal">腹部超声</option>
+                                <option value="cardiac">心脏超声</option>
+                                <option value="vascular">血管超声</option>
+                                <option value="obstetric">妇产科超声</option>
+                                <option value="musculoskeletal">肌肉骨骼超声</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="actions-section">
+                        <button class="btn btn-primary" id="export-btn">导出报表</button>
+                        <button class="btn btn-default" id="refresh-btn">刷新</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ultrasound-container">
+                <!-- 数据概览卡片 -->
+                <div class="overview-cards">
+                    <div class="overview-card card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="icon-users"></i>
+                            </div>
+                            <div class="card-title">总检查人次</div>
+                            <button class="trend-btn" onclick="showTrendModal('examinations')">
+                                <i class="icon-trend"></i>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value">5,862</div>
+                            <div class="card-unit">人次</div>
+                        </div>
+                        <div class="card-trend trend-up">
+                            <i class="icon-arrow-up"></i> 较上月增长 4.3%
+                        </div>
+                    </div>
+                    <div class="overview-card card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="icon-money"></i>
+                            </div>
+                            <div class="card-title">总收入</div>
+                            <button class="trend-btn" onclick="showTrendModal('revenue')">
+                                <i class="icon-trend"></i>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value">128.5</div>
+                            <div class="card-unit">万元</div>
+                        </div>
+                        <div class="card-trend trend-up">
+                            <i class="icon-arrow-up"></i> 较上月增长 6.8%
+                        </div>
+                    </div>
+                    <div class="overview-card card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="icon-chart"></i>
+                            </div>
+                            <div class="card-title">平均设备使用率</div>
+                            <button class="trend-btn" onclick="showTrendModal('equipment')">
+                                <i class="icon-trend"></i>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value">78.5</div>
+                            <div class="card-unit">%</div>
+                        </div>
+                        <div class="card-trend trend-up">
+                            <i class="icon-arrow-up"></i> 较上月增长 2.1%
+                        </div>
+                    </div>
+                    <div class="overview-card card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="icon-check"></i>
+                            </div>
+                            <div class="card-title">阳性检出率</div>
+                            <button class="trend-btn" onclick="showTrendModal('positive')">
+                                <i class="icon-trend"></i>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value">38.2</div>
+                            <div class="card-unit">%</div>
+                        </div>
+                        <div class="card-trend trend-down">
+                            <i class="icon-arrow-down"></i> 较上月下降 0.5%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 设备状态卡片 -->
+                <div class="equipment-status">
+                    <div class="equipment-card card">
+                        <div class="card-header">
+                            <div class="equipment-name card-title">高端彩超仪A</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="equipment-usage card-value">85.2%</div>
+                            <div class="card-subtitle">使用率</div>
+                        </div>
+                        <span class="equipment-status-text status-normal">正常运行</span>
+                    </div>
+                    <div class="equipment-card card">
+                        <div class="card-header">
+                            <div class="equipment-name card-title">高端彩超仪B</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="equipment-usage card-value">81.6%</div>
+                            <div class="card-subtitle">使用率</div>
+                        </div>
+                        <span class="equipment-status-text status-normal">正常运行</span>
+                    </div>
+                    <div class="equipment-card card">
+                        <div class="card-header">
+                            <div class="equipment-name card-title">中端彩超仪C</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="equipment-usage card-value">76.3%</div>
+                            <div class="card-subtitle">使用率</div>
+                        </div>
+                        <span class="equipment-status-text status-normal">正常运行</span>
+                    </div>
+                    <div class="equipment-card card">
+                        <div class="card-header">
+                            <div class="equipment-name card-title">便携彩超仪D</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="equipment-usage card-value">68.9%</div>
+                            <div class="card-subtitle">使用率</div>
+                        </div>
+                        <span class="equipment-status-text status-warning">使用率偏低</span>
+                    </div>
+                </div>
+
+                <!-- 图表区域 -->
+                <div class="charts-section">
+                    <div class="chart-container card">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3 class="chart-title">检查量趋势分析</h3>
+                                <p class="chart-subtitle">超声检查人次月度变化趋势</p>
+                            </div>
+                            <div class="chart-controls">
+                                <select class="chart-filter">
+                                    <option value="month">按月</option>
+                                    <option value="quarter">按季度</option>
+                                    <option value="year">按年</option>
+                                </select>
+                                <button class="chart-refresh-btn" onclick="refreshChart('examination-trend-chart')">
+                                    <i class="icon-refresh"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper" id="examination-trend-chart"></div>
+                    </div>
+                    <div class="chart-container card">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3 class="chart-title">检查类型分布</h3>
+                                <p class="chart-subtitle">各类超声检查项目占比分析</p>
+                            </div>
+                            <div class="chart-controls">
+                                <select class="chart-filter">
+                                    <option value="count">按数量</option>
+                                    <option value="revenue">按收入</option>
+                                </select>
+                                <button class="chart-refresh-btn" onclick="refreshChart('examination-type-chart')">
+                                    <i class="icon-refresh"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper" id="examination-type-chart"></div>
+                    </div>
+                    <div class="chart-container card">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3 class="chart-title">收入趋势分析</h3>
+                                <p class="chart-subtitle">超声科室收入月度变化趋势</p>
+                            </div>
+                            <div class="chart-controls">
+                                <select class="chart-filter">
+                                    <option value="total">总收入</option>
+                                    <option value="outpatient">门诊收入</option>
+                                    <option value="inpatient">住院收入</option>
+                                </select>
+                                <button class="chart-refresh-btn" onclick="refreshChart('revenue-trend-chart')">
+                                    <i class="icon-refresh"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper" id="revenue-trend-chart"></div>
+                    </div>
+                    <div class="chart-container card">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3 class="chart-title">设备使用率对比</h3>
+                                <p class="chart-subtitle">各超声设备使用率对比分析</p>
+                            </div>
+                            <div class="chart-controls">
+                                <select class="chart-filter">
+                                    <option value="usage">使用率</option>
+                                    <option value="efficiency">效率</option>
+                                </select>
+                                <button class="chart-refresh-btn" onclick="refreshChart('equipment-usage-chart')">
+                                    <i class="icon-refresh"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper" id="equipment-usage-chart"></div>
+                    </div>
+                </div>
+
+                <!-- 检查项目统计（新增） -->
+                <div class="charts-section" id="exam-items-section">
+                    <div class="chart-container card" style="grid-column: 1 / -1;">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3 class="chart-title">检查部位对比</h3>
+                                <p class="chart-subtitle">不同检查部位检查量对比</p>
+                            </div>
+                            <div class="chart-controls">
+                                <select id="item-time-range" class="chart-filter">
+                                    <option value="month">近一月</option>
+                                    <option value="quarter">近一季</option>
+                                    <option value="half-year">近半年</option>
+                                    <option value="year" selected>近一年</option>
+                                </select>
+                                <select id="exam-region" class="chart-filter">
+                                    <option value="all" selected>全部部位</option>
+                                    <option value="abdomen">腹部</option>
+                                    <option value="cardiac">心脏</option>
+                                    <option value="thyroid">甲状腺</option>
+                                    <option value="breast">乳腺</option>
+                                    <option value="vascular">血管</option>
+                                    <option value="urinary">泌尿系</option>
+                                    <option value="obstetric">妇产科</option>
+                                    <option value="msk">肌肉骨骼</option>
+                                    <option value="superficial">浅表器官</option>
+                                    <option value="pediatric">儿科</option>
+                                </select>
+                                <select id="exam-type" class="chart-filter">
+                                    <option value="all" selected>全部类型</option>
+                                    <option value="core">核心检查</option>
+                                    <option value="interventional">介入</option>
+                                    <option value="routine">常规</option>
+                                    <option value="contrast">造影</option>
+                                </select>
+                                <button class="chart-refresh-btn" onclick="refreshChart('exam-item-type-chart')">
+                                    <i class="icon-refresh"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container card">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3 class="chart-title">项目类型分布</h3>
+                                <p class="chart-subtitle">不同项目类型占比</p>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="chart-refresh-btn" onclick="refreshChart('exam-item-type-chart')">
+                                    <i class="icon-refresh"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper" id="exam-item-type-chart"></div>
+                    </div>
+
+                    <div class="chart-container card">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3 class="chart-title">检查部位对比</h3>
+                                <p class="chart-subtitle">不同检查部位检查量对比</p>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="chart-refresh-btn" onclick="refreshChart('exam-region-compare-chart')">
+                                    <i class="icon-refresh"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper" id="exam-region-compare-chart"></div>
+                    </div>
+
+                    <!-- 调整：趋势图改为普通列，三图同排显示 -->
+                    <div class="chart-container card">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3 class="chart-title">项目检查量趋势</h3>
+                                <p class="chart-subtitle">所选条件下的时间序列</p>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="chart-refresh-btn" onclick="refreshChart('exam-item-trend-chart')">
+                                    <i class="icon-refresh"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper" id="exam-item-trend-chart"></div>
+                    </div>
+
+                    <div class="chart-container card" style="grid-column: 1 / -1;">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3 class="chart-title">检查项目统计表</h3>
+                                <p class="chart-subtitle">按所选条件展示关键项目与占比</p>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper" style="height: auto; padding: 0;">
+                            <table class="data-table" id="exam-item-table">
+                                <thead>
+                                    <tr>
+                                        <th>项目名称</th>
+                                        <th>项目类型</th>
+                                        <th>检查部位</th>
+                                        <th>检查人次</th>
+                                        <th>占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 动态填充 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 详细数据表格 -->
+                <div class="data-table-container">
+                    <h3>超声检查详细数据</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>月份</th>
+                                <th>腹部超声</th>
+                                <th>心脏超声</th>
+                                <th>血管超声</th>
+                                <th>妇产科超声</th>
+                                <th>肌肉骨骼超声</th>
+                                <th>总检查人次</th>
+                                <th>总收入(万元)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1月</td>
+                                <td>1,250</td>
+                                <td>850</td>
+                                <td>680</td>
+                                <td>980</td>
+                                <td>420</td>
+                                <td>4,180</td>
+                                <td>89.6</td>
+                            </tr>
+                            <tr>
+                                <td>2月</td>
+                                <td>1,320</td>
+                                <td>890</td>
+                                <td>710</td>
+                                <td>1,020</td>
+                                <td>450</td>
+                                <td>4,390</td>
+                                <td>95.2</td>
+                            </tr>
+                            <tr>
+                                <td>3月</td>
+                                <td>1,450</td>
+                                <td>960</td>
+                                <td>780</td>
+                                <td>1,100</td>
+                                <td>480</td>
+                                <td>4,770</td>
+                                <td>103.5</td>
+                            </tr>
+                            <tr>
+                                <td>4月</td>
+                                <td>1,520</td>
+                                <td>1,020</td>
+                                <td>820</td>
+                                <td>1,150</td>
+                                <td>510</td>
+                                <td>5,020</td>
+                                <td>108.7</td>
+                            </tr>
+                            <tr>
+                                <td>5月</td>
+                                <td>1,580</td>
+                                <td>1,080</td>
+                                <td>860</td>
+                                <td>1,200</td>
+                                <td>540</td>
+                                <td>5,260</td>
+                                <td>114.3</td>
+                            </tr>
+                            <tr>
+                                <td>6月</td>
+                                <td>1,620</td>
+                                <td>1,120</td>
+                                <td>890</td>
+                                <td>1,250</td>
+                                <td>560</td>
+                                <td>5,440</td>
+                                <td>119.8</td>
+                            </tr>
+                            <tr>
+                                <td>7月</td>
+                                <td>1,680</td>
+                                <td>1,180</td>
+                                <td>920</td>
+                                <td>1,300</td>
+                                <td>580</td>
+                                <td>5,660</td>
+                                <td>124.7</td>
+                            </tr>
+                            <tr>
+                                <td>8月</td>
+                                <td>1,750</td>
+                                <td>1,250</td>
+                                <td>960</td>
+                                <td>1,350</td>
+                                <td>612</td>
+                                <td>5,922</td>
+                                <td>131.2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+        </div>
+
+    <!-- 加载统一导航组件 -->
+    <script src="../js/navigation-loader.js"></script>
+</body>
+</html>

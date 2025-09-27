@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航测试页面</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #navigation-container { 
+            border: 2px solid #007bff; 
+            min-height: 200px; 
+            margin: 20px 0; 
+            padding: 10px;
+            background: #f8f9fa;
+        }
+        .status { 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+            background: #e9ecef;
+        }
+        .log { 
+            background: #fff; 
+            border: 1px solid #ddd; 
+            padding: 10px; 
+            margin: 10px 0;
+            max-height: 300px; 
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>导航加载器测试</h1>
+    
+    <div class="status">
+        <h3>测试状态</h3>
+        <p>页面路径: <span id="page-path"></span></p>
+        <p>NavigationLoader: <span id="loader-status">检查中...</span></p>
+        <p>导航容器: <span id="container-status">检查中...</span></p>
+        <p>初始化状态: <span id="init-status">检查中...</span></p>
+    </div>
+    
+    <h2>导航容器</h2>
+    <div id="navigation-container">
+        <p style="color: #666; text-align: center; margin: 50px 0;">等待导航加载...</p>
+    </div>
+    
+    <div class="status">
+        <h3>控制台日志</h3>
+        <div id="console-log" class="log"></div>
+    </div>
+    
+    <div class="status">
+        <h3>手动测试</h3>
+        <button onclick="testFetch()">测试Fetch</button>
+        <button onclick="testInit()">手动初始化</button>
+        <button onclick="checkContainer()">检查容器</button>
+        <div id="test-results" class="log"></div>
+    </div>
+
+    <script>
+        // 捕获控制台输出
+        const logDiv = document.getElementById('console-log');
+        const testDiv = document.getElementById('test-results');
+        
+        function addLog(message, isTest = false) {
+            const div = isTest ? testDiv : logDiv;
+            const p = document.createElement('p');
+            p.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            div.appendChild(p);
+            div.scrollTop = div.scrollHeight;
+        }
+        
+        // 重写console方法
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addLog('[LOG] ' + args.join(' '));
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addLog('[ERROR] ' + args.join(' '));
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addLog('[WARN] ' + args.join(' '));
+        };
+        
+        // 显示页面信息
+        document.getElementById('page-path').textContent = window.location.pathname;
+        
+        // 状态检查函数
+        function updateStatus() {
+            // NavigationLoader状态
+            const loaderStatus = document.getElementById('loader-status');
+            if (typeof NavigationLoader !== 'undefined') {
+                if (window.navigationLoader) {
+                    loaderStatus.textContent = '已创建实例';
+                    loaderStatus.style.color = 'green';
+                } else {
+                    loaderStatus.textContent = '类已加载，但无实例';
+                    loaderStatus.style.color = 'orange';
+                }
+            } else {
+                loaderStatus.textContent = '未加载';
+                loaderStatus.style.color = 'red';
+            }
+            
+            // 初始化状态
+            const initStatus = document.getElementById('init-status');
+            if (window.navigationLoader) {
+                const initialized = window.navigationLoader.initialized;
+                const initializing = window.navigationLoader._initializing;
+                initStatus.textContent = initialized ? '已初始化' : (initializing ? '初始化中' : '未初始化');
+                initStatus.style.color = initialized ? 'green' : (initializing ? 'orange' : 'red');
+            } else {
+                initStatus.textContent = '无实例';
+                initStatus.style.color = 'red';
+            }
+            
+            // 容器状态
+            const container = document.getElementById('navigation-container');
+            const containerStatus = document.getElementById('container-status');
+            if (container) {
+                const hasContent = container.innerHTML.length > 100; // 排除初始提示文本
+                const hasNavElements = container.querySelector('header, nav, .header, .navbar, .sidebar');
+                containerStatus.textContent = `内容: ${container.innerHTML.length}字符, 导航元素: ${hasNavElements ? '是' : '否'}`;
+                containerStatus.style.color = hasNavElements ? 'green' : (hasContent ? 'orange' : 'red');
+            }
+        }
+        
+        // 手动测试函数
+        async function testFetch() {
+            addLog('开始手动fetch测试...', true);
+            try {
+                const navPath = window.location.pathname.includes('/pages/') ? '../components/nav.html' : 'components/nav.html';
+                addLog('测试路径: ' + navPath, true);
+                
+                const response = await fetch(navPath);
+                addLog(`Fetch响应: ${response.status} ${response.statusText}`, true);
+                
+                if (response.ok) {
+                    const text = await response.text();
+                    addLog(`内容长度: ${text.length}字符`, true);
+                    addLog(`内容预览: ${text.substring(0, 200)}...`, true);
+                }
+            } catch (error) {
+                addLog('Fetch错误: ' + error.message, true);
+            }
+        }
+        
+        async function testInit() {
+            addLog('开始手动初始化测试...', true);
+            if (window.navigationLoader) {
+                try {
+                    await window.navigationLoader.init();
+                    addLog('手动初始化完成', true);
+                    updateStatus();
+                } catch (error) {
+                    addLog('手动初始化失败: ' + error.message, true);
+                }
+            } else {
+                addLog('NavigationLoader实例不存在', true);
+            }
+        }
+        
+        function checkContainer() {
+            addLog('检查容器状态...', true);
+            const container = document.getElementById('navigation-container');
+            if (container) {
+                addLog(`容器HTML长度: ${container.innerHTML.length}`, true);
+                addLog(`容器HTML内容: ${container.innerHTML.substring(0, 500)}...`, true);
+                
+                const navElements = container.querySelectorAll('header, nav, .header, .navbar, .sidebar');
+                addLog(`找到导航元素: ${navElements.length}个`, true);
+                
+                navElements.forEach((el, i) => {
+                    addLog(`元素${i+1}: ${el.tagName} class="${el.className}"`, true);
+                });
+            }
+            updateStatus();
+        }
+        
+        // 监听导航加载事件
+        document.addEventListener('navigationLoaded', function(event) {
+            addLog('收到navigationLoaded事件: ' + JSON.stringify(event.detail));
+            updateStatus();
+        });
+        
+        // 定期更新状态
+        setInterval(updateStatus, 2000);
+        
+        // 页面加载完成后的初始检查
+        window.addEventListener('load', function() {
+            addLog('页面加载完成');
+            setTimeout(updateStatus, 1000);
+        });
+        
+        addLog('测试页面初始化完成');
+    </script>
+    
+    <!-- 加载navigation-loader.js -->
+    <script src="js/navigation-loader.js"></script>
+</body>
+</html>

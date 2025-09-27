@@ -1,0 +1,46 @@
+# 病种效益分析API - Python依赖包
+# 安装命令: pip install -r requirements.txt
+
+# Web框架
+Flask==2.3.3
+Flask-CORS==4.0.0
+
+# 数据库连接
+mysql-connector-python==8.1.0
+PyMySQL==1.1.0
+
+# 数据处理
+pandas==2.1.1
+numpy==1.24.3
+
+# 日期时间处理
+python-dateutil==2.8.2
+
+# 数据导出
+openpyxl==3.1.2
+xlsxwriter==3.1.9
+
+# PDF生成
+reportlab==4.0.4
+
+# 配置管理
+python-dotenv==1.0.0
+
+# 日志记录
+loguru==0.7.2
+
+# API文档
+flask-restx==1.2.0
+
+# 数据验证
+marshmallow==3.20.1
+
+# 缓存
+redis==4.6.0
+
+# 开发工具
+pytest==7.4.2
+pytest-flask==1.2.0
+
+# 抓取仪表盘所需
+playwright>=1.44.0

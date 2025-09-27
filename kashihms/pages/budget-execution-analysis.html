@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预算执行分析 - 科主任运营分析</title>
+    
+    <!-- 预加载关键CSS -->
+    <link rel="preload" href="../css/style.css" as="style">
+    <link rel="preload" href="../css/common.css" as="style">
+    
+    <!-- CSS文件引用 - 必须按此顺序 -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/department-cockpit.css">
+    <link rel="stylesheet" href="../css/budget-execution-analysis.css">
+    
+    <!-- 开发环境缓存控制 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- ECharts库 -->
+    <script src="../js/echarts.min.js"></script>
+    <style>
+        .budget-execution {
+            padding: 20px;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        .page-header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .breadcrumb {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-group label {
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+        }
+        
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            background: white;
+            min-width: 120px;
+        }
+        
+        .action-buttons {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #1890ff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #40a9ff;
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e6e6e6;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .metric-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .metric-change {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .metric-change.positive {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .metric-change.negative {
+            background: #fff2f0;
+            color: #ff4d4f;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .chart {
+            width: 100%;
+            height: 300px;
+        }
+        
+        .data-table {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .table-content {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        th {
+            background: #fafafa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .progress-bar {
+            width: 100px;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        
+        .progress-normal {
+            background: #52c41a;
+        }
+        
+        .progress-warning {
+            background: #fa8c16;
+        }
+        
+        .progress-danger {
+            background: #ff4d4f;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .action-buttons {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏容器 -->
+    <div id="navigation-container"></div>
+    
+    <div class="main-content">
+        <div class="budget-execution">
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <div class="breadcrumb">科主任运营分析 > 预算执行分析</div>
+            <h1 class="page-title">预算执行分析</h1>
+        </div>
+        
+        <!-- 筛选控件 -->
+        <div class="filters">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>预算年度:</label>
+                    <select id="budget-year">
+                        <option value="2024" selected>2024年</option>
+                        <option value="2023">2023年</option>
+                        <option value="2022">2022年</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>预算类型:</label>
+                    <select id="budget-type">
+                        <option value="">全部类型</option>
+                        <option value="personnel">人员经费</option>
+                        <option value="equipment">设备采购</option>
+                        <option value="material">医疗耗材</option>
+                        <option value="maintenance">维护费用</option>
+                        <option value="training">培训费用</option>
+                        <option value="other">其他费用</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>科室:</label>
+                    <select id="department-select">
+                        <option value="">全部科室</option>
+                        <option value="cardiology">心内科</option>
+                        <option value="orthopedics">骨科</option>
+                        <option value="neurosurgery">神经外科</option>
+                        <option value="gastroenterology">消化内科</option>
+                        <option value="respiratory">呼吸内科</option>
+                        <option value="neurology">神经内科</option>
+                        <option value="gynecology">妇产科</option>
+                        <option value="pediatrics">儿科</option>
+                    </select>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="refresh-btn">刷新</button>
+                    <button class="btn btn-primary" id="export-btn">导出报告</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 关键指标 -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon" style="background: #1890ff;">💰</div>
+                <div class="metric-value">2,856万</div>
+                <div class="metric-label">年度预算总额</div>
+                <div class="metric-change positive">+12.5% 较去年</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon" style="background: #52c41a;">📊</div>
+                <div class="metric-value">78.6%</div>
+                <div class="metric-label">预算执行率</div>
+                <div class="metric-change positive">+5.2% 较上月</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon" style="background: #fa8c16;">⚠️</div>
+                <div class="metric-value">245万</div>
+                <div class="metric-label">预算余额</div>
+                <div class="metric-change negative">-8.3% 较上月</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon" style="background: #722ed1;">🎯</div>
+                <div class="metric-value">92.4%</div>
+                <div class="metric-label">预算达成率</div>
+                <div class="metric-change positive">+2.1% 较上月</div>
+            </div>
+        </div>
+        
+        <!-- 图表区域 -->
+        <div class="charts-grid">
+            <div class="chart-container">
+                <div id="budget-execution-chart" class="chart"></div>
+            </div>
+            
+            <div class="chart-container">
+                <div id="budget-category-chart" class="chart"></div>
+            </div>
+            
+            <div class="chart-container">
+                <div id="monthly-trend-chart" class="chart"></div>
+            </div>
+            
+            <div class="chart-container">
+                <div id="department-comparison-chart" class="chart"></div>
+            </div>
+        </div>
+        
+        <!-- 详细数据表格 -->
+        <div class="data-table">
+            <div class="table-header">预算执行详细数据</div>
+            <div class="table-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>预算项目</th>
+                            <th>所属科室</th>
+                            <th>预算金额</th>
+                            <th>已执行金额</th>
+                            <th>执行率</th>
+                            <th>剩余预算</th>
+                            <th>执行进度</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>医疗设备采购</td>
+                            <td>心内科</td>
+                            <td>350万</td>
+                            <td>285万</td>
+                            <td>81.4%</td>
+                            <td>65万</td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-normal" style="width: 81.4%"></div>
+                                </div>
+                            </td>
+                            <td>正常</td>
+                        </tr>
+                        <tr>
+                            <td>人员培训费</td>
+                            <td>骨科</td>
+                            <td>45万</td>
+                            <td>38万</td>
+                            <td>84.4%</td>
+                            <td>7万</td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-normal" style="width: 84.4%"></div>
+                                </div>
+                            </td>
+                            <td>正常</td>
+                        </tr>
+                        <tr>
+                            <td>医疗耗材</td>
+                            <td>神经外科</td>
+                            <td>180万</td>
+                            <td>165万</td>
+                            <td>91.7%</td>
+                            <td>15万</td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-warning" style="width: 91.7%"></div>
+                                </div>
+                            </td>
+                            <td>预警</td>
+                        </tr>
+                        <tr>
+                            <td>设备维护费</td>
+                            <td>消化内科</td>
+                            <td>75万</td>
+                            <td>52万</td>
+                            <td>69.3%</td>
+                            <td>23万</td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-normal" style="width: 69.3%"></div>
+                                </div>
+                            </td>
+                            <td>正常</td>
+                        </tr>
+                        <tr>
+                            <td>科研经费</td>
+                            <td>呼吸内科</td>
+                            <td>120万</td>
+                            <td>118万</td>
+                            <td>98.3%</td>
+                            <td>2万</td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-danger" style="width: 98.3%"></div>
+                                </div>
+                            </td>
+                            <td>超支风险</td>
+                        </tr>
+                        <tr>
+                            <td>办公用品</td>
+                            <td>神经内科</td>
+                            <td>25万</td>
+                            <td>18万</td>
+                            <td>72.0%</td>
+                            <td>7万</td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-normal" style="width: 72.0%"></div>
+                                </div>
+                            </td>
+                            <td>正常</td>
+                        </tr>
+                        <tr>
+                            <td>学术会议费</td>
+                            <td>妇产科</td>
+                            <td>35万</td>
+                            <td>28万</td>
+                            <td>80.0%</td>
+                            <td>7万</td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-normal" style="width: 80.0%"></div>
+                                </div>
+                            </td>
+                            <td>正常</td>
+                        </tr>
+                        <tr>
+                            <td>药品采购</td>
+                            <td>儿科</td>
+                            <td>200万</td>
+                            <td>156万</td>
+                            <td>78.0%</td>
+                            <td>44万</td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-normal" style="width: 78.0%"></div>
+                                </div>
+                            </td>
+                            <td>正常</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div> <!-- 结束 budget-execution -->
+    </div> <!-- 结束 main-content -->
+    
+    <script src="../js/budget-execution-analysis.js?v=20250125-fix2"></script>
+    
+    <!-- 导航栏加载脚本 -->
+    <script src="../js/navigation-loader.js?v=20250125-fix2"></script>
+</body>
+</html>

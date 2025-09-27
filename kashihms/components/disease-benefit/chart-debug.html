@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图表调试页面</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .debug-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            border: 2px solid #ddd;
+            margin: 10px 0;
+            background: #f9f9f9;
+        }
+        .log-container {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h2>ECharts图表调试</h2>
+        
+        <div>
+            <button class="btn" onclick="testBasicChart()">测试基础图表</button>
+            <button class="btn" onclick="testDiseaseBenefitChart()">测试病种效益图表</button>
+            <button class="btn" onclick="testDRGChart()">测试DRG图表</button>
+            <button class="btn" onclick="clearCharts()">清空图表</button>
+        </div>
+        
+        <div class="chart-container" id="test-chart-1"></div>
+        <div class="chart-container" id="test-chart-2"></div>
+        
+        <h3>调试日志</h3>
+        <div class="log-container" id="debug-log"></div>
+    </div>
+
+    <script>
+        let charts = {};
+        
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('debug-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            logContainer.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        function testBasicChart() {
+            log('开始测试基础图表', 'info');
+            
+            try {
+                const container = document.getElementById('test-chart-1');
+                if (!container) {
+                    throw new Error('找不到图表容器');
+                }
+                
+                // 清理现有图表
+                if (charts['test-chart-1']) {
+                    charts['test-chart-1'].dispose();
+                }
+                
+                // 创建图表实例
+                const chart = echarts.init(container);
+                charts['test-chart-1'] = chart;
+                
+                // 配置选项
+                const option = {
+                    title: {
+                        text: '基础测试图表'
+                    },
+                    tooltip: {},
+                    xAxis: {
+                        data: ['A', 'B', 'C', 'D', 'E']
+                    },
+                    yAxis: {},
+                    series: [{
+                        name: '测试数据',
+                        type: 'bar',
+                        data: [10, 20, 30, 40, 50]
+                    }]
+                };
+                
+                chart.setOption(option);
+                log('✓ 基础图表创建成功', 'success');
+                
+                // 检查图表状态
+                setTimeout(() => {
+                    const rect = container.getBoundingClientRect();
+                    log(`图表容器尺寸: ${rect.width}x${rect.height}`, 'info');
+                    log(`图表实例状态: ${chart.isDisposed() ? '已销毁' : '正常'}`, 'info');
+                }, 100);
+                
+            } catch (error) {
+                log(`❌ 基础图表测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        function testDiseaseBenefitChart() {
+            log('开始测试病种效益图表', 'info');
+            
+            try {
+                const container = document.getElementById('test-chart-2');
+                if (!container) {
+                    throw new Error('找不到图表容器');
+                }
+                
+                // 清理现有图表
+                if (charts['test-chart-2']) {
+                    charts['test-chart-2'].dispose();
+                }
+                
+                // 模拟病种效益数据
+                const mockData = [
+                    { diseaseName: '急性心肌梗死', totalRevenue: 54200, totalCost: 30800, profit: 23400, profitMargin: 31.8 },
+                    { diseaseName: '脑梗死', totalRevenue: 22500, totalCost: 29900, profit: -7500, profitMargin: 17.9 },
+                    { diseaseName: '肺炎', totalRevenue: 47100, totalCost: 31900, profit: 15200, profitMargin: 32.0 },
+                    { diseaseName: '胆囊炎', totalRevenue: 42500, totalCost: 29800, profit: 12700, profitMargin: 34.4 },
+                    { diseaseName: '阑尾炎', totalRevenue: 45700, totalCost: 21100, profit: 24600, profitMargin: 27.6 }
+                ];
+                
+                // 创建图表实例
+                const chart = echarts.init(container);
+                charts['test-chart-2'] = chart;
+                
+                // 配置选项
+                const option = {
+                    title: {
+                        text: '病种效益分析',
+                        left: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        },
+                        formatter: function(params) {
+                            const data = params[0];
+                            const item = mockData[data.dataIndex];
+                            return `${item.diseaseName}<br/>
+                                   总收入: ¥${item.totalRevenue.toLocaleString()}<br/>
+                                   总成本: ¥${item.totalCost.toLocaleString()}<br/>
+                                   利润: ¥${item.profit.toLocaleString()}<br/>
+                                   利润率: ${item.profitMargin}%`;
+                        }
+                    },
+                    legend: {
+                        data: ['总收入', '总成本', '利润'],
+                        top: 30
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        top: '15%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: mockData.map(item => item.diseaseName),
+                        axisLabel: {
+                            rotate: 45,
+                            interval: 0
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisLabel: {
+                            formatter: '¥{value}'
+                        }
+                    },
+                    series: [
+                        {
+                            name: '总收入',
+                            type: 'bar',
+                            data: mockData.map(item => item.totalRevenue),
+                            itemStyle: {
+                                color: '#5470c6'
+                            }
+                        },
+                        {
+                            name: '总成本',
+                            type: 'bar',
+                            data: mockData.map(item => item.totalCost),
+                            itemStyle: {
+                                color: '#91cc75'
+                            }
+                        },
+                        {
+                            name: '利润',
+                            type: 'bar',
+                            data: mockData.map(item => item.profit),
+                            itemStyle: {
+                                color: function(params) {
+                                    return params.value >= 0 ? '#fac858' : '#ee6666';
+                                }
+                            }
+                        }
+                    ]
+                };
+                
+                chart.setOption(option);
+                log('✓ 病种效益图表创建成功', 'success');
+                
+                // 检查图表状态
+                setTimeout(() => {
+                    const rect = container.getBoundingClientRect();
+                    log(`图表容器尺寸: ${rect.width}x${rect.height}`, 'info');
+                    log(`图表实例状态: ${chart.isDisposed() ? '已销毁' : '正常'}`, 'info');
+                    log(`数据项数量: ${mockData.length}`, 'info');
+                }, 100);
+                
+            } catch (error) {
+                log(`❌ 病种效益图表测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        function testDRGChart() {
+            log('开始测试DRG图表', 'info');
+            
+            try {
+                const container = document.getElementById('test-chart-1');
+                if (!container) {
+                    throw new Error('找不到图表容器');
+                }
+                
+                // 清理现有图表
+                if (charts['test-chart-1']) {
+                    charts['test-chart-1'].dispose();
+                }
+                
+                // 模拟DRG数据
+                const mockData = [
+                    { name: '心血管系统', value: 35, color: '#5470c6' },
+                    { name: '呼吸系统', value: 25, color: '#91cc75' },
+                    { name: '消化系统', value: 20, color: '#fac858' },
+                    { name: '神经系统', value: 12, color: '#ee6666' },
+                    { name: '其他', value: 8, color: '#73c0de' }
+                ];
+                
+                // 创建图表实例
+                const chart = echarts.init(container);
+                charts['test-chart-1'] = chart;
+                
+                // 配置选项
+                const option = {
+                    title: {
+                        text: 'DRG效益分布',
+                        left: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{a} <br/>{b}: {c}% ({d}%)'
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left',
+                        top: 'middle'
+                    },
+                    series: [
+                        {
+                            name: 'DRG分布',
+                            type: 'pie',
+                            radius: ['40%', '70%'],
+                            center: ['60%', '50%'],
+                            avoidLabelOverlap: false,
+                            label: {
+                                show: false,
+                                position: 'center'
+                            },
+                            emphasis: {
+                                label: {
+                                    show: true,
+                                    fontSize: '18',
+                                    fontWeight: 'bold'
+                                }
+                            },
+                            labelLine: {
+                                show: false
+                            },
+                            data: mockData.map(item => ({
+                                value: item.value,
+                                name: item.name,
+                                itemStyle: {
+                                    color: item.color
+                                }
+                            }))
+                        }
+                    ]
+                };
+                
+                chart.setOption(option);
+                log('✓ DRG图表创建成功', 'success');
+                
+                // 检查图表状态
+                setTimeout(() => {
+                    const rect = container.getBoundingClientRect();
+                    log(`图表容器尺寸: ${rect.width}x${rect.height}`, 'info');
+                    log(`图表实例状态: ${chart.isDisposed() ? '已销毁' : '正常'}`, 'info');
+                    log(`数据项数量: ${mockData.length}`, 'info');
+                }, 100);
+                
+            } catch (error) {
+                log(`❌ DRG图表测试失败: ${error.message}`, 'error');
+            }
+        }
+        
+        function clearCharts() {
+            log('清空所有图表', 'info');
+            
+            Object.keys(charts).forEach(chartId => {
+                if (charts[chartId] && !charts[chartId].isDisposed()) {
+                    charts[chartId].dispose();
+                    log(`✓ 图表 ${chartId} 已清理`, 'success');
+                }
+            });
+            
+            charts = {};
+            
+            // 清空容器
+            document.getElementById('test-chart-1').innerHTML = '';
+            document.getElementById('test-chart-2').innerHTML = '';
+        }
+        
+        // 页面加载完成后的初始化
+        window.addEventListener('load', function() {
+            log('页面加载完成', 'info');
+            log(`ECharts版本: ${echarts.version}`, 'info');
+            log('可以开始测试图表功能', 'info');
+        });
+        
+        // 窗口大小改变时重新调整图表
+        window.addEventListener('resize', function() {
+            Object.keys(charts).forEach(chartId => {
+                if (charts[chartId] && !charts[chartId].isDisposed()) {
+                    charts[chartId].resize();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

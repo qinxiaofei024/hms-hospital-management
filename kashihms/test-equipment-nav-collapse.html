@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备管理分析页面导航栏折叠功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .test-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background-color: #0056b3;
+        }
+        #log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>设备管理分析页面导航栏折叠功能测试</h1>
+        <p>此页面用于测试设备管理分析页面的导航栏折叠功能是否正常工作。</p>
+        
+        <div>
+            <button class="test-button" onclick="testEquipmentPage()">测试设备管理分析页面</button>
+            <button class="test-button" onclick="testNavigationCollapse()">测试导航栏折叠功能</button>
+            <button class="test-button" onclick="clearLog()">清空日志</button>
+        </div>
+        
+        <div id="results"></div>
+        
+        <h3>测试日志：</h3>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.textContent += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function showResult(message, type) {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${type}`;
+            resultDiv.textContent = message;
+            resultsDiv.appendChild(resultDiv);
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function testEquipmentPage() {
+            log('开始测试设备管理分析页面...');
+            
+            try {
+                // 在新窗口中打开设备管理分析页面
+                const equipmentWindow = window.open('/pages/equipment-management-analysis.html', '_blank');
+                
+                if (!equipmentWindow) {
+                    throw new Error('无法打开设备管理分析页面');
+                }
+                
+                log('设备管理分析页面已在新窗口中打开');
+                showResult('设备管理分析页面打开成功', 'success');
+                
+                // 等待页面加载
+                setTimeout(() => {
+                    log('请在新打开的页面中手动测试导航栏折叠功能');
+                    showResult('请手动测试新页面中的导航栏折叠功能', 'info');
+                }, 1000);
+                
+            } catch (error) {
+                log(`错误: ${error.message}`);
+                showResult(`测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testNavigationCollapse() {
+            log('开始测试导航栏折叠功能...');
+            
+            try {
+                // 检查是否有导航栏容器
+                const navContainer = document.getElementById('navigation-container');
+                if (!navContainer) {
+                    log('当前页面没有导航栏容器，创建测试环境...');
+                    
+                    // 创建测试导航栏
+                    const testNav = document.createElement('div');
+                    testNav.id = 'navigation-container';
+                    testNav.innerHTML = `
+                        <nav class="navbar">
+                            <div class="navbar-brand">HMS</div>
+                            <button class="navbar-toggle" id="navbar-toggle">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </button>
+                        </nav>
+                        <div class="sidebar" id="sidebar">
+                            <div class="sidebar-content">
+                                <ul class="nav-menu">
+                                    <li><a href="#">首页</a></li>
+                                    <li><a href="#">设备管理</a></li>
+                                    <li><a href="#">数据分析</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    document.body.insertBefore(testNav, document.body.firstChild);
+                    
+                    // 添加基本样式
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        .navbar {
+                            background-color: #2c3e50;
+                            color: white;
+                            padding: 10px 20px;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                        }
+                        .navbar-toggle {
+                            background: none;
+                            border: none;
+                            color: white;
+                            cursor: pointer;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 3px;
+                        }
+                        .navbar-toggle span {
+                            width: 25px;
+                            height: 3px;
+                            background-color: white;
+                            transition: 0.3s;
+                        }
+                        .sidebar {
+                            position: fixed;
+                            left: -250px;
+                            top: 0;
+                            width: 250px;
+                            height: 100vh;
+                            background-color: #34495e;
+                            transition: left 0.3s ease;
+                            z-index: 1000;
+                        }
+                        .sidebar.active {
+                            left: 0;
+                        }
+                        .sidebar-content {
+                            padding: 60px 20px 20px;
+                        }
+                        .nav-menu {
+                            list-style: none;
+                            padding: 0;
+                            margin: 0;
+                        }
+                        .nav-menu li {
+                            margin-bottom: 10px;
+                        }
+                        .nav-menu a {
+                            color: white;
+                            text-decoration: none;
+                            display: block;
+                            padding: 10px;
+                            border-radius: 4px;
+                            transition: background-color 0.3s;
+                        }
+                        .nav-menu a:hover {
+                            background-color: #2c3e50;
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    
+                    log('测试导航栏环境已创建');
+                }
+                
+                // 测试折叠按钮
+                const toggleButton = document.getElementById('navbar-toggle') || document.querySelector('.navbar-toggle');
+                const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
+                
+                if (!toggleButton) {
+                    throw new Error('找不到导航栏折叠按钮');
+                }
+                
+                if (!sidebar) {
+                    throw new Error('找不到侧边栏元素');
+                }
+                
+                log('找到导航栏折叠按钮和侧边栏');
+                
+                // 添加点击事件监听器
+                toggleButton.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                    log('侧边栏状态切换: ' + (sidebar.classList.contains('active') ? '展开' : '折叠'));
+                });
+                
+                // 模拟点击测试
+                log('模拟点击折叠按钮...');
+                toggleButton.click();
+                
+                setTimeout(() => {
+                    if (sidebar.classList.contains('active')) {
+                        log('侧边栏已展开');
+                        showResult('导航栏折叠功能测试成功 - 侧边栏可以展开', 'success');
+                        
+                        // 再次点击折叠
+                        setTimeout(() => {
+                            toggleButton.click();
+                            setTimeout(() => {
+                                if (!sidebar.classList.contains('active')) {
+                                    log('侧边栏已折叠');
+                                    showResult('导航栏折叠功能完全正常 - 可以展开和折叠', 'success');
+                                } else {
+                                    log('侧边栏折叠失败');
+                                    showResult('侧边栏无法正确折叠', 'error');
+                                }
+                            }, 500);
+                        }, 1000);
+                    } else {
+                        log('侧边栏展开失败');
+                        showResult('导航栏折叠功能异常 - 侧边栏无法展开', 'error');
+                    }
+                }, 500);
+                
+            } catch (error) {
+                log(`错误: ${error.message}`);
+                showResult(`测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载完成后的初始化
+        window.addEventListener('load', function() {
+            log('导航栏折叠功能测试页面已加载');
+            log('点击"测试设备管理分析页面"按钮打开目标页面');
+            log('点击"测试导航栏折叠功能"按钮在当前页面测试折叠功能');
+        });
+    </script>
+</body>
+</html>

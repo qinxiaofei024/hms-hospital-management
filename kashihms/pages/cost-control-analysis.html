@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成本控制分析 - 科主任运营分析</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self';">
+    <!-- 强制加载所有CSS文件 -->
+    <link rel="preload" href="../css/style.css" as="style">
+    <link rel="preload" href="../css/common.css" as="style">
+    <link rel="preload" href="../css/department-cockpit.css" as="style">
+    <link rel="preload" href="../css/medical-analysis.css" as="style">
+    <link rel="preload" href="../css/cost-control-analysis.css" as="style">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/department-cockpit.css">
+    <link rel="stylesheet" href="../css/medical-analysis.css">
+    <link rel="stylesheet" href="../css/cost-control-analysis.css">
+    <script src="../js/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <!-- 右侧内容区 -->
+        <main class="cost-control">
+        <!-- 均次费用分析模块 -->
+        <section class="average-cost-analysis" aria-label="均次费用分析">
+            <div class="section-header">
+                <h2 class="section-title">
+                    均次费用分析
+                    <span class="section-subtitle">Average Cost Analysis</span>
+                </h2>
+                <div class="analysis-tabs">
+                    <button class="tab-btn active" data-tab="outpatient">门急诊均次费用</button>
+                    <button class="tab-btn" data-tab="inpatient">住院均次费用</button>
+                </div>
+            </div>
+            
+            <!-- 均次费用分析筛选 -->
+            <div class="avg-cost-filters">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="org-dimension">
+                            组织维度
+                            <span class="filter-subtitle">Organization</span>
+                        </label>
+                        <select id="org-dimension">
+                            <option value="department">科级</option>
+                            <option value="doctor">医生</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="time-dimension">
+                            时间维度
+                            <span class="filter-subtitle">Time Period</span>
+                        </label>
+                        <select id="time-dimension">
+                            <option value="month">月</option>
+                            <option value="quarter">季度</option>
+                            <option value="year">年</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="analysis-type">
+                            分析类型
+                            <span class="filter-subtitle">Analysis Type</span>
+                        </label>
+                        <select id="analysis-type">
+                            <option value="trend">趋势分析</option>
+                            <option value="yoy">同比分析</option>
+                            <option value="mom">环比分析</option>
+                            <option value="composition">构成分析</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 均次费用关键指标 -->
+            <div class="avg-cost-indicators">
+                <div class="indicator-card">
+                    <div class="indicator-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="indicator-content">
+                        <div class="indicator-title">
+                            门急诊均次费用
+                            <span class="indicator-subtitle">Outpatient Avg Cost</span>
+                        </div>
+                        <div class="indicator-value">¥<span id="outpatient-avg-cost">458.6</span></div>
+                        <div class="indicator-trend">
+                            <span class="trend-up">+5.2%</span>
+                            <span class="trend-text">较上月</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="indicator-card">
+                    <div class="indicator-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,19H5V5H19V19Z" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="indicator-content">
+                        <div class="indicator-title">
+                            住院均次费用
+                            <span class="indicator-subtitle">Inpatient Avg Cost</span>
+                        </div>
+                        <div class="indicator-value">¥<span id="inpatient-avg-cost">8,256.3</span></div>
+                        <div class="indicator-trend">
+                            <span class="trend-up">+3.8%</span>
+                            <span class="trend-text">较上月</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="indicator-card">
+                    <div class="indicator-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="indicator-content">
+                        <div class="indicator-title">
+                            费用增长率
+                            <span class="indicator-subtitle">Growth Rate</span>
+                        </div>
+                        <div class="indicator-value"><span id="cost-growth-rate">4.5</span>%</div>
+                        <div class="indicator-trend">
+                            <span class="trend-down">-1.2%</span>
+                            <span class="trend-text">较上月</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="indicator-card">
+                    <div class="indicator-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9,11H15L13,9L15,7H9V9L11,11L9,13V11M7,9V7H5V9H7M7,13V11H5V13H7M19,9V7H17V9H19M19,13V11H17V13H19Z" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="indicator-content">
+                        <div class="indicator-title">
+                            控制目标达成率
+                            <span class="indicator-subtitle">Target Achievement</span>
+                        </div>
+                        <div class="indicator-value"><span id="control-target-rate">92.3</span>%</div>
+                        <div class="indicator-trend">
+                            <span class="trend-up">+2.1%</span>
+                            <span class="trend-text">较上月</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 均次费用分析图表 -->
+            <div class="avg-cost-charts">
+                <div class="chart-row">
+                    <div class="chart-container half-width">
+                        <h3 class="chart-title">
+                            科室均次费用排名
+                            <span class="chart-subtitle">Department Cost Ranking</span>
+                        </h3>
+                        <div id="dept-avg-cost-ranking" class="chart" role="img" aria-label="科室均次费用排名图表"></div>
+                    </div>
+                    
+                    <div class="chart-container half-width">
+                        <h3 class="chart-title">
+                            均次费用趋势分析
+                            <span class="chart-subtitle">Cost Trend Analysis</span>
+                        </h3>
+                        <div id="avg-cost-trend" class="chart" role="img" aria-label="均次费用趋势分析图表"></div>
+                    </div>
+                </div>
+                
+                <div class="chart-row">
+                    <div class="chart-container half-width">
+                        <h3 class="chart-title">
+                            费用结构占比分析
+                            <span class="chart-subtitle">Cost Structure Analysis</span>
+                        </h3>
+                        <div id="cost-structure-analysis" class="chart" role="img" aria-label="费用结构占比分析图表"></div>
+                    </div>
+                    
+                    <div class="chart-container half-width">
+                        <h3 class="chart-title">
+                            影响因素分析
+                            <span class="chart-subtitle">Factor Analysis</span>
+                        </h3>
+                        <div id="cost-factor-analysis" class="chart" role="img" aria-label="影响因素分析图表"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 医生费用结构明细表格 -->
+            <div class="doctor-cost-detail">
+                <h3 class="table-title">
+                    医生费用结构明细
+                    <span class="table-subtitle">Doctor Cost Structure Details</span>
+                    <button class="detail-toggle-btn" id="toggle-doctor-detail">展开详情</button>
+                </h3>
+                <div class="detail-table-container" id="doctor-detail-table" style="display: none;">
+                    <table class="detail-table">
+                        <thead>
+                            <tr>
+                                <th>医生姓名</th>
+                                <th>科室</th>
+                                <th>门急诊均次费用</th>
+                                <th>住院均次费用</th>
+                                <th>药品费用占比</th>
+                                <th>检查费用占比</th>
+                                <th>治疗费用占比</th>
+                                <th>材料费用占比</th>
+                                <th>费用合理性评价</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctor-cost-tbody">
+                            <!-- 动态生成医生费用明细数据 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 筛选控件 -->
+        <section class="filters" aria-label="数据筛选控件">
+            <div class="filter-row" role="group" aria-label="筛选条件">
+                <div class="filter-group">
+                    <label for="time-range">时间范围:</label>
+                    <select id="time-range" aria-describedby="time-range-help">
+                        <option value="7">近7天</option>
+                        <option value="30" selected>近30天</option>
+                        <option value="90">近3个月</option>
+                        <option value="365">近1年</option>
+                    </select>
+                    <span id="time-range-help" class="sr-only">选择要查看的时间范围</span>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="department-select">科室:</label>
+                    <select id="department-select" aria-describedby="department-help">
+                        <option value="">全部科室</option>
+                        <option value="cardiology">心内科</option>
+                        <option value="orthopedics">骨科</option>
+                        <option value="neurosurgery">神经外科</option>
+                        <option value="gastroenterology">消化内科</option>
+                        <option value="respiratory">呼吸内科</option>
+                        <option value="neurology">神经内科</option>
+                        <option value="gynecology">妇产科</option>
+                        <option value="pediatrics">儿科</option>
+                    </select>
+                    <span id="department-help" class="sr-only">选择要查看的科室</span>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="cost-type">成本类型:</label>
+                    <select id="cost-type" aria-describedby="cost-type-help">
+                        <option value="">全部类型</option>
+                        <option value="personnel">人员成本</option>
+                        <option value="material">材料成本</option>
+                        <option value="equipment">设备成本</option>
+                        <option value="medicine">药品成本</option>
+                        <option value="other">其他成本</option>
+                    </select>
+                    <span id="cost-type-help" class="sr-only">选择要查看的成本类型</span>
+                </div>
+                
+                <div class="action-buttons" role="group" aria-label="操作按钮">
+                    <button class="btn btn-secondary" id="refresh-btn" aria-describedby="refresh-help">
+                        刷新
+                    </button>
+                    <span id="refresh-help" class="sr-only">刷新当前数据</span>
+                    <button class="btn btn-primary" id="export-btn" aria-describedby="export-help">
+                        导出报告
+                    </button>
+                    <span id="export-help" class="sr-only">导出成本控制分析报告</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <div class="breadcrumb">科主任运营分析 > 成本控制分析</div>
+            <h1 class="page-title">
+                成本控制分析
+                <span class="page-subtitle">Cost Control Analysis</span>
+            </h1>
+        </div>
+        
+        <!-- 关键指标 -->
+        <section class="overview-cards" aria-label="关键成本指标">
+            <div class="overview-card" role="article" aria-labelledby="total-cost-label">
+                <div class="card-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V21C3 22.11 3.89 23 5 23H19C20.11 23 21 22.11 21 21V9M19 9H14V4H5V21H19V9Z" fill="white"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <div class="card-title">本月总成本
+                        <span class="card-subtitle">Total Cost</span>
+                    </div>
+                    <div class="card-value">2,856<span class="card-unit">万</span></div>
+                    <div class="card-trend">
+                        <span class="trend-up">+3.2%</span>
+                        <span class="trend-text">较上月</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="overview-card" role="article" aria-labelledby="control-rate-label">
+                <div class="card-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22,21H2V3H4V19H6V10H10V19H12V6H16V19H18V14H22V21Z" fill="white"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <div class="card-title">成本控制率
+                        <span class="card-subtitle">Control Rate</span>
+                    </div>
+                    <div class="card-value">68.5<span class="card-unit">%</span></div>
+                    <div class="card-trend">
+                        <span class="trend-up">+2.1%</span>
+                        <span class="trend-text">较上月</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="overview-card" role="article" aria-labelledby="medicine-cost-label">
+                <div class="card-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17,3H7A1,1 0 0,0 6,4V7H18V4A1,1 0 0,0 17,3M18,8H6V20A1,1 0 0,0 7,21H17A1,1 0 0,0 18,20V8M8,10H16V12H8V10M8,13H16V15H8V13M8,16H13V18H8V16Z" fill="white"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <div class="card-title">药品成本
+                        <span class="card-subtitle">Drug Cost</span>
+                    </div>
+                    <div class="card-value">1,245<span class="card-unit">万</span></div>
+                    <div class="card-trend">
+                        <span class="trend-up">+1.8%</span>
+                        <span class="trend-text">较上月</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="overview-card" role="article" aria-labelledby="personnel-cost-label">
+                <div class="card-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16,4C16.88,4 17.67,4.5 18,5.26L19,7H20A2,2 0 0,1 22,9V16A2,2 0 0,1 20,18H19L18,19.74C17.67,20.5 16.88,21 16,21H8C7.12,21 6.33,20.5 6,19.74L5,18H4A2,2 0 0,1 2,16V9A2,2 0 0,1 4,7H5L6,5.26C6.33,4.5 7.12,4 8,4H16M8.5,7A0.5,0.5 0 0,0 8,7.5A0.5,0.5 0 0,0 8.5,8A0.5,0.5 0 0,0 9,7.5A0.5,0.5 0 0,0 8.5,7M15.5,7A0.5,0.5 0 0,0 15,7.5A0.5,0.5 0 0,0 15.5,8A0.5,0.5 0 0,0 16,7.5A0.5,0.5 0 0,0 15.5,7Z" fill="white"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <div class="card-title">人员成本
+                        <span class="card-subtitle">Personnel Cost</span>
+                    </div>
+                    <div class="card-value">892<span class="card-unit">万</span></div>
+                    <div class="card-trend">
+                        <span class="trend-down">-0.5%</span>
+                        <span class="trend-text">较上月</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 图表区域 -->
+        <section class="charts-grid" aria-label="成本分析图表">
+            <div class="chart-container">
+                <h3 class="sr-only">成本趋势图</h3>
+                <div id="cost-trend-chart" class="chart" role="img" aria-label="成本趋势图表，显示时间序列的成本变化趋势" tabindex="0"></div>
+            </div>
+            
+            <div class="chart-container">
+                <h3 class="sr-only">成本结构图</h3>
+                <div id="cost-structure-chart" class="chart" role="img" aria-label="成本结构饼图，显示各类成本的占比分布" tabindex="0"></div>
+            </div>
+            
+            <div class="chart-container">
+                <h3 class="sr-only">科室成本对比图</h3>
+                <div id="department-cost-chart" class="chart" role="img" aria-label="科室成本对比柱状图，显示各科室的成本情况" tabindex="0"></div>
+            </div>
+            
+            <div class="chart-container">
+                <h3 class="sr-only">成本效率分析图</h3>
+                <div id="cost-efficiency-chart" class="chart" role="img" aria-label="成本效率分析图，显示成本控制效率指标" tabindex="0"></div>
+            </div>
+        </section>
+        
+        <!-- 详细数据表格 -->
+        <section class="data-table" aria-labelledby="data-table-title">
+            <h2 class="table-header" id="data-table-title">成本控制详细数据
+                    <span class="table-subtitle">Detailed Cost Control Data</span>
+                </h2>
+            <div class="table-content">
+                <table role="table" aria-label="成本控制详细数据表格">
+                    <thead>
+                        <tr role="row">
+                            <th role="columnheader" scope="col" aria-sort="none" tabindex="0">科室</th>
+                            <th role="columnheader" scope="col" aria-sort="none" tabindex="0">总成本(万元)</th>
+                            <th role="columnheader" scope="col" aria-sort="none" tabindex="0">人员成本</th>
+                            <th role="columnheader" scope="col" aria-sort="none" tabindex="0">药品成本</th>
+                            <th role="columnheader" scope="col" aria-sort="none" tabindex="0">材料成本</th>
+                            <th role="columnheader" scope="col" aria-sort="none" tabindex="0">设备成本</th>
+                            <th role="columnheader" scope="col" aria-sort="none" tabindex="0">成本控制率</th>
+                            <th role="columnheader" scope="col" aria-sort="none" tabindex="0">环比变化</th>
+                        </tr>
+                    </thead>
+                    <tbody role="rowgroup">
+                        <tr role="row">
+                            <th role="rowheader" scope="row">心内科</th>
+                            <td role="cell">456.8</td>
+                            <td role="cell">125.6万</td>
+                            <td role="cell">198.2万</td>
+                            <td role="cell">89.5万</td>
+                            <td role="cell">43.5万</td>
+                            <td role="cell">72.3%</td>
+                            <td role="cell"><span class="cost-trend trend-down" aria-label="下降2.1%">↓ 2.1%</span></td>
+                        </tr>
+                        <tr role="row">
+                            <th role="rowheader" scope="row">骨科</th>
+                            <td role="cell">389.2</td>
+                            <td role="cell">98.7万</td>
+                            <td role="cell">156.8万</td>
+                            <td role="cell">95.2万</td>
+                            <td role="cell">38.5万</td>
+                            <td role="cell">69.8%</td>
+                            <td role="cell"><span class="cost-trend trend-up" aria-label="上升1.5%">↑ 1.5%</span></td>
+                        </tr>
+                        <tr role="row">
+                            <th role="rowheader" scope="row">神经外科</th>
+                            <td role="cell">512.6</td>
+                            <td role="cell">142.3万</td>
+                            <td role="cell">189.7万</td>
+                            <td role="cell">125.8万</td>
+                            <td role="cell">54.8万</td>
+                            <td role="cell">65.2%</td>
+                            <td role="cell"><span class="cost-trend trend-up" aria-label="上升3.8%">↑ 3.8%</span></td>
+                        </tr>
+                        <tr role="row">
+                            <th role="rowheader" scope="row">消化内科</th>
+                            <td role="cell">298.5</td>
+                            <td role="cell">89.6万</td>
+                            <td role="cell">132.4万</td>
+                            <td role="cell">52.8万</td>
+                            <td role="cell">23.7万</td>
+                            <td role="cell">75.6%</td>
+                            <td role="cell"><span class="cost-trend trend-down" aria-label="下降1.2%">↓ 1.2%</span></td>
+                        </tr>
+                        <tr role="row">
+                            <th role="rowheader" scope="row">呼吸内科</th>
+                            <td role="cell">267.3</td>
+                            <td role="cell">78.9万</td>
+                            <td role="cell">115.6万</td>
+                            <td role="cell">48.2万</td>
+                            <td role="cell">24.6万</td>
+                            <td role="cell">71.4%</td>
+                            <td role="cell"><span class="cost-trend trend-stable" aria-label="基本持平0.3%">→ 0.3%</span></td>
+                        </tr>
+                        <tr role="row">
+                            <th role="rowheader" scope="row">神经内科</th>
+                            <td role="cell">234.7</td>
+                            <td role="cell">72.5万</td>
+                            <td role="cell">98.3万</td>
+                            <td role="cell">42.6万</td>
+                            <td role="cell">21.3万</td>
+                            <td role="cell">73.8%</td>
+                            <td role="cell"><span class="cost-trend trend-down" aria-label="下降0.8%">↓ 0.8%</span></td>
+                        </tr>
+                        <tr role="row">
+                            <th role="rowheader" scope="row">妇产科</th>
+                            <td role="cell">345.9</td>
+                            <td role="cell">95.2万</td>
+                            <td role="cell">145.7万</td>
+                            <td role="cell">78.5万</td>
+                            <td role="cell">26.5万</td>
+                            <td role="cell">70.9%</td>
+                            <td role="cell"><span class="cost-trend trend-up" aria-label="上升2.3%">↑ 2.3%</span></td>
+                        </tr>
+                        <tr role="row">
+                            <th role="rowheader" scope="row">儿科</th>
+                            <td role="cell">351.0</td>
+                            <td role="cell">112.8万</td>
+                            <td role="cell">156.9万</td>
+                            <td role="cell">58.7万</td>
+                            <td role="cell">22.6万</td>
+                            <td role="cell">68.5%</td>
+                            <td role="cell"><span class="cost-trend trend-up" aria-label="上升4.1%">↑ 4.1%</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    
+    <script src="../js/navigation-loader.js?v=20250121-debug"></script>
+    <script src="../js/cost-control-analysis.js"></script>
+</body>
+</html>

@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>核医学运营分析 - 喀什地区第一人民医院数据中心管理平台</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/medical-analysis.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="../js/nuclear-medicine.js?v=20250925223612"></script>
+    <script src="../js/common.js"></script>
+    <style>
+        /* 核医学页面特定样式 */
+        .nuclear-medicine-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .page-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 装饰性元素样式 */
+        .header-decoration {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .decoration-icon {
+            flex-shrink: 0;
+        }
+        
+        .header-content {
+            flex: 1;
+        }
+        
+        .header-stats {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #4CAF50;
+            font-weight: 500;
+        }
+        
+        .stat-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        /* 区域装饰线 */
+        .section-decoration {
+            display: flex;
+            align-items: center;
+            margin: 30px 0 20px 0;
+            gap: 15px;
+        }
+        
+        .decoration-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4CAF50, transparent);
+        }
+        
+        .decoration-text {
+            color: #4CAF50;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 5px 15px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        /* 图表标题包装器 */
+        .chart-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chart-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* 表格标题包装器 */
+        .table-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .table-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        /* KPI标题包装器 */
+        .kpi-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .kpi-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 99, 132, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 99, 132, 0.3);
+        }
+        
+        /* 统一卡片风格 */
+        .overview-card, .chart-card, .kpi-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .overview-card:hover, .chart-card:hover, .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* 卡片图标样式 */
+        .overview-card .card-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* 卡片内容样式 */
+        .overview-card .card-content h3 {
+            font-size: 14px;
+            color: #666;
+            margin: 0 0 8px 0;
+            font-weight: 500;
+        }
+        
+        .overview-card .card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 8px 0;
+        }
+        
+        .overview-card .card-change {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        
+        .overview-card .card-change.positive {
+            color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+        
+        .overview-card .card-change.negative {
+            color: #F44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+        
+        /* 搜索框图标样式 */
+        .search-btn {
+            background: none;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .search-btn:hover svg {
+            stroke: #4CAF50;
+        }
+        
+        /* 数据表格区域样式 */
+        .data-table-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* KPI分析区域样式 */
+        .kpi-analysis-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="content-wrapper">
+            <!-- 页面内容区 -->
+            <div class="content-area">
+            <div class="page-header">
+                <div class="header-decoration">
+                    <div class="decoration-icon">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="20" r="18" stroke="#4CAF50" stroke-width="2" fill="rgba(76, 175, 80, 0.1)"/>
+                            <path d="M20 8L22 14L28 12L24 18L30 20L24 22L28 28L22 26L20 32L18 26L12 28L16 22L10 20L16 18L12 12L18 14L20 8Z" fill="#4CAF50"/>
+                        </svg>
+                    </div>
+                    <div class="header-content">
+                        <h1>核医学运营分析</h1>
+                        <p class="page-description">核医学科室运营数据分析与监控</p>
+                    </div>
+                    <div class="header-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">实时监控</span>
+                            <span class="stat-indicator active"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="date-filter">
+                        <select id="time-period">
+                            <option value="year">年度</option>
+                            <option value="quarter">季度</option>
+                            <option value="month" selected>月度</option>
+                        </select>
+                        <select id="year-select">
+                            <option value="2023">2023年</option>
+                            <option value="2024">2024年</option>
+                            <option value="2025" selected>2025年</option>
+                        </select>
+                        <select id="quarter-select">
+                            <option value="1">第一季度</option>
+                            <option value="2">第二季度</option>
+                            <option value="3">第三季度</option>
+                            <option value="4">第四季度</option>
+                        </select>
+                    </div>
+                    <button id="refresh-btn" class="btn btn-primary">
+                        <i class="icon-refresh"></i> 刷新
+                    </button>
+                    <button id="export-btn" class="btn btn-secondary">
+                        <i class="icon-export"></i> 导出
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 数据概览卡片 -->
+            <div class="overview-cards">
+                <div class="overview-card" data-metric="totalExams">
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="9" cy="7" r="4" stroke="#4CAF50" stroke-width="2"/>
+                            <path d="M23 21V19C23 18.1645 22.7155 17.3541 22.2094 16.7006C21.7033 16.047 20.9999 15.5866 20.2 15.3954" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 3.13C16.8003 3.32127 17.5037 3.78168 18.0098 4.43515C18.5159 5.08861 18.8004 5.89904 18.8004 6.735C18.8004 7.57096 18.5159 8.38139 18.0098 9.03485C17.5037 9.68832 16.8003 10.1487 16 10.34" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">总检查人次</div>
+                        <div class="card-value" id="total-exams">0</div>
+                        <div class="card-unit">人次</div>
+                    </div>
+                    <div class="card-trend">
+                        <span class="trend-value" id="examsTrend">+8.2%</span>
+                        <span class="trend-text">较上月</span>
+                        <button class="trend-btn" data-metric="totalExams">
+                            <i class="icon-chart"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="overview-card" data-metric="totalRevenue">
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 1V23" stroke="#FF6384" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M17 5H9.5C8.57174 5 7.6815 5.36875 7.02513 6.02513C6.36875 6.6815 6 7.57174 6 8.5C6 9.42826 6.36875 10.3185 7.02513 10.9749C7.6815 11.6313 8.57174 12 9.5 12H14.5C15.4283 12 16.3185 12.3687 16.9749 13.0251C17.6313 13.6815 18 14.5717 18 15.5C18 16.4283 17.6313 17.3185 16.9749 17.9749C16.3185 18.6313 15.4283 19 14.5 19H6" stroke="#FF6384" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">总收入</div>
+                        <div class="card-value" id="total-revenue">0</div>
+                        <div class="card-unit">万元</div>
+                    </div>
+                    <div class="card-trend">
+                        <span class="trend-value" id="revenueTrend">+10.5%</span>
+                        <span class="trend-text">较上月</span>
+                        <button class="trend-btn" data-metric="totalRevenue">
+                            <i class="icon-chart"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="overview-card" data-metric="equipmentUtilization">
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22 12H18L15 21L9 3L6 12H2" stroke="#FFA726" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">设备使用率</div>
+                        <div class="card-value" id="equipment-usage">0</div>
+                        <div class="card-unit">%</div>
+                    </div>
+                    <div class="card-trend">
+                        <span class="trend-value" id="equipmentTrend">+2.1%</span>
+                        <span class="trend-text">较上月</span>
+                        <button class="trend-btn" data-metric="equipmentUtilization">
+                            <i class="icon-chart"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="overview-card" data-metric="avgExamTime">
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="#9C27B0" stroke-width="2"/>
+                            <path d="M12 6V12L16 14" stroke="#9C27B0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">平均检查时长</div>
+                        <div class="card-value" id="avg-exam-time">0</div>
+                        <div class="card-unit">分钟</div>
+                    </div>
+                    <div class="card-trend">
+                        <span class="trend-value" id="timeTrend">-3.8%</span>
+                        <span class="trend-text">较上月</span>
+                        <button class="trend-btn" data-metric="avgExamTime">
+                            <i class="icon-chart"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 图表区域 -->
+            <div class="charts-section">
+                <div class="section-decoration">
+                    <div class="decoration-line"></div>
+                    <div class="decoration-text">数据分析</div>
+                    <div class="decoration-line"></div>
+                </div>
+                
+                <div class="chart-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title-wrapper">
+                                <div class="chart-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M2 18L18 18M2 18L2 2M2 18L6 14L10 10L14 6L18 2" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <h3>检查量趋势分析</h3>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="btn btn-small btn-primary active" data-period="month">月度</button>
+                                <button class="btn btn-small btn-secondary" data-period="quarter">季度</button>
+                                <button class="btn btn-small btn-secondary" data-period="year">年度</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div id="exam-trend-chart" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title-wrapper">
+                                <div class="chart-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M2 18L18 18M2 18L2 2M2 18L6 14L10 8L14 12L18 4" stroke="#36A2EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <circle cx="6" cy="14" r="2" fill="#36A2EB"/>
+                                        <circle cx="10" cy="8" r="2" fill="#36A2EB"/>
+                                        <circle cx="14" cy="12" r="2" fill="#36A2EB"/>
+                                        <circle cx="18" cy="4" r="2" fill="#36A2EB"/>
+                                    </svg>
+                                </div>
+                                <h3>收入情况趋势</h3>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="btn btn-small btn-primary active" data-period="month">月度</button>
+                                <button class="btn btn-small btn-secondary" data-period="quarter">季度</button>
+                                <button class="btn btn-small btn-secondary" data-period="year">年度</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div id="revenue-trend-chart" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title-wrapper">
+                                <div class="chart-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="8" stroke="#FF6384" stroke-width="2" fill="none"/>
+                                        <path d="M10 2A8 8 0 0 1 18 10" stroke="#FF6384" stroke-width="3" fill="none"/>
+                                    </svg>
+                                </div>
+                                <h3>检查类型分布</h3>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="btn btn-small btn-primary active">本月</button>
+                                <button class="btn btn-small btn-secondary">上月</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div id="exam-type-chart" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title-wrapper">
+                                <div class="chart-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="3" fill="#FFA726"/>
+                                        <circle cx="10" cy="10" r="6" stroke="#FFA726" stroke-width="2" fill="none" stroke-dasharray="2 2"/>
+                                        <circle cx="10" cy="10" r="9" stroke="#FFA726" stroke-width="1" fill="none" opacity="0.5"/>
+                                    </svg>
+                                </div>
+                                <h3>放射性药物使用分析</h3>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="btn btn-small btn-primary active">本周</button>
+                                <button class="btn btn-small btn-secondary">本月</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div id="radiopharmaceutical-chart" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title-wrapper">
+                                <div class="chart-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="2" y="6" width="16" height="8" rx="2" stroke="#9C27B0" stroke-width="2" fill="rgba(156, 39, 176, 0.1)"/>
+                                        <circle cx="6" cy="10" r="1" fill="#9C27B0"/>
+                                        <circle cx="10" cy="10" r="1" fill="#9C27B0"/>
+                                        <circle cx="14" cy="10" r="1" fill="#9C27B0"/>
+                                        <path d="M2 6L10 2L18 6" stroke="#9C27B0" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                                <h3>设备运行效率分析</h3>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="btn btn-small btn-primary active">实时</button>
+                                <button class="btn btn-small btn-secondary">历史</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div id="equipment-efficiency-chart" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title-wrapper">
+                                <div class="chart-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="3" y="4" width="14" height="12" rx="2" stroke="#2196F3" stroke-width="2" fill="rgba(33, 150, 243, 0.1)"/>
+                                        <path d="M7 8L9 10L13 6" stroke="#2196F3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <circle cx="15" cy="6" r="2" fill="#FF5722"/>
+                                    </svg>
+                                </div>
+                                <h3>临床科室核医学检查申请</h3>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="btn btn-small btn-primary active">本月</button>
+                                <button class="btn btn-small btn-secondary">上月</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div id="department-request-chart" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title-wrapper">
+                                <div class="chart-icon">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="8" stroke="#FF5722" stroke-width="2" fill="none"/>
+                                        <path d="M10 6V10L13 13" stroke="#FF5722" stroke-width="2" stroke-linecap="round"/>
+                                        <circle cx="10" cy="10" r="2" fill="#FF5722"/>
+                                        <path d="M6 4L8 2M14 4L12 2M4 6L2 8M16 6L18 8" stroke="#FFA726" stroke-width="1.5" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                                <h3>辐射安全监控</h3>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="btn btn-small btn-primary active">实时</button>
+                                <button class="btn btn-small btn-secondary">历史</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div id="radiation-safety-chart" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 关键绩效指标分析 -->
+            <div class="kpi-analysis-section">
+                <div class="section-decoration">
+                    <div class="decoration-line"></div>
+                    <div class="decoration-text">关键绩效指标</div>
+                    <div class="decoration-line"></div>
+                </div>
+                
+                <div class="section-header">
+                    <div class="kpi-title-wrapper">
+                        <div class="kpi-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="3" width="18" height="18" rx="3" stroke="#FF6384" stroke-width="2" fill="rgba(255, 99, 132, 0.1)"/>
+                                <path d="M8 12L11 15L16 9" stroke="#FF6384" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="18" cy="6" r="3" fill="#4CAF50"/>
+                            </svg>
+                        </div>
+                        <h3>关键绩效指标分析</h3>
+                    </div>
+                    <div class="kpi-controls">
+                        <button class="btn btn-primary">月度对比</button>
+                        <button class="btn btn-secondary">季度对比</button>
+                        <button class="btn btn-secondary">年度对比</button>
+                    </div>
+                </div>
+                
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h4>检查完成率</h4>
+                            <span class="kpi-trend up">+2.3%</span>
+                        </div>
+                        <div class="kpi-value">96.8%</div>
+                        <div class="kpi-description">较上月提升2.3个百分点</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h4>患者满意度</h4>
+                            <span class="kpi-trend up">+1.5%</span>
+                        </div>
+                        <div class="kpi-value">94.2%</div>
+                        <div class="kpi-description">患者反馈良好，服务质量稳步提升</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h4>设备故障率</h4>
+                            <span class="kpi-trend down">-0.8%</span>
+                        </div>
+                        <div class="kpi-value">2.1%</div>
+                        <div class="kpi-description">设备维护效果显著</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h4>辐射安全合规率</h4>
+                            <span class="kpi-trend stable">0%</span>
+                        </div>
+                        <div class="kpi-value">100%</div>
+                        <div class="kpi-description">严格遵守辐射安全规范</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 核医学检查明细数据表格 -->
+            <div class="data-table-section">
+                <div class="section-decoration">
+                    <div class="decoration-line"></div>
+                    <div class="decoration-text">检查明细</div>
+                    <div class="decoration-line"></div>
+                </div>
+                
+                <div class="table-header">
+                    <div class="table-title-wrapper">
+                        <div class="table-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="4" width="18" height="16" rx="2" stroke="#4CAF50" stroke-width="2" fill="rgba(76, 175, 80, 0.1)"/>
+                                <path d="M7 8H17M7 12H17M7 16H13" stroke="#4CAF50" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <h3>核医学检查明细</h3>
+                    </div>
+                    <div class="table-actions">
+                        <div class="search-box">
+                            <input type="text" id="table-search" placeholder="搜索患者姓名、检查项目...">
+                            <button class="search-btn">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="7" cy="7" r="5" stroke="#666" stroke-width="2"/>
+                                    <path d="M13 13L11 11" stroke="#666" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>检查编号</th>
+                            <th>患者姓名</th>
+                            <th>检查类型</th>
+                            <th>检查日期</th>
+                            <th>主治医生</th>
+                            <th>检查状态</th>
+                            <th>放射剂量</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exam-detail-table">
+                        <!-- 数据将通过JavaScript动态加载 -->
+                    </tbody>
+                </table>
+                
+                <div class="pagination">
+                    <button id="prev-btn" class="btn btn-secondary">上一页</button>
+                    <span class="page-info">第 <span id="current-page">1</span> 页，共 <span id="total-pages">10</span> 页</span>
+                    <button id="next-btn" class="btn btn-secondary">下一页</button>
+                    <div class="page-jump">
+                        <input type="number" id="page-input" min="1" max="10" placeholder="页码">
+                        <button id="go-btn" class="btn btn-primary">跳转</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- 加载统一导航组件 -->
+    <script src="../js/navigation-loader.js?v=20250125-fix3"></script>
+</body>
+</html>

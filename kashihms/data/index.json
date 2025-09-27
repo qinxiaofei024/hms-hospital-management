@@ -1,0 +1,300 @@
+{
+  "overview": {
+    "totalPatient": 1256890,
+    "monthlyVisit": 12580,
+    "monthlyDischarge": 2856,
+    "monthlyOperation": 1423,
+    "avgLengthOfStay": 6.8,
+    "bedOccupancyRate": 92.5,
+    "medicalQualityScore": 96.8,
+    "patientSatisfaction": 94.2,
+    "totalRevenue": 2865.3,
+    "staffCount": 1280,
+    "bedCount": 850,
+    "equipmentCount": 650,
+    "dailyOutpatient": 420,
+    "emergencyCases": 1850
+  },
+  
+  "patientLevel": {
+    "ageDistribution": [
+      {"ageGroup": "0-14岁", "count": 1250, "percentage": 9.9},
+      {"ageGroup": "15-44岁", "count": 4280, "percentage": 34.0},
+      {"ageGroup": "45-64岁", "count": 3850, "percentage": 30.6},
+      {"ageGroup": "65-79岁", "count": 2350, "percentage": 18.7},
+      {"ageGroup": "80岁以上", "count": 850, "percentage": 6.8}
+    ],
+    "genderDistribution": [
+      {"gender": "男", "count": 6450, "percentage": 51.3},
+      {"gender": "女", "count": 6130, "percentage": 48.7}
+    ],
+    "diseaseClassification": [
+      {"category": "呼吸系统", "count": 2350, "percentage": 18.7},
+      {"category": "消化系统", "count": 2100, "percentage": 16.7},
+      {"category": "心脑血管", "count": 1850, "percentage": 14.7},
+      {"category": "骨科", "count": 1520, "percentage": 12.1},
+      {"category": "内分泌", "count": 1250, "percentage": 9.9},
+      {"category": "神经系统", "count": 1020, "percentage": 8.1},
+      {"category": "其他", "count": 1490, "percentage": 11.8}
+    ],
+    "seasonalTrend": {
+      "months": ["春季", "夏季", "秋季", "冬季"],
+      "outpatient": [35000, 38000, 36000, 34000],
+      "inpatient": [8000, 8500, 8200, 7800]
+    },
+    "avgWaitingTime": {
+      "registration": 15,
+      "doctor": 35,
+      "laboratory": 45,
+      "imaging": 60,
+      "pharmacy": 25
+    },
+    "returnVisitRate": 12.5,
+    "readmissionRate": 3.8
+  },
+  
+  "surgeryLevel": {
+    "successRate": 99.2,
+    "complicationRate": 0.8,
+    "surgeryTypeDistribution": [
+      {"type": "普外科手术", "count": 425, "percentage": 29.9},
+      {"type": "骨科手术", "count": 310, "percentage": 21.8},
+      {"type": "妇产科手术", "count": 225, "percentage": 15.8},
+      {"type": "神经外科手术", "count": 180, "percentage": 12.7},
+      {"type": "心内科手术", "count": 155, "percentage": 10.9},
+      {"type": "其他手术", "count": 128, "percentage": 9.0}
+    ],
+    "surgeryDuration": {
+      "lessThan1h": 320,
+      "between1h3h": 750,
+      "between3h5h": 250,
+      "moreThan5h": 103
+    },
+    "surgeryStaffDistribution": [
+      {"type": "主任医师", "count": 150, "percentage": 10.5},
+      {"type": "副主任医师", "count": 320, "percentage": 22.5},
+      {"type": "主治医师", "count": 580, "percentage": 40.8},
+      {"type": "住院医师", "count": 210, "percentage": 14.8},
+      {"type": "进修医师", "count": 163, "percentage": 11.4}
+    ],
+    "avgRecoveryTime": 7.2
+  },
+  
+  "resourceLevel": {
+    "staffDistribution": [
+      {"department": "内科", "count": 320},
+      {"department": "外科", "count": 280},
+      {"department": "妇产科", "count": 120},
+      {"department": "儿科", "count": 100},
+      {"department": "急诊科", "count": 80},
+      {"department": "影像科", "count": 65},
+      {"department": "检验科", "count": 55},
+      {"department": "药剂科", "count": 45},
+      {"department": "手术室", "count": 75},
+      {"department": "行政后勤", "count": 140}
+    ],
+    "doctorNurseRatio": 1.5,
+    "bedDistribution": [
+      {"department": "内科", "beds": 220},
+      {"department": "外科", "beds": 180},
+      {"department": "妇产科", "beds": 100},
+      {"department": "儿科", "beds": 80},
+      {"department": "ICU", "beds": 45},
+      {"department": "其他科室", "beds": 225}
+    ],
+    "avgBedOccupancy": 92.5,
+    "operationRoomCount": 15,
+    "operationRoomUsageRate": 85.2
+  },
+  
+  "equipmentLevel": {
+    "equipmentTypeDistribution": [
+      {"type": "影像设备", "count": 45, "percentage": 6.9},
+      {"type": "检验设备", "count": 85, "percentage": 13.1},
+      {"type": "手术设备", "count": 65, "percentage": 10.0},
+      {"type": "监护设备", "count": 120, "percentage": 18.5},
+      {"type": "治疗设备", "count": 180, "percentage": 27.7},
+      {"type": "其他设备", "count": 155, "percentage": 23.8}
+    ],
+    "equipmentUsageRate": 82.5,
+    "equipmentFailureRate": 1.2,
+    "maintenanceSchedule": {
+      "weekly": 45,
+      "monthly": 85,
+      "quarterly": 120,
+      "yearly": 380
+    },
+    "advancedEquipment": {
+      "MRI": 3,
+      "CT": 5,
+      "DR": 8,
+      "彩超": 12,
+      "腔镜": 10,
+      "呼吸机": 35,
+      "监护仪": 150
+    },
+    "equipmentAge": {
+      "lessThan1Year": 120,
+      "between1y3y": 280,
+      "between3y5y": 180,
+      "moreThan5y": 70
+    }
+  },
+  "businessTrend": {
+    "months": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+    "outpatient": [10250, 9800, 11500, 12100, 11800, 12300, 13500, 14200, 13800, 12500, 12800, 12580],
+    "inpatient": [2100, 1980, 2350, 2500, 2680, 2750, 2900, 2880, 2750, 2680, 2800, 2856],
+    "operation": [1100, 1050, 1200, 1280, 1350, 1420, 1480, 1520, 1490, 1450, 1430, 1423]
+  },
+  "revenueStructure": {
+    "categories": ["医疗服务收入", "药品收入", "检查收入", "手术收入", "其他收入"],
+    "data": [
+      {"value": 1250, "name": "医疗服务收入", "color": "#0066cc"},
+      {"value": 870, "name": "药品收入", "color": "#1890ff"},
+      {"value": 420, "name": "检查收入", "color": "#52c41a"},
+      {"value": 280, "name": "手术收入", "color": "#faad14"},
+      {"value": 45.3, "name": "其他收入", "color": "#8c8c8c"}
+    ]
+  },
+  "departmentLevel": [
+    {"name": "内科", "value": 25},
+    {"name": "外科", "value": 20},
+    {"name": "妇产科", "value": 15},
+    {"name": "儿科", "value": 10},
+    {"name": "急诊科", "value": 8},
+    {"name": "影像科", "value": 7},
+    {"name": "检验科", "value": 6},
+    {"name": "药剂科", "value": 5},
+    {"name": "手术室", "value": 3},
+    {"name": "行政后勤", "value": 1}
+  ],
+  "warningLevel": {
+    "months": ["1月", "2月", "3月", "4月", "5月", "6月"],
+    "warningCount": [25, 30, 28, 35, 32, 40],
+    "processedCount": [20, 28, 25, 32, 30, 38]
+  },
+  "warningMessages": [
+    {
+      "id": "1",
+      "title": "挂号系统访问量异常增长",
+      "description": "今日挂号系统访问量较昨日增长35%，可能存在异常访问",
+      "level": "warning",
+      "time": "10分钟前",
+      "department": "信息中心"
+    },
+    {
+      "id": "2",
+      "title": "影像系统存储容量不足",
+      "description": "影像系统存储空间使用率已达85%，建议及时扩容",
+      "level": "warning",
+      "time": "25分钟前",
+      "department": "医学影像科"
+    },
+    {
+      "id": "3",
+      "title": "药品库存预警",
+      "description": "阿莫西林等5种常用药品库存低于安全库存",
+      "level": "warning",
+      "time": "40分钟前",
+      "department": "药剂科"
+    },
+    {
+      "id": "4",
+      "title": "门诊等待时间过长",
+      "description": "内科门诊平均等待时间已达65分钟，超过阈值45分钟",
+      "level": "alert",
+      "time": "1小时前",
+      "department": "门诊部"
+    },
+    {
+      "id": "5",
+      "title": "服务器CPU使用率过高",
+      "description": "数据中心服务器CPU平均使用率已达80%",
+      "level": "alert",
+      "time": "2小时前",
+      "department": "信息中心"
+    }
+  ],
+  "keyIndicators": [
+    {
+      "id": "1",
+      "name": "门急诊量",
+      "value": "12,580",
+      "unit": "人次",
+      "trend": "up",
+      "changeRate": "5.2%",
+      "target": "11,000",
+      "status": "normal"
+    },
+    {
+      "id": "2",
+      "name": "出院人数",
+      "value": "2,856",
+      "unit": "人次",
+      "trend": "up",
+      "changeRate": "3.8%",
+      "target": "2,700",
+      "status": "normal"
+    },
+    {
+      "id": "3",
+      "name": "手术量",
+      "value": "1,423",
+      "unit": "台次",
+      "trend": "up",
+      "changeRate": "2.1%",
+      "target": "1,400",
+      "status": "normal"
+    },
+    {
+      "id": "4",
+      "name": "平均住院日",
+      "value": "6.8",
+      "unit": "天",
+      "trend": "down",
+      "changeRate": "-2.9%",
+      "target": "7.0",
+      "status": "normal"
+    },
+    {
+      "id": "5",
+      "name": "病床使用率",
+      "value": "92.5",
+      "unit": "%",
+      "trend": "up",
+      "changeRate": "1.2%",
+      "target": "90.0",
+      "status": "warning"
+    },
+    {
+      "id": "6",
+      "name": "医疗质量评分",
+      "value": "96.8",
+      "unit": "分",
+      "trend": "up",
+      "changeRate": "0.8%",
+      "target": "95.0",
+      "status": "normal"
+    },
+    {
+      "id": "7",
+      "name": "患者满意度",
+      "value": "94.2",
+      "unit": "%",
+      "trend": "down",
+      "changeRate": "-0.5%",
+      "target": "95.0",
+      "status": "warning"
+    },
+    {
+      "id": "8",
+      "name": "药占比",
+      "value": "38.5",
+      "unit": "%",
+      "trend": "down",
+      "changeRate": "-1.5%",
+      "target": "40.0",
+      "status": "normal"
+    }
+  ]
+}

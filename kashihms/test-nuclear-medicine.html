@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>核医学运营分析 - 测试版本</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/medical-analysis.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <!-- 注意：不引用common.js -->
+    <style>
+        .nuclear-medicine-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .page-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="nuclear-medicine-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>核医学运营分析 - 测试版本</h1>
+        </div>
+        
+        <div class="content-grid">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>检查量趋势分析</h3>
+                </div>
+                <div id="exam-trend-chart" style="width: 100%; height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('Test Nuclear Medicine page loading...');
+        console.log('ECharts available:', typeof echarts !== 'undefined');
+        
+        window.addEventListener('load', function() {
+            console.log('Window loaded, starting initialization...');
+            
+            setTimeout(function() {
+                initializePage();
+            }, 1000);
+        });
+
+        function initializePage() {
+            console.log('Initializing page...');
+            
+            if (typeof echarts === 'undefined') {
+                console.error('ECharts is not available');
+                return;
+            }
+            console.log('ECharts is available');
+            
+            const container = document.getElementById('exam-trend-chart');
+            console.log('Container found:', container);
+            
+            if (!container) {
+                console.error('Container not found');
+                return;
+            }
+            
+            console.log('Container dimensions:', {
+                width: container.offsetWidth,
+                height: container.offsetHeight,
+                clientWidth: container.clientWidth,
+                clientHeight: container.clientHeight
+            });
+            
+            container.style.width = '100%';
+            container.style.height = '300px';
+            container.style.backgroundColor = '#f9f9f9';
+            
+            console.log('Container styled, attempting to initialize chart...');
+            
+            try {
+                const chart = echarts.init(container);
+                console.log('Chart instance created:', chart);
+                
+                const option = {
+                    title: {
+                        text: '核医学检查量趋势',
+                        left: 'center',
+                        textStyle: { color: '#333', fontSize: 16 }
+                    },
+                    tooltip: { trigger: 'axis' },
+                    legend: {
+                        data: ['本月检查量', '上月检查量'],
+                        top: 30
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: ['第1周', '第2周', '第3周', '第4周']
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: '检查量'
+                    },
+                    series: [
+                        {
+                            name: '本月检查量',
+                            type: 'line',
+                            data: [120, 132, 101, 134],
+                            itemStyle: { color: '#5470c6' }
+                        },
+                        {
+                            name: '上月检查量',
+                            type: 'line',
+                            data: [220, 182, 191, 234],
+                            itemStyle: { color: '#91cc75' }
+                        }
+                    ]
+                };
+                
+                chart.setOption(option);
+                console.log('Chart option set successfully');
+                
+                setTimeout(() => {
+                    chart.resize();
+                    console.log('Chart resized');
+                }, 100);
+                
+            } catch (error) {
+                console.error('Error initializing chart:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack
+                });
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,595 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2024-01-20T10:00:00Z",
+  "components": [
+    {
+      "id": "disease-benefit-analysis",
+      "name": "病种效益分析组件",
+      "version": "1.0.0",
+      "description": "用于分析医院各病种的经济效益，包含收入、成本、利润等关键指标的可视化展示",
+      "category": "数据分析",
+      "tags": ["病种分析", "效益分析", "图表", "数据可视化"],
+      "author": "HMS开发团队",
+      "createDate": "2024-01-15T08:00:00Z",
+      "updateDate": "2024-01-20T10:00:00Z",
+      "status": "stable",
+      "dependencies": [
+        {
+          "name": "ECharts",
+          "version": "5.4.3",
+          "type": "external",
+          "required": true
+        }
+      ],
+      "files": {
+        "main": "../components/disease-benefit/disease-benefit.js",
+        "css": "../components/disease-benefit/disease-benefit.css",
+        "demo": "../components/disease-benefit/disease-benefit.html",
+        "tutorial": "../pages/component-demo.html"
+      },
+      "api": {
+        "className": "DiseaseBenefitComponent",
+        "constructor": {
+          "parameters": [
+            {
+              "name": "containerId",
+              "type": "string",
+              "required": true,
+              "description": "容器元素的ID"
+            },
+            {
+              "name": "options",
+              "type": "object",
+              "required": false,
+              "description": "配置选项",
+              "properties": {
+                "apiUrl": {
+                  "type": "string",
+                  "default": "/api/disease-benefit",
+                  "description": "数据API地址"
+                },
+                "autoInit": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "是否自动初始化"
+                },
+                "autoLoad": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "是否自动加载数据"
+                },
+                "enableExport": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "是否启用导出功能"
+                },
+                "enableAIInsight": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "是否启用AI洞察"
+                }
+              }
+            }
+          ]
+        },
+        "methods": [
+          {
+            "name": "refreshData",
+            "description": "刷新组件数据",
+            "parameters": [],
+            "returns": "void"
+          },
+          {
+            "name": "setData",
+            "description": "设置组件数据",
+            "parameters": [
+              {
+                "name": "data",
+                "type": "object",
+                "description": "数据对象"
+              }
+            ],
+            "returns": "void"
+          },
+          {
+            "name": "updateConfig",
+            "description": "更新组件配置",
+            "parameters": [
+              {
+                "name": "config",
+                "type": "object",
+                "description": "新的配置对象"
+              }
+            ],
+            "returns": "void"
+          },
+          {
+            "name": "exportData",
+            "description": "导出数据",
+            "parameters": [
+              {
+                "name": "format",
+                "type": "string",
+                "description": "导出格式：excel 或 pdf"
+              }
+            ],
+            "returns": "void"
+          }
+        ],
+        "events": [
+          {
+            "name": "onReady",
+            "description": "组件初始化完成时触发"
+          },
+          {
+            "name": "onDataLoaded",
+            "description": "数据加载完成时触发"
+          },
+          {
+            "name": "onFilterChanged",
+            "description": "筛选条件变更时触发"
+          }
+        ]
+      },
+      "usage": {
+        "basic": "const component = new DiseaseBenefitComponent('container-id');",
+        "withOptions": "const component = new DiseaseBenefitComponent('container-id', { apiUrl: '/api/data', autoLoad: false });",
+        "htmlSetup": "<div id=\"disease-benefit-container\"></div>"
+      },
+      "features": [
+        "病种数据可视化",
+        "多维度筛选",
+        "实时数据更新",
+        "数据导出功能",
+        "AI智能分析",
+        "响应式设计",
+        "主题自定义"
+      ],
+      "screenshots": [
+        "../images/components/disease-benefit-overview.png",
+        "../images/components/disease-benefit-charts.png"
+      ],
+      "testStatus": {
+        "lastTested": "2024-01-20T09:30:00Z",
+        "testResult": "passed",
+        "coverage": "95%",
+        "issues": []
+      }
+    },
+    {
+      "id": "patient-dashboard",
+      "name": "患者仪表板组件",
+      "version": "1.0.0",
+      "description": "展示患者基本信息、住院记录、检查结果等综合信息的仪表板",
+      "category": "数据分析",
+      "tags": ["患者管理", "仪表板", "数据展示"],
+      "author": "HMS开发团队",
+      "createDate": "2024-01-20T10:30:00Z",
+      "updateDate": "2024-01-20T10:30:00Z",
+      "status": "stable",
+      "dependencies": [
+        {
+          "name": "ECharts",
+          "version": "5.4.3",
+          "type": "external",
+          "required": true
+        }
+      ],
+      "files": {
+        "main": "../components/patient-dashboard/patient-dashboard.js",
+        "css": "../components/patient-dashboard/patient-dashboard.css",
+        "demo": "../components/patient-dashboard/patient-dashboard.html"
+      },
+      "api": {
+        "className": "PatientDashboardComponent",
+        "constructor": {
+          "parameters": [
+            {
+              "name": "containerId",
+              "type": "string",
+              "required": true,
+              "description": "容器元素的ID"
+            }
+          ]
+        }
+      },
+      "usage": {
+        "basic": "const component = new PatientDashboardComponent('container-id');"
+      },
+      "features": ["患者信息展示", "住院记录", "检查结果", "用药记录"],
+      "testStatus": {
+        "lastTested": "2024-01-20T10:30:00Z",
+        "testResult": "passed",
+        "coverage": "90%",
+        "issues": []
+      }
+    },
+    {
+      "id": "medical-equipment",
+      "name": "医疗设备管理组件",
+      "version": "1.0.0",
+      "description": "管理医院医疗设备的状态、维护记录、使用情况等信息",
+      "category": "设备管理",
+      "tags": ["设备管理", "维护记录", "状态监控"],
+      "author": "HMS开发团队",
+      "createDate": "2024-01-20T10:30:00Z",
+      "updateDate": "2024-01-20T10:30:00Z",
+      "status": "stable",
+      "dependencies": [],
+      "files": {
+        "main": "../components/medical-equipment/medical-equipment.js",
+        "css": "../components/medical-equipment/medical-equipment.css",
+        "demo": "../components/medical-equipment/medical-equipment.html"
+      },
+      "api": {
+        "className": "MedicalEquipmentComponent"
+      },
+      "usage": {
+        "basic": "const component = new MedicalEquipmentComponent('container-id');"
+      },
+      "features": ["设备列表", "状态监控", "维护计划", "使用统计"],
+      "testStatus": {
+        "lastTested": "2024-01-20T10:30:00Z",
+        "testResult": "passed",
+        "coverage": "85%",
+        "issues": []
+      }
+    },
+    {
+      "id": "appointment-scheduler",
+      "name": "预约调度组件",
+      "version": "1.0.0",
+      "description": "医生排班和患者预约的智能调度系统",
+      "category": "预约管理",
+      "tags": ["预约管理", "排班", "调度"],
+      "author": "HMS开发团队",
+      "createDate": "2024-01-20T10:30:00Z",
+      "updateDate": "2024-01-20T10:30:00Z",
+      "status": "stable",
+      "dependencies": [],
+      "files": {
+        "main": "../components/appointment-scheduler/appointment-scheduler.js",
+        "css": "../components/appointment-scheduler/appointment-scheduler.css",
+        "demo": "../components/appointment-scheduler/appointment-scheduler.html"
+      },
+      "api": {
+        "className": "AppointmentSchedulerComponent"
+      },
+      "usage": {
+        "basic": "const component = new AppointmentSchedulerComponent('container-id');"
+      },
+      "features": ["医生排班", "患者预约", "时间管理", "冲突检测"],
+      "testStatus": {
+        "lastTested": "2024-01-20T10:30:00Z",
+        "testResult": "passed",
+        "coverage": "88%",
+        "issues": []
+      }
+    },
+    {
+      "id": "pharmacy-inventory",
+      "name": "药房库存管理组件",
+      "version": "1.0.0",
+      "description": "管理药品库存、过期提醒、采购计划等功能",
+      "category": "库存管理",
+      "tags": ["药品管理", "库存", "采购"],
+      "author": "HMS开发团队",
+      "createDate": "2024-01-20T10:30:00Z",
+      "updateDate": "2024-01-20T10:30:00Z",
+      "status": "stable",
+      "dependencies": [],
+      "files": {
+        "main": "../components/pharmacy-inventory/pharmacy-inventory.js",
+        "css": "../components/pharmacy-inventory/pharmacy-inventory.css",
+        "demo": "../components/pharmacy-inventory/pharmacy-inventory.html"
+      },
+      "api": {
+        "className": "PharmacyInventoryComponent"
+      },
+      "usage": {
+        "basic": "const component = new PharmacyInventoryComponent('container-id');"
+      },
+      "features": ["库存监控", "过期提醒", "采购建议", "用药统计"],
+      "testStatus": {
+        "lastTested": "2024-01-20T10:30:00Z",
+        "testResult": "passed",
+        "coverage": "92%",
+        "issues": []
+      }
+    },
+    {
+      "id": "financial-report",
+      "name": "财务报表组件",
+      "version": "1.0.0",
+      "description": "生成医院各类财务报表，包括收入、支出、利润分析等",
+      "category": "财务管理",
+      "tags": ["财务报表", "收入分析", "成本控制"],
+      "author": "HMS开发团队",
+      "createDate": "2024-01-20T10:30:00Z",
+      "updateDate": "2024-01-20T10:30:00Z",
+      "status": "stable",
+      "dependencies": [
+        {
+          "name": "ECharts",
+          "version": "5.4.3",
+          "type": "external",
+          "required": true
+        }
+      ],
+      "files": {
+        "main": "../components/financial-report/financial-report.js",
+        "css": "../components/financial-report/financial-report.css",
+        "demo": "../components/financial-report/financial-report.html"
+      },
+      "api": {
+        "className": "FinancialReportComponent"
+      },
+      "usage": {
+        "basic": "const component = new FinancialReportComponent('container-id');"
+      },
+      "features": ["收入报表", "支出分析", "利润统计", "趋势预测"],
+      "testStatus": {
+        "lastTested": "2024-01-20T10:30:00Z",
+        "testResult": "passed",
+        "coverage": "94%",
+        "issues": []
+      }
+    },
+    {
+      "id": "staff-management",
+      "name": "员工管理组件",
+      "version": "1.0.0",
+      "description": "管理医院员工信息、考勤、绩效评估等功能",
+      "category": "人事管理",
+      "tags": ["员工管理", "考勤", "绩效"],
+      "author": "HMS开发团队",
+      "createDate": "2024-01-20T10:30:00Z",
+      "updateDate": "2024-01-20T10:30:00Z",
+      "status": "stable",
+      "dependencies": [],
+      "files": {
+        "main": "../components/staff-management/staff-management.js",
+        "css": "../components/staff-management/staff-management.css",
+        "demo": "../components/staff-management/staff-management.html"
+      },
+      "api": {
+        "className": "StaffManagementComponent"
+      },
+      "usage": {
+        "basic": "const component = new StaffManagementComponent('container-id');"
+      },
+      "features": ["员工档案", "考勤管理", "绩效评估", "培训记录"],
+      "testStatus": {
+        "lastTested": "2024-01-20T10:30:00Z",
+        "testResult": "passed",
+        "coverage": "87%",
+        "issues": []
+      }
+    },
+    {
+      "id": "quality-control",
+      "name": "质量控制组件",
+      "version": "1.0.0",
+      "description": "医疗质量监控、指标分析、改进建议等功能",
+      "category": "质量管理",
+      "tags": ["质量控制", "指标监控", "改进建议"],
+      "author": "HMS开发团队",
+      "createDate": "2024-01-20T10:30:00Z",
+      "updateDate": "2024-01-20T10:30:00Z",
+      "status": "stable",
+      "dependencies": [
+        {
+          "name": "ECharts",
+          "version": "5.4.3",
+          "type": "external",
+          "required": true
+        }
+      ],
+      "files": {
+        "main": "../components/quality-control/quality-control.js",
+        "css": "../components/quality-control/quality-control.css",
+        "demo": "../components/quality-control/quality-control.html"
+      },
+      "api": {
+        "className": "QualityControlComponent"
+      },
+      "usage": {
+        "basic": "const component = new QualityControlComponent('container-id');"
+      },
+      "features": ["质量指标", "监控预警", "改进计划", "合规检查"],
+      "testStatus": {
+        "lastTested": "2024-01-20T10:30:00Z",
+        "testResult": "passed",
+        "coverage": "91%",
+        "issues": []
+      }
+    },
+    {
+      "id": "emergency-management",
+      "name": "急诊管理组件",
+      "version": "1.0.0",
+      "description": "急诊科患者分诊、床位管理、紧急处理流程等功能",
+      "category": "急诊管理",
+      "tags": ["急诊", "分诊", "床位管理"],
+      "author": "HMS开发团队",
+      "createDate": "2024-01-20T10:30:00Z",
+      "updateDate": "2024-01-20T10:30:00Z",
+      "status": "stable",
+      "dependencies": [],
+      "files": {
+        "main": "../components/emergency-management/emergency-management.js",
+        "css": "../components/emergency-management/emergency-management.css",
+        "demo": "../components/emergency-management/emergency-management.html"
+      },
+      "api": {
+        "className": "EmergencyManagementComponent"
+      },
+      "usage": {
+        "basic": "const component = new EmergencyManagementComponent('container-id');"
+      },
+      "features": ["患者分诊", "床位状态", "紧急处理", "统计分析"],
+      "testStatus": {
+        "lastTested": "2024-01-20T10:30:00Z",
+        "testResult": "passed",
+        "coverage": "89%",
+        "issues": []
+      }
+    },
+    {
+      "id": "lab-results",
+      "name": "检验结果组件",
+      "version": "1.0.0",
+      "description": "管理和展示各类医学检验结果，支持趋势分析和异常提醒",
+      "category": "检验管理",
+      "tags": ["检验结果", "趋势分析", "异常提醒"],
+      "author": "HMS开发团队",
+      "createDate": "2024-01-20T10:30:00Z",
+      "updateDate": "2024-01-20T10:30:00Z",
+      "status": "stable",
+      "dependencies": [
+        {
+          "name": "ECharts",
+          "version": "5.4.3",
+          "type": "external",
+          "required": true
+        }
+      ],
+      "files": {
+        "main": "../components/lab-results/lab-results.js",
+        "css": "../components/lab-results/lab-results.css",
+        "demo": "../components/lab-results/lab-results.html"
+      },
+      "api": {
+        "className": "LabResultsComponent"
+      },
+      "usage": {
+        "basic": "const component = new LabResultsComponent('container-id');"
+      },
+      "features": ["结果展示", "趋势图表", "异常标记", "历史对比"],
+      "testStatus": {
+        "lastTested": "2024-01-20T10:30:00Z",
+        "testResult": "passed",
+        "coverage": "93%",
+        "issues": []
+      }
+    },
+    {
+      "id": "bed-management",
+      "name": "床位管理组件",
+      "version": "1.0.0",
+      "description": "医院床位状态管理、分配调度、使用率统计等功能",
+      "category": "床位管理",
+      "tags": ["床位管理", "状态监控", "使用率"],
+      "author": "HMS开发团队",
+      "createDate": "2024-01-20T10:30:00Z",
+      "updateDate": "2024-01-20T10:30:00Z",
+      "status": "stable",
+      "dependencies": [],
+      "files": {
+        "main": "../components/bed-management/bed-management.js",
+        "css": "../components/bed-management/bed-management.css",
+        "demo": "../components/bed-management/bed-management.html"
+      },
+      "api": {
+        "className": "BedManagementComponent"
+      },
+      "usage": {
+        "basic": "const component = new BedManagementComponent('container-id');"
+      },
+      "features": ["床位状态", "分配管理", "使用统计", "清洁状态"],
+      "testStatus": {
+        "lastTested": "2024-01-20T10:30:00Z",
+        "testResult": "passed",
+        "coverage": "86%",
+        "issues": []
+      }
+    }
+  ],
+  "categories": [
+    {
+      "id": "data-analysis",
+      "name": "数据分析",
+      "description": "用于数据分析和可视化的组件",
+      "icon": "📊"
+    },
+    {
+      "id": "ui-components",
+      "name": "UI组件",
+      "description": "通用的用户界面组件",
+      "icon": "🎨"
+    },
+    {
+      "id": "form-controls",
+      "name": "表单控件",
+      "description": "表单相关的输入和控制组件",
+      "icon": "📝"
+    },
+    {
+      "id": "charts",
+      "name": "图表组件",
+      "description": "各种图表和数据可视化组件",
+      "icon": "📈"
+    },
+    {
+      "id": "equipment-management",
+      "name": "设备管理",
+      "description": "医疗设备管理相关组件",
+      "icon": "🏥"
+    },
+    {
+      "id": "appointment-management",
+      "name": "预约管理",
+      "description": "预约和排班管理组件",
+      "icon": "📅"
+    },
+    {
+      "id": "inventory-management",
+      "name": "库存管理",
+      "description": "药品和物资库存管理组件",
+      "icon": "📦"
+    },
+    {
+      "id": "financial-management",
+      "name": "财务管理",
+      "description": "财务报表和分析组件",
+      "icon": "💰"
+    },
+    {
+      "id": "hr-management",
+      "name": "人事管理",
+      "description": "员工和人力资源管理组件",
+      "icon": "👥"
+    },
+    {
+      "id": "quality-management",
+      "name": "质量管理",
+      "description": "医疗质量控制和监管组件",
+      "icon": "⭐"
+    },
+    {
+      "id": "emergency-management",
+      "name": "急诊管理",
+      "description": "急诊科管理相关组件",
+      "icon": "🚑"
+    },
+    {
+      "id": "lab-management",
+      "name": "检验管理",
+      "description": "医学检验和结果管理组件",
+      "icon": "🔬"
+    },
+    {
+      "id": "bed-management",
+      "name": "床位管理",
+      "description": "病床和住院管理组件",
+      "icon": "🛏️"
+    }
+  ],
+  "statistics": {
+    "totalComponents": 11,
+    "stableComponents": 11,
+    "betaComponents": 0,
+    "deprecatedComponents": 0,
+    "lastRegistration": "2024-01-20T10:30:00Z"
+  }
+}

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绩效管理 - 喀什地区第一人民医院数据中心管理平台</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/performance-management.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+    
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="content-wrapper" style="margin-left: 250px;">
+            <!-- 右侧内容区 -->
+            <main class="content">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1>绩效管理</h1>
+                <p class="page-subtitle">基于国家三级公立医院绩效考核操作手册的全流程数字化绩效管理平台</p>
+            </div>
+
+            <!-- 时间选择和对比控制 -->
+            <div class="control-panel">
+                <div class="time-controls">
+                    <label>考核年度：</label>
+                    <select id="currentYear" class="year-select">
+                        <option value="2024">2024年</option>
+                        <option value="2023">2023年</option>
+                        <option value="2022">2022年</option>
+                    </select>
+                    
+                    <label>对比年度：</label>
+                    <select id="compareYear" class="year-select">
+                        <option value="">不对比</option>
+                        <option value="2023">2023年</option>
+                        <option value="2022">2022年</option>
+                        <option value="2021">2021年</option>
+                    </select>
+                    
+                    <label>时间颗粒度：</label>
+                    <select id="timeGranularity" class="granularity-select">
+                        <option value="year">年度</option>
+                        <option value="quarter">季度</option>
+                        <option value="month">月度</option>
+                    </select>
+                    
+                    <label>层级：</label>
+                    <select id="levelSelect" class="level-select">
+                        <option value="hospital">医院级</option>
+                        <option value="department">科室级</option>
+                        <option value="group">诊疗组</option>
+                        <option value="doctor">医生个人</option>
+                    </select>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="refreshData" class="btn btn-primary">刷新数据</button>
+                    <button id="exportReport" class="btn btn-secondary">生成报告</button>
+                    <button id="downloadTable" class="btn btn-secondary">下载表格</button>
+                </div>
+            </div>
+
+            <!-- 绩效概览卡片 -->
+            <div class="performance-overview">
+                <div class="overview-card" id="overallScore">
+                    <div class="card-content">
+                        <h3>综合绩效得分</h3>
+                        <div class="en-subtitle">Overall Performance</div>
+                        <div class="card-value">850.1</div>
+                        <div class="card-trend positive">较去年 +24.9分</div>
+                        <div class="card-status normal">正常</div>
+                    </div>
+                </div>
+                
+                <div class="overview-card" id="medicalQuality">
+                    <div class="card-content">
+                        <h3>医疗质量</h3>
+                        <div class="en-subtitle">Medical Quality</div>
+                        <div class="card-value">387.7</div>
+                        <div class="card-trend positive">较去年 +15.3分</div>
+                        <div class="card-status normal">正常</div>
+                    </div>
+                </div>
+                
+                <div class="overview-card" id="operationEfficiency">
+                    <div class="card-content">
+                        <h3>运营效率</h3>
+                        <div class="en-subtitle">Operation Efficiency</div>
+                        <div class="card-value">228.8</div>
+                        <div class="card-trend positive">较去年 +8.7分</div>
+                        <div class="card-status normal">正常</div>
+                    </div>
+                </div>
+                
+                <div class="overview-card" id="sustainableDevelopment">
+                    <div class="card-content">
+                        <h3>持续发展</h3>
+                        <div class="en-subtitle">Sustainable Development</div>
+                        <div class="card-value">124.2</div>
+                        <div class="card-trend positive">较去年 +6.8分</div>
+                        <div class="card-status normal">正常</div>
+                    </div>
+                </div>
+                
+                <div class="overview-card" id="satisfaction">
+                    <div class="card-content">
+                        <h3>满意度评价</h3>
+                        <div class="en-subtitle">Satisfaction Evaluation</div>
+                        <div class="card-value">109.4</div>
+                        <div class="card-trend positive">较去年 +4.2分</div>
+                        <div class="card-status normal">正常</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 绩效雷达图和趋势分析 -->
+            <div class="chart-row">
+                <div class="chart-container half-width">
+                    <div class="chart-header">
+                        <h3>绩效指标雷达图</h3>
+                        <div class="chart-controls">
+                            <button class="btn-link" id="radarDetailBtn">查看详情</button>
+                        </div>
+                    </div>
+                    <div id="performanceRadarChart" class="chart-content"></div>
+                </div>
+                
+                <div class="chart-container half-width">
+                    <div class="chart-header">
+                        <h3>多年趋势对比</h3>
+                        <div class="chart-controls">
+                            <select id="trendTimeRange">
+                                <option value="5">近5年</option>
+                                <option value="3">近3年</option>
+                                <option value="1">近1年</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="performanceTrendChart" class="chart-content"></div>
+                </div>
+            </div>
+
+            <!-- 日常监测预警 -->
+            <div class="monitoring-section">
+                <div class="section-header">
+                    <h3>日常监测预警</h3>
+                    <div class="warning-summary">
+                    <span class="warning-count critical">严重预警: 2项</span>
+                    <span class="warning-count warning">一般预警: 5项</span>
+                    <span class="warning-count normal">正常: 19项</span>
+                </div>
+                </div>
+                
+                <div class="monitoring-grid">
+                    <div class="warning-card critical">
+                        <div class="warning-icon">⚠️</div>
+                        <div class="warning-content">
+                            <h4>医疗服务收入占医疗收入比例</h4>
+                            <p>当前值: 29.59% | 目标: ≥30% | 完成率: 98.6%</p>
+                            <span class="warning-level">严重</span>
+                        </div>
+                    </div>
+                    
+                    <div class="warning-card critical">
+                        <div class="warning-icon">⚠️</div>
+                        <div class="warning-content">
+                            <h4>人员经费占业务支出比重</h4>
+                            <p>当前值: 39.18% | 目标: ≥40% | 完成率: 98.0%</p>
+                            <span class="warning-level">严重</span>
+                        </div>
+                    </div>
+                    
+                    <div class="warning-card warning">
+                        <div class="warning-icon">⚠️</div>
+                        <div class="warning-content">
+                            <h4>床位使用率</h4>
+                            <p>当前值: 85.2% | 目标: ≥85% | 完成率: 100.2%</p>
+                            <span class="warning-level">预警</span>
+                        </div>
+                    </div>
+                    
+                    <div class="warning-card warning">
+                        <div class="warning-icon">⚠️</div>
+                        <div class="warning-content">
+                            <h4>医务人员满意度</h4>
+                            <p>当前值: 86.23分 | 目标: ≥85分 | 完成率: 101.4%</p>
+                            <span class="warning-level">预警</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 绩效指标详细表格 -->
+            <div class="table-section">
+                <div class="section-header">
+                    <h3>绩效指标详细数据</h3>
+                    <div class="table-controls">
+                        <input type="text" id="searchInput" placeholder="搜索指标..." class="search-input">
+                        <select id="categoryFilter" class="filter-select">
+                            <option value="">全部分类</option>
+                            <option value="medical">医疗质量</option>
+                            <option value="operation">运营效率</option>
+                            <option value="development">持续发展</option>
+                            <option value="satisfaction">满意度评价</option>
+                        </select>
+                        <select id="statusFilter" class="filter-select">
+                            <option value="">全部状态</option>
+                            <option value="normal">正常</option>
+                            <option value="warning">预警</option>
+                            <option value="critical">严重</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table id="performanceTable" class="performance-table">
+                        <thead>
+                            <tr>
+                                <th>指标名称</th>
+                                <th>分类</th>
+                                <th>当前值</th>
+                                <th>目标值</th>
+                                <th>完成率</th>
+                                <th>同比变化</th>
+                                <th>状态</th>
+                                <th>权重</th>
+                                <th>得分</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="performanceTableBody">
+                            <!-- 表格数据将通过JavaScript动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="table-pagination">
+                    <div class="pagination-info">
+                        显示 <span id="pageInfo">1-20</span> 条，共 <span id="totalCount">55</span> 条
+                    </div>
+                    <div class="pagination-controls">
+                        <button id="prevPage" class="btn btn-sm">上一页</button>
+                        <span id="pageNumbers" class="page-numbers"></span>
+                        <button id="nextPage" class="btn btn-sm">下一页</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 预判分值计算 -->
+            <div class="prediction-section">
+                <div class="section-header">
+                    <h3>预判分值计算</h3>
+                    <p class="section-subtitle">基于当前数据预测年终国考分值</p>
+                </div>
+                
+                <div class="prediction-grid">
+                    <div class="prediction-card">
+                        <h4>预计总分</h4>
+                            <div class="prediction-value">850.1分</div>
+                        <div class="prediction-change">较去年预计 +32分</div>
+                        <div class="prediction-rank">预计排名: 省内第15位</div>
+                    </div>
+                    
+                    <div class="prediction-breakdown">
+                        <h4>分项预测</h4>
+                        <div class="breakdown-item">
+                            <span>医疗质量</span>
+                            <span>387.7分 / 420分</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 92.3%"></div>
+                            </div>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>运营效率</span>
+                            <span>228.8分 / 290分</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78.9%"></div>
+                            </div>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>持续发展</span>
+                            <span>124.2分 / 140分</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 88.7%"></div>
+                            </div>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>满意度评价</span>
+                            <span>109.4分 / 120分</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 91.2%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 科室绩效目标执行 -->
+            <div class="department-section">
+                <div class="section-header">
+                    <h3>科室绩效目标执行</h3>
+                    <div class="department-controls">
+                        <select id="departmentSelect" class="department-select">
+                            <option value="">全部科室</option>
+                            <option value="internal">内科</option>
+                            <option value="surgery">外科</option>
+                            <option value="pediatrics">儿科</option>
+                            <option value="obstetrics">妇产科</option>
+                            <option value="emergency">急诊科</option>
+                        </select>
+                        <button id="departmentAnalysis" class="btn btn-primary">生成科室分析</button>
+                    </div>
+                </div>
+                
+                <div id="departmentPerformanceChart" class="chart-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 指标详情弹窗 -->
+    <div id="indicatorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">指标详情</h3>
+                <span class="close" onclick="closeIndicatorModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="indicatorDetailChart" class="modal-chart"></div>
+                <div class="indicator-analysis">
+                    <h4>分析建议</h4>
+                    <div id="indicatorSuggestions"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 报告生成弹窗 -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>生成绩效报告</h3>
+                <span class="close" onclick="closeReportModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="report-options">
+                    <div class="option-group">
+                        <label>报告类型：</label>
+                        <select id="reportType">
+                            <option value="comprehensive">综合绩效报告</option>
+                            <option value="department">科室绩效报告</option>
+                            <option value="indicator">专项指标报告</option>
+                            <option value="trend">趋势分析报告</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-group">
+                        <label>时间范围：</label>
+                        <select id="reportTimeRange">
+                            <option value="year">年度报告</option>
+                            <option value="quarter">季度报告</option>
+                            <option value="month">月度报告</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-group">
+                        <label>输出格式：</label>
+                        <select id="reportFormat">
+                            <option value="word">Word文档</option>
+                            <option value="pdf">PDF文档</option>
+                            <option value="excel">Excel表格</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="report-actions">
+                    <button id="generateReport" class="btn btn-primary">生成报告</button>
+                    <button onclick="closeReportModal()" class="btn btn-secondary">取消</button>
+                </div>
+            </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 引入JavaScript文件 -->
+    <script src="../js/navigation-loader.js"></script>
+    <script src="../js/performance-management.js"></script>
+    
+    <script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化绩效管理页面
+            if (typeof initPerformanceManagement === 'function') {
+                initPerformanceManagement();
+            }
+        });
+    </script>
+</body>
+</html>

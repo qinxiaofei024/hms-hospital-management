@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医学影像运营分析 - 喀什地区第一人民医院数据中心管理平台</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/medical-analysis.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/medical-imaging.js"></script>
+    <style>
+        /* 现代化响应式布局样式 */
+        .main-content {
+            margin-left: 0;
+            padding: 0;
+            background: #f8f9fa;
+        }
+        
+        .content-wrapper {
+            margin-left: var(--sidebar-width, 240px);
+            padding: 12px 16px;
+            min-height: 100vh;
+            max-width: calc(100vw - var(--sidebar-width, 240px));
+            box-sizing: border-box;
+            width: calc(100% - var(--sidebar-width, 240px));
+            transition: margin-left 0.3s ease, max-width 0.3s ease, width 0.3s ease;
+        }
+        
+        /* 侧边栏收起状态 */
+        body.sidebar-collapsed .content-wrapper {
+            margin-left: 0;
+            max-width: 100vw;
+            width: 100%;
+        }
+        
+        /* 确保CSS变量的默认值 */
+        :root {
+            --sidebar-width: 240px;
+            --header-height: 48px;
+        }
+        
+        .overview-section {
+            background: white;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 0;
+        }
+        
+        .header-left h2 {
+            margin: 0 0 8px 0;
+            font-size: 28px;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        
+        .breadcrumb {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .date-filter {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .date-filter select {
+            padding: 8px 16px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            transition: border-color 0.2s;
+        }
+        
+        .date-filter select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .action-buttons button {
+            padding: 10px 20px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .action-buttons button:hover {
+            background: #f8f9fa;
+            transform: translateY(-1px);
+        }
+        
+        #refresh-btn {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+        }
+        
+        #refresh-btn:hover {
+            background: linear-gradient(135deg, #0056b3, #004085);
+        }
+        
+        /* 优化的四容器纵向布局 */
+        .page-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 0;
+            width: 100%;
+            min-height: calc(100vh - 200px);
+            transition: all 0.3s ease;
+        }
+        
+        .core-metrics-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-height: 140px;
+            width: 100%;
+        }
+        
+        .kpi-analysis-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-height: 220px;
+            width: 100%;
+        }
+        
+        .charts-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex: 1;
+            min-height: 700px;
+            width: 100%;
+        }
+        
+        .details-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-height: 450px;
+            width: 100%;
+        }
+        
+        /* 调整概览卡片样式 - 确保四个组件一行显示 */
+        .overview-cards {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 0;
+            flex-wrap: nowrap;
+        }
+        
+        .overview-card {
+            flex: 1;
+            min-width: 0;
+            max-width: 25%;
+            padding: 15px;
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .overview-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .overview-card .card-title {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .overview-card .card-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .overview-card .card-change {
+            font-size: 12px;
+        }
+        
+        /* 调整图表网格样式 */
+        .charts-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+        
+        .chart-row {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+        
+        .chart-row .chart-card {
+            flex: 1;
+            min-height: 250px;
+        }
+        
+        .chart-row .chart-card.full-width {
+            width: 100%;
+        }
+        
+        /* KPI卡片样式优化 */
+        .kpi-cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .kpi-card {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        /* 响应式布局 */
+        @media (max-width: 1200px) {
+            .overview-cards {
+                flex-wrap: wrap;
+            }
+            
+            .overview-card {
+                max-width: 48%;
+                min-width: 200px;
+            }
+            
+            .chart-row {
+                flex-direction: column;
+            }
+            
+            .kpi-cards {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .overview-card {
+                max-width: 100%;
+            }
+            
+            .page-layout {
+                padding: 10px;
+                gap: 15px;
+            }
+            
+            .core-metrics-container,
+            .kpi-analysis-container,
+            .charts-container,
+            .details-container {
+                padding: 15px;
+            }
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 6px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .chart-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .kpi-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        
+        .chart-card.large {
+            min-height: 400px;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .chart-title h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .chart-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        /* 数据表格和KPI区域优化 */
+        .data-table-section {
+            background: white;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* 溯源分析容器样式 - 与首页风格一致 */
+        .analysis-summary-container {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-top: 20px;
+            border: 1px solid #e8eef7;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analysis-summary-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0078d4, #106ebe, #005a9e);
+        }
+
+        /* 卡片样式 - 与首页保持一致 */
+        .summary-card, .recommendations-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            border: 1px solid #e1e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,120,212,0.08);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .summary-card:hover, .recommendations-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,120,212,0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f6ff;
+            position: relative;
+        }
+
+        .card-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .azure-decoration {
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(135deg, #0078d4, #106ebe);
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(0,120,212,0.3);
+        }
+
+        /* 评价网格布局 */
+        .evaluation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .evaluation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: linear-gradient(135deg, #f8fbff 0%, #ffffff 100%);
+            border-radius: 8px;
+            border: 1px solid #e8eef7;
+            transition: all 0.2s ease;
+        }
+
+        .evaluation-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,120,212,0.1);
+        }
+
+        .evaluation-icon {
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .evaluation-text strong {
+            color: #0078d4;
+            font-weight: 600;
+            font-size: 16px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .evaluation-text p {
+            margin: 0;
+            color: #4a4a4a;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        /* 建议网格布局 */
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .recommendation-item {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            border: 1px solid #e1e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .recommendation-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0078d4, #106ebe);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .recommendation-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,120,212,0.15);
+        }
+
+        .recommendation-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        .recommendation-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .recommendation-item h5 {
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .recommendation-item p {
+            margin: 0;
+            color: #4a4a4a;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .evaluation-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .analysis-summary-container {
+                padding: 16px;
+                margin-top: 16px;
+            }
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .table-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .search-input {
+            padding: 8px 16px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 200px;
+        }
+        
+        .kpi-section {
+            background: white;
+            border-radius: 6px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .kpi-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .kpi-card {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border-radius: 6px;
+            padding: 16px;
+            border: 1px solid #e9ecef;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        }
+        
+        /* 优化的响应式设计 */
+        @media (max-width: 1400px) {
+            .chart-row {
+                flex-direction: column;
+            }
+            
+            .overview-cards {
+                flex-wrap: wrap;
+            }
+            
+            .overview-card {
+                max-width: 48%;
+                min-width: 200px;
+            }
+            
+            .content-wrapper {
+                padding: 8px 12px;
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            :root {
+                --sidebar-width: 200px;
+            }
+            
+            .content-wrapper {
+                margin-left: var(--sidebar-width, 200px);
+                max-width: calc(100vw - var(--sidebar-width, 200px));
+                width: calc(100% - var(--sidebar-width, 200px));
+                padding: 6px 8px;
+            }
+            
+            body.sidebar-collapsed .content-wrapper {
+                margin-left: 0;
+                max-width: 100vw;
+                width: 100%;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+            
+            .header-right {
+                justify-content: space-between;
+            }
+            
+            .overview-cards {
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+            
+            .overview-card {
+                max-width: 48%;
+                min-width: 180px;
+            }
+            
+            .charts-grid {
+                gap: 16px;
+            }
+            
+            .core-metrics-container,
+            .kpi-analysis-container,
+            .charts-container,
+            .details-container {
+                padding: 16px;
+                min-height: auto;
+            }
+            
+            .charts-container {
+                min-height: 500px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --sidebar-width: 64px;
+            }
+            
+            .content-wrapper {
+                margin-left: var(--sidebar-width, 64px);
+                max-width: calc(100vw - var(--sidebar-width, 64px));
+                width: calc(100% - var(--sidebar-width, 64px));
+                padding: 4px 6px;
+            }
+            
+            body.sidebar-collapsed .content-wrapper {
+                margin-left: 0;
+                max-width: 100vw;
+                width: 100%;
+            }
+            
+            .overview-cards {
+                flex-direction: column;
+            }
+            
+            .overview-card {
+                max-width: 100%;
+            }
+            
+            .kpi-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .date-filter {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .page-layout {
+                gap: 12px;
+            }
+            
+            .core-metrics-container,
+            .kpi-analysis-container,
+            .charts-container,
+            .details-container {
+                padding: 12px;
+            }
+            
+            .charts-container {
+                min-height: 400px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            :root {
+                --sidebar-width: 0px;
+            }
+            
+            .content-wrapper {
+                margin-left: 0;
+                max-width: 100vw;
+                width: 100%;
+                padding: 2px 4px;
+            }
+            
+            .page-layout {
+                gap: 8px;
+            }
+            
+            .core-metrics-container,
+            .kpi-analysis-container,
+            .charts-container,
+            .details-container {
+                padding: 8px;
+            }
+            
+            .charts-container {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="content-wrapper">
+            <!-- 页面标题和操作区 -->
+            <div class="overview-section">
+                <div class="header-controls">
+                    <div class="header-left">
+                        <h2>医学影像运营分析</h2>
+                        <div class="breadcrumb">
+                            <span>首页</span> &gt; <span>医技运营管理平台</span> &gt; <span>医学影像</span>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <div class="date-filter">
+                            <select id="time-period">
+                                <option value="year">年度</option>
+                                <option value="quarter">季度</option>
+                                <option value="month">月度</option>
+                            </select>
+                            <select id="year-select">
+                                <option value="2023">2023年</option>
+                                <option value="2024">2024年</option>
+                                <option value="2025" selected>2025年</option>
+                            </select>
+                            <select id="quarter-select">
+                                <option value="1">第一季度</option>
+                                <option value="2">第二季度</option>
+                                <option value="3">第三季度</option>
+                                <option value="4">第四季度</option>
+                            </select>
+                        </div>
+                        <div class="action-buttons">
+                            <button id="refresh-btn">刷新</button>
+                            <button id="export-btn">导出</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 四个容器纵向布局 -->
+            <div class="page-layout">
+                <!-- 第一个容器：核心指标 -->
+                <div class="core-metrics-container">
+                    <div class="overview-cards">
+                        <div class="overview-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-icon">👥</span>
+                                    <h3>总检查人次</h3>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="trend-btn" data-card="exams">📈</button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="main-metric">
+                                    <span class="number" id="totalExams">38,356</span>
+                                    <span class="unit">人次</span>
+                                </div>
+                                <div class="trend-info">
+                                    <span class="trend positive" id="examsTrend">↗ +12.5%</span>
+                                    <span class="period">较上月</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-icon">💰</span>
+                                    <h3>总收入</h3>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="trend-btn" data-card="revenue">📈</button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="main-metric">
+                                    <span class="number" id="totalRevenue">2,365</span>
+                                    <span class="unit">万元</span>
+                                </div>
+                                <div class="trend-info">
+                                    <span class="trend positive" id="revenueTrend">↗ +8.3%</span>
+                                    <span class="period">较上月</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-icon">📊</span>
+                                    <h3>设备利用率</h3>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="trend-btn" data-card="equipment">📈</button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="main-metric">
+                                    <span class="number" id="equipmentUtilization">88.5</span>
+                                    <span class="unit">%</span>
+                                </div>
+                                <div class="trend-info">
+                                    <span class="trend positive" id="equipmentTrend">↗ +3.2%</span>
+                                    <span class="period">较上月</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="overview-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-icon">⏱️</span>
+                                    <h3>平均检查时长</h3>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="trend-btn" data-card="timeliness">📈</button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="main-metric">
+                                    <span class="number" id="avgExamTime">16.3</span>
+                                    <span class="unit">分钟</span>
+                                </div>
+                                <div class="trend-info">
+                                    <span class="trend negative" id="timeTrend">↘ -5.1%</span>
+                                    <span class="period">较上月</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第二个容器：关键绩效指标分析 -->
+                <div class="kpi-analysis-container">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <h3 class="title-glow">关键绩效指标分析</h3>
+                        </div>
+                        <div class="chart-controls">
+                            <button class="btn-secondary">导出</button>
+                        </div>
+                    </div>
+                    <div class="chart-content">
+                        <div class="kpi-cards">
+                            <div class="kpi-card hover-effect">
+                                <div class="kpi-name">检查阳性率</div>
+                                <div class="kpi-value counter-animation">48.5%</div>
+                                <div class="kpi-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 48.5%"></div>
+                                    </div>
+                                    <span class="kpi-target">目标: 50%</span>
+                                </div>
+                            </div>
+                            <div class="kpi-card hover-effect">
+                                <div class="kpi-name">预约准确率</div>
+                                <div class="kpi-value counter-animation">92.3%</div>
+                                <div class="kpi-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 92.3%"></div>
+                                    </div>
+                                    <span class="kpi-target">目标: 90%</span>
+                                </div>
+                            </div>
+                            <div class="kpi-card hover-effect">
+                                <div class="kpi-name">报告及时性</div>
+                                <div class="kpi-value counter-animation">89.7%</div>
+                                <div class="kpi-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 89.7%"></div>
+                                    </div>
+                                    <span class="kpi-target">目标: 95%</span>
+                                </div>
+                            </div>
+                            <div class="kpi-card hover-effect">
+                                <div class="kpi-name">患者满意度</div>
+                                <div class="kpi-value counter-animation">94.2%</div>
+                                <div class="kpi-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 94.2%"></div>
+                                    </div>
+                                    <span class="kpi-target">目标: 92%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第三个容器：各类图表 -->
+                <div class="charts-container">
+                    <div class="charts-grid">
+                        <!-- 第一行：主要趋势图表 -->
+                        <div class="chart-row">
+                            <div class="chart-card large">
+                                <div class="chart-header">
+                                    <div class="chart-title">
+                                        <h3>检查量趋势分析</h3>
+                                        <span class="chart-subtitle">实时监控检查量变化趋势</span>
+                                    </div>
+                                    <div class="chart-controls">
+                                        <button class="control-btn active" data-period="7">7天</button>
+                                        <button class="control-btn" data-period="30">30天</button>
+                                        <button class="control-btn" data-period="90">90天</button>
+                                        <button class="refresh-btn" data-chart="examTrend">🔄</button>
+                                    </div>
+                                </div>
+                                <div class="chart-content">
+                                    <div id="exam-volume-chart" style="height: 350px;"></div>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <div class="chart-title">
+                                        <h3>检查类型分布</h3>
+                                    </div>
+                                    <div class="chart-controls">
+                                        <button class="refresh-btn" data-chart="examType">🔄</button>
+                                    </div>
+                                </div>
+                                <div class="chart-content">
+                                    <div id="equipment-distribution-chart" style="height: 350px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 第二行：设备和效率分析 -->
+                        <div class="chart-row">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <div class="chart-title">
+                                        <h3>设备运行效率</h3>
+                                    </div>
+                                    <div class="chart-controls">
+                                        <button class="refresh-btn" data-chart="equipmentEfficiency">🔄</button>
+                                    </div>
+                                </div>
+                                <div class="chart-content">
+                                    <div id="equipment-efficiency-chart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <div class="chart-title">
+                                        <h3>科室申请量排名</h3>
+                                    </div>
+                                    <div class="chart-controls">
+                                        <button class="refresh-btn" data-chart="departmentRanking">🔄</button>
+                                    </div>
+                                </div>
+                                <div class="chart-content">
+                                    <div id="department-ranking-chart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 第三行：质量监控和时间分析 -->
+                        <div class="chart-row">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <div class="chart-title">
+                                        <h3>影像质量监控</h3>
+                                    </div>
+                                    <div class="chart-controls">
+                                        <button class="refresh-btn" data-chart="qualityMonitor">🔄</button>
+                                    </div>
+                                </div>
+                                <div class="chart-content">
+                                    <div id="qualityMonitorChart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <div class="chart-title">
+                                        <h3>报告时间分析</h3>
+                                    </div>
+                                    <div class="chart-controls">
+                                        <button class="refresh-btn" data-chart="reportTime">🔄</button>
+                                    </div>
+                                </div>
+                                <div class="chart-content">
+                                    <div id="reportTimeChart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 第四行：预约和收入分析 -->
+                        <div class="chart-row">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <div class="chart-title">
+                                        <h3>预约情况分析</h3>
+                                    </div>
+                                    <div class="chart-controls">
+                                        <button class="refresh-btn" data-chart="appointment">🔄</button>
+                                    </div>
+                                </div>
+                                <div class="chart-content">
+                                    <div id="appointmentChart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <div class="chart-title">
+                                        <h3>收入构成分析</h3>
+                                    </div>
+                                    <div class="chart-controls">
+                                        <button class="refresh-btn" data-chart="revenueStructure">🔄</button>
+                                    </div>
+                                </div>
+                                <div class="chart-content">
+                                    <div id="revenueStructureChart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第四个容器：明细数据 -->
+                <div class="details-container">
+                        <div class="table-header">
+                            <h3>影像检查明细数据</h3>
+                            <div class="table-actions">
+                                <input type="text" placeholder="搜索检查项目..." class="search-input">
+                                <button>搜索</button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>检查项目</th>
+                                        <th>检查量</th>
+                                        <th>收入(万元)</th>
+                                        <th>平均时长(分钟)</th>
+                                        <th>阳性率(%)</th>
+                                        <th>预约率(%)</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="exam-detail-table">
+                                    <!-- 数据通过JavaScript动态填充 -->
+                                    <tr>
+                                        <td>CT平扫</td>
+                                        <td>8,452</td>
+                                        <td>684.2</td>
+                                        <td>15.2</td>
+                                        <td>68.5</td>
+                                        <td>92.3</td>
+                                        <td>
+                                            <button>详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>MRI检查</td>
+                                        <td>5,136</td>
+                                        <td>745.3</td>
+                                        <td>28.6</td>
+                                        <td>72.1</td>
+                                        <td>87.6</td>
+                                        <td>
+                                            <button>详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>X光检查</td>
+                                        <td>12,345</td>
+                                        <td>426.4</td>
+                                        <td>8.3</td>
+                                        <td>45.8</td>
+                                        <td>91.4</td>
+                                        <td>
+                                            <button>详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>超声检查</td>
+                                        <td>7,447</td>
+                                        <td>412.4</td>
+                                        <td>12.8</td>
+                                        <td>58.3</td>
+                                        <td>83.2</td>
+                                        <td>
+                                            <button>详情</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination">
+                            <button>上一页</button>
+                            <button>1</button>
+                            <button>2</button>
+                            <button>3</button>
+                            <button>下一页</button>
+                        </div>
+                    </div>
+
+                <!-- 溯源分析 -->
+                <div class="analysis-summary-container">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <h3>五、溯源分析</h3>
+                            <div class="chart-subtitle">影像数据深度分析与改进建议</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 综合评价卡片 -->
+                    <div class="card summary-card">
+                        <div class="card-header">
+                            <h4 class="card-title">影像数据综合评价</h4>
+                            <div class="azure-decoration"></div>
+                        </div>
+                        <div class="card-content">
+                            <div class="evaluation-grid">
+                                <div class="evaluation-item">
+                                    <div class="evaluation-icon">📈</div>
+                                    <div class="evaluation-text">
+                                        <strong>检查量增长</strong>
+                                        <p>影像科2025年上半年检查量稳步增长，CT、MRI等高端检查项目需求持续上升，体现了医院诊疗水平的提升。</p>
+                                    </div>
+                                </div>
+                                <div class="evaluation-item">
+                                    <div class="evaluation-icon">⚙️</div>
+                                    <div class="evaluation-text">
+                                        <strong>设备利用率</strong>
+                                        <p>设备利用率保持在较高水平，CT设备利用率达85.2%，MRI设备利用率达78.6%，资源配置相对合理。</p>
+                                    </div>
+                                </div>
+                                <div class="evaluation-item">
+                                    <div class="evaluation-icon">🎯</div>
+                                    <div class="evaluation-text">
+                                        <strong>质量控制</strong>
+                                        <p>影像质量控制效果显著，阳性检出率稳定在合理范围内，报告及时率达到95.3%，满足临床诊疗需求。</p>
+                                    </div>
+                                </div>
+                                <div class="evaluation-item">
+                                    <div class="evaluation-icon">💰</div>
+                                    <div class="evaluation-text">
+                                        <strong>收入结构</strong>
+                                        <p>收入结构优化明显，高值检查项目收入占比提升，单项检查平均收入增长12.8%。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 改进建议卡片 -->
+                    <div class="card recommendations-card">
+                        <div class="card-header">
+                            <h4 class="card-title">深度溯源建议</h4>
+                            <div class="azure-decoration"></div>
+                        </div>
+                        <div class="card-content">
+                            <div class="recommendations-grid">
+                                <div class="recommendation-item card">
+                                    <div class="recommendation-icon">🔄</div>
+                                    <h5>优化检查流程管理</h5>
+                                    <p>建立智能预约系统，根据检查类型和设备状况动态调整预约时间，减少患者等候时间，提高设备周转效率。</p>
+                                </div>
+                                <div class="recommendation-item card">
+                                    <div class="recommendation-icon">🔍</div>
+                                    <h5>强化影像质量控制</h5>
+                                    <p>建立影像质量评价体系，定期开展图像质量评估，加强技师培训，确保影像质量持续改进。</p>
+                                </div>
+                                <div class="recommendation-item card">
+                                    <div class="recommendation-icon">🤖</div>
+                                    <h5>推进AI辅助诊断</h5>
+                                    <p>引入人工智能影像诊断系统，提高疑难病例识别能力，缩短报告时间，提升诊断准确性。</p>
+                                </div>
+                                <div class="recommendation-item card">
+                                    <div class="recommendation-icon">🛠️</div>
+                                    <h5>加强设备维护管理</h5>
+                                    <p>建立设备全生命周期管理体系，制定预防性维护计划，降低设备故障率，延长设备使用寿命。</p>
+                                </div>
+                                <div class="recommendation-item card">
+                                    <div class="recommendation-icon">📊</div>
+                                    <h5>完善数据分析体系</h5>
+                                    <p>构建影像大数据分析平台，深入挖掘检查数据价值，为临床决策和科研工作提供数据支撑。</p>
+                                </div>
+                                <div class="recommendation-item card">
+                                    <div class="recommendation-icon">😊</div>
+                                    <h5>提升服务满意度</h5>
+                                    <p>优化患者就诊体验，加强医患沟通，建立患者反馈机制，持续改进服务质量。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+
+    <!-- 加载统一导航组件 -->
+    <script src="../js/navigation-loader.js"></script>
+    
+
+</body>
+</html>

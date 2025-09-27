@@ -1,0 +1,732 @@
+/* 重点指标监控页面样式 */
+
+/* 修复main-content布局问题 - 根据HMS故障排除指南 */
+.main-content {
+    display: block !important;
+    flex-direction: column !important;
+    padding: 24px !important;
+}
+
+.main-content > * {
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.main-content > *:last-child {
+    margin-bottom: 0;
+}
+
+.key-indicators-monitoring {
+    padding: 24px;
+    background-color: #f5f7fa;
+    min-height: calc(100vh - 80px);
+}
+
+/* 页面头部 */
+.page-header {
+    background-color: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.page-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.english-title {
+    font-size: 14px;
+    color: #666;
+    font-weight: 400;
+    margin-left: 12px;
+}
+
+.breadcrumb {
+    font-size: 14px;
+    color: #666;
+}
+
+.breadcrumb a {
+    color: #1890ff;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+/* 筛选控件 */
+.filter-controls {
+    background-color: #fff;
+    padding: 20px 24px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+}
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-item label {
+    font-size: 14px;
+    color: #333;
+    white-space: nowrap;
+}
+
+.filter-item select,
+.filter-item input {
+    padding: 6px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    font-size: 14px;
+    min-width: 120px;
+}
+
+.filter-item input[type="date"] {
+    min-width: 140px;
+}
+
+.btn-primary {
+    background-color: #1890ff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #40a9ff;
+}
+
+.btn-secondary {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #d9d9d9;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+    border-color: #1890ff;
+    color: #1890ff;
+}
+
+/* 指标概览卡片 */
+.indicators-overview {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+/* 所有卡片容器统一样式 - 一行显示，自适应大小 */
+.workload-indicators,
+.revenue-indicators,
+.cost-efficiency-indicators {
+    display: flex;
+    gap: 12px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    white-space: nowrap;
+}
+
+/* 卡片统一样式 - 减小尺寸 */
+.workload-indicators .overview-card,
+.revenue-indicators .overview-card,
+.cost-efficiency-indicators .overview-card,
+.cost-efficiency-row .overview-card {
+    flex: 1;
+    min-width: 150px;
+    max-width: 200px;
+    flex-shrink: 0;
+}
+
+/* 费用控制和效益效率容器特殊处理 */
+.cost-efficiency-indicators {
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.cost-efficiency-row {
+    display: contents;
+}
+
+/* 兼容原有的indicators-row样式 */
+.indicators-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+
+.indicators-overview .overview-card {
+    flex: 1;
+    min-width: 200px;
+    max-width: none;
+    flex-shrink: 0;
+}
+
+.overview-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border-left: 4px solid #52c41a;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.overview-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.overview-card[data-status="warning"] {
+    border-left-color: #faad14;
+}
+
+.overview-card[data-status="alert"] {
+    border-left-color: #ff4d4f;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.card-header h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-badge.normal {
+    background-color: #f6ffed;
+    color: #52c41a;
+    border: 1px solid #b7eb8f;
+}
+
+.status-badge.warning {
+    background-color: #fffbe6;
+    color: #faad14;
+    border: 1px solid #ffe58f;
+}
+
+.status-badge.alert {
+    background-color: #fff2f0;
+    color: #ff4d4f;
+    border: 1px solid #ffccc7;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.indicator-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.indicator-item:last-child {
+    border-bottom: none;
+}
+
+.indicator-name {
+    font-size: 12px;
+    color: #666;
+}
+
+.indicator-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.indicator-trend {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.indicator-trend.up {
+    background-color: #f6ffed;
+    color: #52c41a;
+}
+
+.indicator-trend.down {
+    background-color: #fff2f0;
+    color: #ff4d4f;
+}
+
+/* 通用section样式 */
+.section {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.section-title h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.section-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* 指标表格 */
+.indicators-table-container {
+    overflow-x: auto;
+}
+
+.indicators-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.indicators-table th,
+.indicators-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.indicators-table th {
+    background-color: #fafafa;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+}
+
+.indicators-table td {
+    color: #666;
+}
+
+.indicators-table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.table-status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.table-status.normal {
+    background-color: #f6ffed;
+    color: #52c41a;
+}
+
+.table-status.warning {
+    background-color: #fffbe6;
+    color: #faad14;
+}
+
+.table-status.alert {
+    background-color: #fff2f0;
+    color: #ff4d4f;
+}
+
+.table-trend {
+    font-weight: 600;
+}
+
+.table-trend.up {
+    color: #52c41a;
+}
+
+.table-trend.down {
+    color: #ff4d4f;
+}
+
+.table-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-small {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-config {
+    background-color: #1890ff;
+    color: white;
+}
+
+.btn-config:hover {
+    background-color: #40a9ff;
+}
+
+.btn-detail {
+    background-color: #52c41a;
+    color: white;
+}
+
+.btn-detail:hover {
+    background-color: #73d13d;
+}
+
+/* 图表容器 */
+.charts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.charts-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.charts-row .chart-item {
+    flex: 1;
+    min-width: 350px;
+    max-width: calc(33.333% - 14px);
+}
+
+.chart-item {
+    background-color: #fafafa;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.chart-header h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.chart-selector {
+    padding: 4px 8px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.chart {
+    width: 100%;
+    height: 300px;
+}
+
+/* 对比分析 */
+
+
+.legend-dot.normal {
+    background-color: #52c41a;
+}
+
+.legend-dot.warning {
+    background-color: #faad14;
+}
+
+.legend-dot.alert {
+    background-color: #ff4d4f;
+}
+
+/* 弹窗样式 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.modal-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.close {
+    font-size: 24px;
+    font-weight: bold;
+    color: #999;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+    .workload-indicators .overview-card,
+    .revenue-indicators .overview-card,
+    .cost-efficiency-indicators .overview-card {
+        min-width: 140px;
+        max-width: 180px;
+    }
+    
+    .charts-row {
+        flex-direction: column;
+    }
+    
+    .charts-row .chart-item {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    /* 修复小屏幕main-content布局 - 根据HMS故障排除指南 */
+    .main-content {
+        padding: 16px !important;
+    }
+    
+    .main-content > * {
+        margin-bottom: 16px;
+    }
+    
+    .key-indicators-monitoring {
+        padding: 16px;
+    }
+    
+    .page-header,
+    .section {
+        padding: 16px;
+    }
+    
+    .filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+    
+    .filter-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+    
+    .filter-item select,
+    .filter-item input {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    /* 小屏幕下允许卡片换行 */
+    .workload-indicators,
+    .revenue-indicators,
+    .cost-efficiency-indicators {
+        flex-wrap: wrap;
+        overflow-x: visible;
+    }
+    
+    .workload-indicators .overview-card,
+    .revenue-indicators .overview-card,
+    .cost-efficiency-indicators .overview-card {
+        min-width: 150px;
+        flex: 1 1 calc(50% - 8px);
+    }
+    
+    .charts-row {
+        flex-direction: column;
+    }
+    
+    .charts-row .chart-item {
+        max-width: 100%;
+        min-width: auto;
+    }
+    
+    .section-title {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .section-actions {
+        justify-content: flex-start;
+    }
+    
+    .chart {
+        height: 250px;
+    }
+    
+
+    
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+    
+    .modal-header,
+    .modal-body {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h2 {
+        font-size: 20px;
+    }
+    
+    .english-title {
+        display: block;
+        margin-left: 0;
+        margin-top: 4px;
+    }
+    
+    /* 超小屏幕下卡片单列显示 */
+    .workload-indicators,
+    .revenue-indicators,
+    .cost-efficiency-indicators {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .workload-indicators .overview-card,
+    .revenue-indicators .overview-card,
+    .cost-efficiency-indicators .overview-card {
+        flex: none;
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .overview-card {
+        padding: 16px;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    
+    .indicator-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+    
+    .indicators-table-container {
+        font-size: 12px;
+    }
+    
+    .indicators-table th,
+    .indicators-table td {
+        padding: 8px 4px;
+    }
+}

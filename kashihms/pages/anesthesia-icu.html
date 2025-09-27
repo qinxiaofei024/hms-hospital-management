@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>麻醉重症运营分析 - 喀什地区第一人民医院数据中心管理平台</title>
+    
+    <!-- 预加载关键CSS -->
+    <link rel="preload" href="../css/style.css" as="style">
+    <link rel="preload" href="../css/common.css" as="style">
+    
+    <!-- CSS文件引用 - 必须按此顺序 -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/medical-analysis.css">
+    
+    <!-- 开发环境缓存控制 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- ECharts库 -->
+    <!-- 使用本地文件，避免CDN不可达导致功能失效 -->
+    <script src="../js/echarts.min.js?v=20250126-fix2"></script>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <div class="container">
+      <div class="main-content">
+        <div class="content-wrapper">
+            <main class="content">
+            <div class="page-header">
+                <h2>麻醉重症运营分析<span class="english-title">Anesthesia & ICU Operation Analysis</span></h2>
+                <div class="breadcrumb">
+                    <a href="../index.html">首页</a> &gt; 
+                    <a href="#department-analysis">科室运营分析</a> &gt; 
+                    <span>麻醉重症运营分析</span>
+                </div>
+                <div class="page-actions">
+                    <div class="filter-section">
+                        <div class="filter-group">
+                            <label for="time-range">时间范围:</label>
+                            <select id="time-range">
+                                <option value="month">本月</option>
+                                <option value="quarter">本季度</option>
+                                <option value="half-year">半年</option>
+                                <option value="year">全年</option>
+                                <option value="custom">自定义</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="department">科室:</label>
+                            <select id="department">
+                                <option value="all">全部</option>
+                                <option value="anesthesia">麻醉科</option>
+                                <option value="icu">重症医学科</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="actions-section">
+                        <button class="btn btn-primary" id="export-btn">导出报表</button>
+                        <button class="btn btn-default" id="refresh-btn">刷新</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="anesthesia-icu-container">
+                <!-- 数据概览卡片 -->
+                <div class="overview-cards">
+                    <div class="overview-card">
+                        <div class="chart-header">
+                            <div class="chart-icon">
+                                <i class="icon-medical"></i>
+                            </div>
+                            <div class="card-info">
+                                <h3 class="chart-title">麻醉总例数</h3>
+                                <div class="card-value">
+                                    <span id="total-anesthesia-count">1,256</span>
+                                    <span class="card-unit">例</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-trend">
+                            <span id="total-anesthesia-trend" class="trend-up">▲ 5.2%</span>
+                            <button class="trend-btn" onclick="showTrendModal('麻醉总例数')">
+                                <i class="icon-chart"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="chart-header">
+                            <div class="chart-icon">
+                                <i class="icon-bed"></i>
+                            </div>
+                            <div class="card-info">
+                                <h3 class="chart-title">ICU入住人次</h3>
+                                <div class="card-value">
+                                    <span id="icu-admission-count">342</span>
+                                    <span class="card-unit">人次</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-trend">
+                            <span id="icu-admission-trend" class="trend-up">▲ 3.8%</span>
+                            <button class="trend-btn" onclick="showTrendModal('ICU入住人次')">
+                                <i class="icon-chart"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="chart-header">
+                            <div class="chart-icon">
+                                <i class="icon-money"></i>
+                            </div>
+                            <div class="card-info">
+                                <h3 class="chart-title">总收入</h3>
+                                <div class="card-value">
+                                    <span id="total-revenue">386.5</span>
+                                    <span class="card-unit">万元</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-trend">
+                            <span id="total-revenue-trend" class="trend-up">▲ 8.7%</span>
+                            <button class="trend-btn" onclick="showTrendModal('总收入')">
+                                <i class="icon-chart"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="chart-header">
+                            <div class="chart-icon">
+                                <i class="icon-time"></i>
+                            </div>
+                            <div class="card-info">
+                                <h3 class="chart-title">平均住院日</h3>
+                                <div class="card-value">
+                                    <span id="avg-stay">7.2</span>
+                                    <span class="card-unit">天</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-trend">
+                            <span id="avg-stay-trend" class="trend-down">▼ 2.1%</span>
+                            <button class="trend-btn" onclick="showTrendModal('平均住院日')">
+                                <i class="icon-chart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 关键绩效指标（上移） -->
+                <div class="kpi-section">
+                    <div class="kpi-card">
+                        <div class="kpi-title">麻醉成功率</div>
+                        <div class="kpi-value">99.8%</div>
+                        <div class="kpi-target">目标: ≥99.5%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-good" style="width: 99.8%"></div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">ICU床位使用率</div>
+                        <div class="kpi-value">86.5%</div>
+                        <div class="kpi-target">目标: 80%-90%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-good" style="width: 86.5%"></div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">麻醉并发症率</div>
+                        <div class="kpi-value">0.2%</div>
+                        <div class="kpi-target">目标: ≤0.5%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-good" style="width: 40%"></div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">ICU死亡率</div>
+                        <div class="kpi-value">4.8%</div>
+                        <div class="kpi-target">目标: ≤8%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-good" style="width: 60%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表区域 -->
+                <div class="charts-section">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3 class="chart-title">麻醉例数趋势分析</h3>
+                                <p class="chart-subtitle">展示麻醉例数的时间趋势变化</p>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="refresh-btn" onclick="refreshChart('anesthesia-trend')">
+                                    <i class="icon-refresh"></i>
+                                </button>
+                                <select class="time-filter" onchange="filterChart('anesthesia-trend', this.value)">
+                                    <option value="7d">近7天</option>
+                                    <option value="30d" selected>近30天</option>
+                                    <option value="90d">近90天</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper" id="anesthesia-trend"></div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3 class="chart-title">ICU入住趋势分析</h3>
+                                <p class="chart-subtitle">展示ICU入住人次的时间趋势变化</p>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="refresh-btn" onclick="refreshChart('icu-trend')">
+                                    <i class="icon-refresh"></i>
+                                </button>
+                                <select class="time-filter" onchange="filterChart('icu-trend', this.value)">
+                                    <option value="7d">近7天</option>
+                                    <option value="30d" selected>近30天</option>
+                                    <option value="90d">近90天</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper" id="icu-trend"></div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3 class="chart-title">收入构成分析</h3>
+                                <p class="chart-subtitle">展示不同收入来源的构成比例</p>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="refresh-btn" onclick="refreshChart('revenue-composition')">
+                                    <i class="icon-refresh"></i>
+                                </button>
+                                <select class="type-filter" onchange="filterChart('revenue-composition', this.value)">
+                                    <option value="all" selected>全部</option>
+                                    <option value="anesthesia">麻醉费</option>
+                                    <option value="icu">ICU费用</option>
+                                    <option value="medicine">药品费</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper" id="revenue-composition"></div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3 class="chart-title">手术类型分布</h3>
+                                <p class="chart-subtitle">展示不同手术类型的分布情况</p>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="refresh-btn" onclick="refreshChart('surgery-type')">
+                                    <i class="icon-refresh"></i>
+                                </button>
+                                <select class="category-filter" onchange="filterChart('surgery-type', this.value)">
+                                    <option value="all" selected>全部科室</option>
+                                    <option value="general">普外科</option>
+                                    <option value="orthopedic">骨科</option>
+                                    <option value="cardiac">心外科</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper" id="surgery-type"></div>
+                    </div>
+                 </div>
+
+                 <!-- 新增：麻醉与ICU扩展分析模块 -->
+                 <div class="charts-section">
+                     <div class="chart-container">
+                         <div class="chart-header">
+                             <div class="chart-title-group">
+                                 <h3 class="chart-title">收入来源分析 <span class="english-title">Revenue Sources</span></h3>
+                                 <p class="chart-subtitle">门急诊/住院/手术室/其他维度的收入占比</p>
+                             </div>
+                             <div class="chart-controls">
+                                 <button class="refresh-btn" onclick="refreshChart('revenue-source')"><i class="icon-refresh"></i></button>
+                                 <select class="type-filter" onchange="filterChart('revenue-source', this.value)">
+                                     <option value="all" selected>全部</option>
+                                     <option value="opd">门急诊</option>
+                                     <option value="ipd">住院</option>
+                                     <option value="or">手术室</option>
+                                 </select>
+                             </div>
+                         </div>
+                         <div class="chart-wrapper" id="revenue-source"></div>
+                     </div>
+
+                     <div class="chart-container">
+                         <div class="chart-header">
+                             <div class="chart-title-group">
+                                 <h3 class="chart-title">组织/时间维度对比 <span class="english-title">Org vs Time Comparison</span></h3>
+                                 <p class="chart-subtitle">组织维度与时间维度核心指标对比</p>
+                             </div>
+                             <div class="chart-controls">
+                                 <button class="refresh-btn" onclick="refreshChart('org-time-analysis')"><i class="icon-refresh"></i></button>
+                                 <select class="time-filter" onchange="filterChart('org-time-analysis', this.value)">
+                                     <option value="month" selected>月度</option>
+                                     <option value="quarter">季度</option>
+                                     <option value="year">年度</option>
+                                 </select>
+                             </div>
+                         </div>
+                         <div class="chart-wrapper" id="org-time-analysis"></div>
+                     </div>
+
+                     <div class="chart-container">
+                         <div class="chart-header">
+                             <div class="chart-title-group">
+                                 <h3 class="chart-title">医技科室收入排名 <span class="english-title">MedTech Dept Ranking</span></h3>
+                                 <p class="chart-subtitle">医技相关科室的收入Top排名</p>
+                             </div>
+                             <div class="chart-controls">
+                                 <button class="refresh-btn" onclick="refreshChart('medtech-ranking')"><i class="icon-refresh"></i></button>
+                             </div>
+                         </div>
+                         <div class="chart-wrapper" id="medtech-ranking"></div>
+                     </div>
+
+                     <div class="chart-container">
+                         <div class="chart-header">
+                             <div class="chart-title-group">
+                                 <h3 class="chart-title">门诊麻醉评估人次 <span class="english-title">Outpatient Anesthesia Evaluations</span></h3>
+                                 <p class="chart-subtitle">近阶段门诊麻醉评估工作量</p>
+                             </div>
+                             <div class="chart-controls">
+                                 <button class="refresh-btn" onclick="refreshChart('outpatient-eval')"><i class="icon-refresh"></i></button>
+                                 <select class="time-filter" onchange="filterChart('outpatient-eval', this.value)">
+                                     <option value="7d">近7天</option>
+                                     <option value="30d" selected>近30天</option>
+                                     <option value="90d">近90天</option>
+                                 </select>
+                             </div>
+                         </div>
+                         <div class="chart-wrapper" id="outpatient-eval"></div>
+                     </div>
+
+                     <div class="chart-container">
+                         <div class="chart-header">
+                             <div class="chart-title-group">
+                                 <h3 class="chart-title">无痛处方预约时长 <span class="english-title">Painless Appointment Duration</span></h3>
+                                 <p class="chart-subtitle">无痛诊疗预约等待时长区间分布</p>
+                             </div>
+                             <div class="chart-controls">
+                                 <button class="refresh-btn" onclick="refreshChart('painless-appointment')"><i class="icon-refresh"></i></button>
+                             </div>
+                         </div>
+                         <div class="chart-wrapper" id="painless-appointment"></div>
+                     </div>
+
+                     <div class="chart-container">
+                         <div class="chart-header">
+                             <div class="chart-title-group">
+                                 <h3 class="chart-title">收入结构与费用控制 <span class="english-title">Income vs Cost Structure</span></h3>
+                                 <p class="chart-subtitle">收入与费用对比，辅助成本控制</p>
+                             </div>
+                             <div class="chart-controls">
+                                 <button class="refresh-btn" onclick="refreshChart('income-cost-structure')"><i class="icon-refresh"></i></button>
+                                 <select class="time-filter" onchange="filterChart('income-cost-structure', this.value)">
+                                     <option value="month" selected>月度</option>
+                                     <option value="quarter">季度</option>
+                                     <option value="year">年度</option>
+                                 </select>
+                             </div>
+                         </div>
+                         <div class="chart-wrapper" id="income-cost-structure"></div>
+                     </div>
+
+                     <div class="chart-container">
+                         <div class="chart-header">
+                             <div class="chart-title-group">
+                                 <h3 class="chart-title">首台晚开监测 <span class="english-title">First Case Delay</span></h3>
+                                 <p class="chart-subtitle">手术间首台手术开台延迟情况监测</p>
+                             </div>
+                             <div class="chart-controls">
+                                 <button class="refresh-btn" onclick="refreshChart('first-case-delay')"><i class="icon-refresh"></i></button>
+                             </div>
+                         </div>
+                         <div class="chart-wrapper" id="first-case-delay"></div>
+                     </div>
+
+                     <div class="chart-container">
+                         <div class="chart-header">
+                             <div class="chart-title-group">
+                                 <h3 class="chart-title">医师工作量 <span class="english-title">Physician Workload</span></h3>
+                                 <p class="chart-subtitle">分医师工作量，可点击下钻</p>
+                             </div>
+                             <div class="chart-controls">
+                                 <button class="refresh-btn" onclick="refreshChart('physician-workload')"><i class="icon-refresh"></i></button>
+                             </div>
+                         </div>
+                         <div class="chart-wrapper" id="physician-workload"></div>
+                     </div>
+
+                     <div class="chart-container">
+                         <div class="chart-header">
+                             <div class="chart-title-group">
+                                 <h3 class="chart-title">不同麻醉类型用药人次 <span class="english-title">Drug Usage by Anesthesia Type</span></h3>
+                                 <p class="chart-subtitle">按麻醉类型统计用药相关人次</p>
+                             </div>
+                             <div class="chart-controls">
+                                 <button class="refresh-btn" onclick="refreshChart('drug-usage-type')"><i class="icon-refresh"></i></button>
+                             </div>
+                         </div>
+                         <div class="chart-wrapper" id="drug-usage-type"></div>
+                     </div>
+
+                     <div class="chart-container">
+                         <div class="chart-header">
+                             <div class="chart-title-group">
+                                 <h3 class="chart-title">不同麻醉类型操作工作量 <span class="english-title">Operation Workload by Type</span></h3>
+                                 <p class="chart-subtitle">按麻醉类型统计操作/处置工作量</p>
+                             </div>
+                             <div class="chart-controls">
+                                 <button class="refresh-btn" onclick="refreshChart('operation-workload-type')"><i class="icon-refresh"></i></button>
+                             </div>
+                         </div>
+                         <div class="chart-wrapper" id="operation-workload-type"></div>
+                     </div>
+                 </div>
+
+                 <!-- 麻醉医师工作分析 -->
+                 <div class="charts-grid">
+                     <div class="chart-container">
+                         <div class="chart-header">
+                             <h3 class="chart-title">麻醉医师工作时长分布</h3>
+                             <p class="chart-subtitle">Anesthesiologist Working Hours Distribution</p>
+                             <div class="chart-controls">
+                                 <button class="btn btn-sm btn-default" onclick="refreshChart('work-hours')">
+                                     <i class="icon-refresh"></i> 刷新
+                                 </button>
+                                 <div class="filter-group">
+                                     <label for="work-hours-time-filter">时间:</label>
+                                     <select id="work-hours-time-filter">
+                                         <option value="week">近一周</option>
+                                         <option value="month" selected>近一月</option>
+                                         <option value="quarter">近三月</option>
+                                     </select>
+                                 </div>
+                                 <div class="filter-group">
+                                     <label for="work-hours-dept-filter">科室:</label>
+                                     <select id="work-hours-dept-filter">
+                                         <option value="all">全部</option>
+                                         <option value="anesthesia">麻醉科</option>
+                                         <option value="icu">重症医学科</option>
+                                     </select>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="chart-content" id="work-hours-chart"></div>
+                     </div>
+                     <div class="chart-container">
+                         <div class="chart-header">
+                             <h3 class="chart-title">加班合理性分布</h3>
+                             <p class="chart-subtitle">Overtime Reasonableness Distribution</p>
+                             <div class="chart-controls">
+                                 <button class="btn btn-sm btn-default" onclick="refreshChart('overtime-analysis')">
+                                     <i class="icon-refresh"></i> 刷新
+                                 </button>
+                                 <div class="filter-group">
+                                     <label for="overtime-time-filter">时间:</label>
+                                     <select id="overtime-time-filter">
+                                         <option value="week">近一周</option>
+                                         <option value="month" selected>近一月</option>
+                                         <option value="quarter">近三月</option>
+                                     </select>
+                                 </div>
+                                 <div class="filter-group">
+                                     <label for="overtime-type-filter">类型:</label>
+                                     <select id="overtime-type-filter">
+                                         <option value="all">全部</option>
+                                         <option value="emergency">急诊加班</option>
+                                         <option value="surgery">手术加班</option>
+                                         <option value="icu">ICU加班</option>
+                                     </select>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="chart-content" id="overtime-analysis-chart"></div>
+                     </div>
+                 </div>
+
+
+                <!-- 详细数据表格 -->
+                <div class="data-table-container">
+                    <h3>麻醉重症详细数据</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>月份</th>
+                                <th>麻醉例数</th>
+                                <th>ICU入住人次</th>
+                                <th>麻醉收入(万元)</th>
+                                <th>ICU收入(万元)</th>
+                                <th>总收入(万元)</th>
+                                <th>环比增长</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1月</td>
+                                <td>980</td>
+                                <td>265</td>
+                                <td>125.6</td>
+                                <td>98.3</td>
+                                <td>223.9</td>
+                                <td>--</td>
+                            </tr>
+                            <tr>
+                                <td>2月</td>
+                                <td>1025</td>
+                                <td>280</td>
+                                <td>132.8</td>
+                                <td>105.6</td>
+                                <td>238.4</td>
+                                <td>+6.5%</td>
+                            </tr>
+                            <tr>
+                                <td>3月</td>
+                                <td>1150</td>
+                                <td>302</td>
+                                <td>148.2</td>
+                                <td>118.5</td>
+                                <td>266.7</td>
+                                <td>+11.9%</td>
+                            </tr>
+                            <tr>
+                                <td>4月</td>
+                                <td>1180</td>
+                                <td>310</td>
+                                <td>152.5</td>
+                                <td>122.3</td>
+                                <td>274.8</td>
+                                <td>+3.0%</td>
+                            </tr>
+                            <tr>
+                                <td>5月</td>
+                                <td>1220</td>
+                                <td>318</td>
+                                <td>158.6</td>
+                                <td>126.4</td>
+                                <td>285.0</td>
+                                <td>+3.7%</td>
+                            </tr>
+                            <tr>
+                                <td>6月</td>
+                                <td>1256</td>
+                                <td>328</td>
+                                <td>163.8</td>
+                                <td>131.2</td>
+                                <td>295.0</td>
+                                <td>+3.5%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/common.js"></script>
+  <script src="../js/anesthesia-icu.js?v=20250126-fix2"></script>
+  <script src="../js/navigation-loader.js?v=20250125-fix3"></script>
+</body>
+</html>

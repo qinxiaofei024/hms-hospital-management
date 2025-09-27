@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航栏折叠功能测试</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .test-container {
+            padding: 20px;
+            margin: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            padding: 10px 20px;
+            margin: 10px;
+            background: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .test-button:hover {
+            background: #40a9ff;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-success { background: #52c41a; }
+        .status-error { background: #ff4d4f; }
+        .status-warning { background: #faad14; }
+        .log-output {
+            background: #f5f5f5;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            padding: 12px;
+            margin-top: 16px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏容器 -->
+    <div id="navigation-container"></div>
+    
+    <div class="main-content">
+        <div class="test-container">
+            <h1>导航栏折叠功能测试</h1>
+            <p>这个页面用于测试修复后的导航栏折叠功能</p>
+            
+            <div class="test-controls">
+                <button class="test-button" onclick="testSidebarManager()">检查SidebarManager</button>
+                <button class="test-button" onclick="testToggleButton()">检查折叠按钮</button>
+                <button class="test-button" onclick="testToggleFunction()">测试折叠功能</button>
+                <button class="test-button" onclick="clearLog()">清空日志</button>
+            </div>
+            
+            <div id="status-display">
+                <h3>功能状态</h3>
+                <div id="sidebar-manager-status">
+                    <span class="status-indicator status-warning"></span>
+                    <span>SidebarManager: 检查中...</span>
+                </div>
+                <div id="toggle-button-status">
+                    <span class="status-indicator status-warning"></span>
+                    <span>折叠按钮: 检查中...</span>
+                </div>
+                <div id="toggle-function-status">
+                    <span class="status-indicator status-warning"></span>
+                    <span>折叠功能: 未测试</span>
+                </div>
+            </div>
+            
+            <div id="log-output" class="log-output">
+                测试日志将显示在这里...
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载导航栏 -->
+    <script src="js/navigation-loader.js?v=20250121-debug"></script>
+    
+    <script>
+        let logOutput = document.getElementById('log-output');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'warn' ? '⚠️' : type === 'success' ? '✅' : 'ℹ️';
+            logOutput.innerHTML += `[${timestamp}] ${prefix} ${message}\n`;
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+        
+        function updateStatus(elementId, success, message) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                const indicator = element.querySelector('.status-indicator');
+                const text = element.querySelector('span:last-child');
+                
+                if (indicator) {
+                    indicator.className = `status-indicator ${success ? 'status-success' : 'status-error'}`;
+                }
+                if (text) {
+                    text.textContent = message;
+                }
+            }
+        }
+        
+        function testSidebarManager() {
+            log('开始检查SidebarManager...');
+            
+            // 检查window.sidebarManager
+            if (typeof window.sidebarManager !== 'undefined') {
+                log('✅ window.sidebarManager 存在', 'success');
+                updateStatus('sidebar-manager-status', true, 'SidebarManager: 已初始化');
+            } else {
+                log('❌ window.sidebarManager 不存在', 'error');
+            }
+            
+            // 检查window._sidebarManager
+            if (typeof window._sidebarManager !== 'undefined') {
+                log('✅ window._sidebarManager 存在', 'success');
+                updateStatus('sidebar-manager-status', true, 'SidebarManager: 已初始化');
+            } else {
+                log('❌ window._sidebarManager 不存在', 'error');
+            }
+            
+            // 检查SidebarManager类
+            if (typeof window.SidebarManager !== 'undefined') {
+                log('✅ SidebarManager 类存在', 'success');
+            } else {
+                log('❌ SidebarManager 类不存在', 'error');
+            }
+            
+            if (!window.sidebarManager && !window._sidebarManager) {
+                updateStatus('sidebar-manager-status', false, 'SidebarManager: 未初始化');
+            }
+        }
+        
+        function testToggleButton() {
+            log('开始检查折叠按钮...');
+            
+            // 检查.sidebar-toggle
+            const toggleButton1 = document.querySelector('.sidebar-toggle');
+            if (toggleButton1) {
+                log('✅ .sidebar-toggle 按钮存在', 'success');
+                log(`   按钮文本: "${toggleButton1.textContent}"`);
+                log(`   按钮类名: ${toggleButton1.className}`);
+            } else {
+                log('❌ .sidebar-toggle 按钮不存在', 'error');
+            }
+            
+            // 检查.toggle-sidebar-btn
+            const toggleButton2 = document.querySelector('.toggle-sidebar-btn');
+            if (toggleButton2) {
+                log('✅ .toggle-sidebar-btn 按钮存在', 'success');
+                log(`   按钮文本: "${toggleButton2.textContent}"`);
+                log(`   按钮类名: ${toggleButton2.className}`);
+            } else {
+                log('❌ .toggle-sidebar-btn 按钮不存在', 'error');
+            }
+            
+            if (toggleButton1 || toggleButton2) {
+                updateStatus('toggle-button-status', true, '折叠按钮: 已找到');
+            } else {
+                updateStatus('toggle-button-status', false, '折叠按钮: 未找到');
+                
+                // 列出所有按钮
+                const allButtons = document.querySelectorAll('button');
+                log(`页面中共有 ${allButtons.length} 个按钮:`);
+                allButtons.forEach((btn, index) => {
+                    log(`  ${index + 1}. "${btn.textContent}" (类名: ${btn.className})`);
+                });
+            }
+        }
+        
+        function testToggleFunction() {
+            log('开始测试折叠功能...');
+            
+            const sidebarManager = window.sidebarManager || window._sidebarManager;
+            if (!sidebarManager) {
+                log('❌ SidebarManager 实例不存在，无法测试', 'error');
+                updateStatus('toggle-function-status', false, '折叠功能: 测试失败');
+                return;
+            }
+            
+            try {
+                log('调用 toggleSidebar() 方法...');
+                sidebarManager.toggleSidebar();
+                log('✅ toggleSidebar() 调用成功', 'success');
+                updateStatus('toggle-function-status', true, '折叠功能: 测试通过');
+                
+                // 检查侧栏状态
+                const sidebar = document.querySelector('.sidebar');
+                if (sidebar) {
+                    const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+                    log(`侧栏当前状态: ${isCollapsed ? '已折叠' : '已展开'}`);
+                } else {
+                    log('⚠️ 未找到侧栏元素', 'warn');
+                }
+            } catch (error) {
+                log(`❌ toggleSidebar() 调用失败: ${error.message}`, 'error');
+                updateStatus('toggle-function-status', false, '折叠功能: 测试失败');
+            }
+        }
+        
+        function clearLog() {
+            logOutput.innerHTML = '';
+        }
+        
+        // 监听导航加载完成事件
+        document.addEventListener('navigationLoaded', function(event) {
+            log('✅ 导航加载完成事件触发', 'success');
+            log(`导航容器子元素数量: ${event.detail.containerElements}`);
+            
+            // 延迟检查，确保所有初始化完成
+            setTimeout(() => {
+                testSidebarManager();
+                testToggleButton();
+            }, 500);
+        });
+        
+        // 页面加载完成后的初始检查
+        window.addEventListener('load', function() {
+            log('页面加载完成');
+            
+            // 如果导航还没加载，等待一下
+            setTimeout(() => {
+                if (!document.querySelector('.sidebar')) {
+                    log('⚠️ 导航可能还未完全加载，请手动点击测试按钮', 'warn');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

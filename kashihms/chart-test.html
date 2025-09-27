@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图表测试页面</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .chart-container {
+            width: 800px;
+            height: 400px;
+            background: white;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            padding: 10px;
+        }
+        .test-info {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-info">
+        <h1>ECharts 图表测试</h1>
+        <p>这个页面用于测试ECharts图表是否能正常显示</p>
+        <div id="status">正在初始化...</div>
+    </div>
+
+    <div class="chart-container" id="testChart1">
+        <div style="text-align: center; line-height: 380px; color: #999;">趋势图表加载中...</div>
+    </div>
+
+    <div class="chart-container" id="testChart2">
+        <div style="text-align: center; line-height: 380px; color: #999;">时间线图表加载中...</div>
+    </div>
+
+    <script>
+        console.log('页面开始加载');
+        
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML = message;
+            console.log(message);
+        }
+
+        function initTestCharts() {
+            updateStatus('开始初始化图表...');
+            
+            // 检查ECharts是否加载
+            if (typeof echarts === 'undefined') {
+                updateStatus('错误: ECharts未加载');
+                return;
+            }
+            
+            updateStatus('ECharts已加载，版本: ' + echarts.version);
+            
+            // 测试图表1 - 趋势图
+            try {
+                const chart1Dom = document.getElementById('testChart1');
+                console.log('图表1容器:', chart1Dom);
+                console.log('图表1容器尺寸:', chart1Dom.offsetWidth, 'x', chart1Dom.offsetHeight);
+                
+                const chart1 = echarts.init(chart1Dom);
+                console.log('图表1实例:', chart1);
+                
+                const option1 = {
+                    title: {
+                        text: '测试趋势图'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00']
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [{
+                        name: '测试数据',
+                        type: 'line',
+                        data: [96, 97, 95, 98, 96, 97],
+                        smooth: true,
+                        lineStyle: { color: '#667eea' }
+                    }]
+                };
+                
+                chart1.setOption(option1);
+                updateStatus('图表1初始化成功');
+                
+            } catch (error) {
+                console.error('图表1初始化失败:', error);
+                updateStatus('图表1初始化失败: ' + error.message);
+            }
+            
+            // 测试图表2 - 时间线图
+            try {
+                const chart2Dom = document.getElementById('testChart2');
+                console.log('图表2容器:', chart2Dom);
+                console.log('图表2容器尺寸:', chart2Dom.offsetWidth, 'x', chart2Dom.offsetHeight);
+                
+                const chart2 = echarts.init(chart2Dom);
+                console.log('图表2实例:', chart2);
+                
+                const option2 = {
+                    title: {
+                        text: '测试时间线图'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: ['08:00', '08:30', '09:00', '09:30', '10:00']
+                    },
+                    yAxis: {
+                        type: 'category',
+                        data: ['执行治疗', '治疗方案', '诊断确认', '辅助检查', '首诊评估']
+                    },
+                    series: [{
+                        name: '已完成',
+                        type: 'bar',
+                        data: [95, 92, 98, 89, 96],
+                        itemStyle: { color: '#43e97b' }
+                    }]
+                };
+                
+                chart2.setOption(option2);
+                updateStatus('所有图表初始化成功！');
+                
+            } catch (error) {
+                console.error('图表2初始化失败:', error);
+                updateStatus('图表2初始化失败: ' + error.message);
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus('DOM加载完成，等待ECharts...');
+            
+            // 等待ECharts加载
+            const checkEcharts = () => {
+                if (typeof echarts !== 'undefined') {
+                    initTestCharts();
+                } else {
+                    setTimeout(checkEcharts, 100);
+                }
+            };
+            
+            checkEcharts();
+        });
+    </script>
+</body>
+</html>

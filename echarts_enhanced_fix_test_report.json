@@ -1,0 +1,108 @@
+{
+  "timestamp": "2025-09-19 00:01:22",
+  "url": "http://localhost:8000/pages/economic-benefit.html",
+  "status": "success",
+  "checks": [
+    {
+      "name": "页面访问",
+      "status": "pass",
+      "score": 20,
+      "max_score": 20,
+      "message": "页面访问成功，状态码: 200"
+    },
+    {
+      "name": "诊断脚本集成",
+      "status": "pass",
+      "score": 30,
+      "max_score": 30,
+      "message": "增强版诊断脚本已正确集成，并且配置了自动修复功能"
+    },
+    {
+      "name": "自动修复流程",
+      "status": "pass",
+      "score": 25,
+      "max_score": 25,
+      "message": "增强版诊断工具包含完整的自动修复逻辑：DOMContentLoaded事件监听、延迟执行、可见性检测、图表初始化"
+    },
+    {
+      "name": "图表容器检查",
+      "status": "pass",
+      "score": 25,
+      "max_score": 25,
+      "message": "所有4个关键图表容器都已找到"
+    }
+  ],
+  "total_score": 100,
+  "max_score": 100,
+  "issues": [],
+  "charts": {
+    "overall-trend-chart": {
+      "exists": true,
+      "id": "overall-trend-chart",
+      "class": [
+        "chart-content"
+      ],
+      "parent_classes": [
+        "chart-container"
+      ],
+      "container_structure": [
+        "div.chart-container",
+        "div.tab-content.active [可能是标签页容器]",
+        "main.content",
+        "div.main-content",
+        "div.container"
+      ]
+    },
+    "department-benefit-chart": {
+      "exists": true,
+      "id": "department-benefit-chart",
+      "class": [
+        "chart-content"
+      ],
+      "parent_classes": [
+        "chart-container"
+      ],
+      "container_structure": [
+        "div.chart-container",
+        "div.tab-content.active [可能是标签页容器]",
+        "main.content",
+        "div.main-content",
+        "div.container"
+      ]
+    },
+    "service-benefit-chart": {
+      "exists": true,
+      "id": "service-benefit-chart",
+      "class": [
+        "chart-content"
+      ],
+      "parent_classes": [
+        "chart-container"
+      ],
+      "container_structure": [
+        "div.chart-container",
+        "div.tab-content [可能是标签页容器]",
+        "main.content",
+        "div.main-content",
+        "div.container"
+      ]
+    },
+    "service-cost-chart": {
+      "exists": true,
+      "id": "service-cost-chart",
+      "class": [
+        "chart-content"
+      ],
+      "parent_classes": [
+        "chart-container"
+      ],
+      "container_structure": [
+        "div.chart-container",
+        "div.tab-content [可能是标签页容器]",
+        "main.content",
+        "div.main-content",
+        "div.container"
+      ]
+    }
+  }
+}

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>重点指标监控 - 喀什地区第一人民医院数据中心管理平台</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/key-indicators-monitoring.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+    
+    <div class="container">
+        <!-- 主要内容区域 -->
+        <div class="main-content">
+            <!-- 右侧内容区 -->
+            <div class="content-wrapper">
+                <!-- 主内容区域 -->
+                <main class="key-indicators-monitoring">
+                    <!-- 页面头部 -->
+                    <div class="page-header">
+                        <h2>重点指标监控<span class="english-title">Key Indicators Monitoring</span></h2>
+                        <div class="breadcrumb">
+                            <a href="../index.html">首页</a> &gt; 
+                            <a href="#department-analysis">科主任运营分析</a> &gt; 
+                            <span>重点指标监控</span>
+                        </div>
+                    </div>
+
+                    <!-- 筛选控件 -->
+                    <div class="filter-controls">
+                        <div class="filter-item">
+                            <label for="timePeriod">时段选择：</label>
+                            <select id="timePeriod">
+                                <option value="day">日级</option>
+                                <option value="month" selected>月级</option>
+                                <option value="year">年级</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="department">科室选择：</label>
+                            <select id="department">
+                                <option value="all">全部科室</option>
+                                <option value="cardiology" selected>心内科</option>
+                                <option value="neurology">神经内科</option>
+                                <option value="orthopedics">骨科</option>
+                                <option value="surgery">外科</option>
+                                <option value="pediatrics">儿科</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="alertStatus">预警状态：</label>
+                            <select id="alertStatus">
+                                <option value="all">全部状态</option>
+                                <option value="normal">正常</option>
+                                <option value="warning">预警</option>
+                                <option value="alert">告警</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="startDate">时间范围：</label>
+                            <input type="date" id="startDate" value="2024-01-01">
+                            <span>至</span>
+                            <input type="date" id="endDate" value="2024-12-31">
+                        </div>
+                        <button id="queryBtn" class="btn-primary">查询</button>
+                        <button id="resetBtn" class="btn-secondary">重置</button>
+                        <button id="exportBtn" class="btn-secondary">导出</button>
+                    </div>
+
+                    <!-- 指标概览卡片 -->
+                    <div id="indicatorsOverview" class="indicators-overview">
+                        <!-- 动态生成指标概览卡片 -->
+                    </div>
+
+                    <!-- 趋势分析图表 -->
+                    <div class="section">
+                        <div class="section-title">
+                            <h3>指标趋势分析</h3>
+                        </div>
+                        <div class="charts-container">
+                            <div class="charts-row">
+                                <div class="chart-item">
+                                    <div class="chart-header">
+                                        <h4>工作量趋势</h4>
+                                    </div>
+                                    <div id="trend-workload" class="chart"></div>
+                                </div>
+                                <div class="chart-item">
+                                    <div class="chart-header">
+                                        <h4>收入结构趋势</h4>
+                                    </div>
+                                    <div id="trend-revenue" class="chart"></div>
+                                </div>
+                                <div class="chart-item">
+                                    <div class="chart-header">
+                                        <h4>费用控制趋势</h4>
+                                    </div>
+                                    <div id="trend-cost" class="chart"></div>
+                                </div>
+                            </div>
+                            <div class="charts-row">
+                                <div class="chart-item">
+                                    <div class="chart-header">
+                                        <h4>效益效率趋势</h4>
+                                    </div>
+                                    <div id="trend-efficiency" class="chart"></div>
+                                </div>
+                                <div class="chart-item">
+                                    <div class="chart-header">
+                                        <h4>质量安全趋势</h4>
+                                    </div>
+                                    <div id="trend-quality" class="chart"></div>
+                                </div>
+                                <div class="chart-item">
+                                    <div class="chart-header">
+                                        <h4>患者满意度趋势</h4>
+                                    </div>
+                                    <div id="trend-satisfaction" class="chart"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 详细指标表格 -->
+                    <div class="section">
+                        <div class="section-title">
+                            <h3>详细指标监控</h3>
+                            <div class="section-actions">
+                                <button class="btn-secondary" id="export-btn">导出数据</button>
+                                <button class="btn-secondary" id="config-btn">配置预警</button>
+                            </div>
+                        </div>
+                        <div class="indicators-table-container">
+                            <table id="indicatorsTable" class="indicators-table">
+                                <thead>
+                                    <tr>
+                                        <th>指标名称</th>
+                                        <th>科室</th>
+                                        <th>当前值</th>
+                                        <th>目标值</th>
+                                        <th>完成率</th>
+                                        <th>趋势</th>
+                                        <th>状态</th>
+                                        <th>更新时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 表格数据将通过JavaScript动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- 预警配置弹窗 -->
+    <div id="configModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>预警配置 - <span id="configIndicatorName"></span></h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="warningThreshold">预警阈值：</label>
+                    <input type="number" id="warningThreshold" step="0.1" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label for="alertThreshold">告警阈值：</label>
+                    <input type="number" id="alertThreshold" step="0.1" min="0" max="100">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary close">取消</button>
+                    <button type="button" class="btn-primary" id="saveConfig">保存配置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载通用脚本 -->
+    <script src="../js/common.js"></script>
+    <script src="../js/navigation-loader.js"></script>
+    
+    <!-- 加载重点指标监控页面JavaScript -->
+    <script src="../js/key-indicators-monitoring.js"></script>
+</body>
+</html>

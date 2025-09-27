@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>脚本加载测试</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <h1>脚本加载测试页面</h1>
+    
+    <!-- 导航栏容器 -->
+    <div id="navigation-container"></div>
+    
+    <div id="test-results">
+        <h2>测试结果：</h2>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const p = document.createElement('p');
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(p);
+            console.log(message);
+        }
+        
+        log('页面开始加载...');
+        
+        // 监听脚本加载
+        window.addEventListener('load', function() {
+            log('页面加载完成');
+            
+            setTimeout(() => {
+                // 检查NavigationLoader是否存在
+                if (typeof NavigationLoader !== 'undefined') {
+                    log('✅ NavigationLoader 类已加载');
+                } else {
+                    log('❌ NavigationLoader 类未找到');
+                }
+                
+                // 检查SidebarManager是否存在
+                if (window.sidebarManager) {
+                    log('✅ window.sidebarManager 已初始化');
+                } else {
+                    log('❌ window.sidebarManager 未初始化');
+                }
+                
+                if (window._sidebarManager) {
+                    log('✅ window._sidebarManager 已初始化');
+                } else {
+                    log('❌ window._sidebarManager 未初始化');
+                }
+                
+                // 检查导航栏是否加载
+                const navContainer = document.getElementById('navigation-container');
+                if (navContainer && navContainer.innerHTML.trim()) {
+                    log('✅ 导航栏内容已加载');
+                } else {
+                    log('❌ 导航栏内容未加载');
+                }
+                
+                // 检查折叠按钮
+                const toggleBtn = document.querySelector('.sidebar-toggle');
+                if (toggleBtn) {
+                    log('✅ 折叠按钮已找到');
+                } else {
+                    log('❌ 折叠按钮未找到');
+                }
+            }, 2000);
+        });
+        
+        // 监听脚本错误
+        window.addEventListener('error', function(e) {
+            log(`❌ 脚本错误: ${e.message} (${e.filename}:${e.lineno})`);
+        });
+    </script>
+    
+    <!-- 加载navigation-loader.js -->
+    <script src="js/navigation-loader.js?v=20250121-debug" 
+            onload="log('✅ navigation-loader.js 加载成功')" 
+            onerror="log('❌ navigation-loader.js 加载失败')"></script>
+</body>
+</html>

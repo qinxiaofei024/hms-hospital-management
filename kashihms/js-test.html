@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript测试</title>
+</head>
+<body>
+    <h1>JavaScript执行测试</h1>
+    <div id="navigation-container">初始内容</div>
+    <div id="test-output"></div>
+    
+    <script>
+        console.log('内联脚本开始执行');
+        document.getElementById('test-output').innerHTML = '<p>内联JavaScript正常执行</p>';
+        
+        // 测试fetch功能
+        async function testFetch() {
+            try {
+                console.log('开始测试fetch...');
+                const response = await fetch('../components/nav.html');
+                console.log('Fetch响应:', response.status);
+                
+                if (response.ok) {
+                    const text = await response.text();
+                    console.log('获取内容长度:', text.length);
+                    document.getElementById('navigation-container').innerHTML = text;
+                    document.getElementById('test-output').innerHTML += '<p>Fetch成功，导航已加载</p>';
+                } else {
+                    document.getElementById('test-output').innerHTML += '<p>Fetch失败: ' + response.status + '</p>';
+                }
+            } catch (error) {
+                console.error('Fetch错误:', error);
+                document.getElementById('test-output').innerHTML += '<p>Fetch错误: ' + error.message + '</p>';
+            }
+        }
+        
+        // 页面加载后执行测试
+        window.addEventListener('load', function() {
+            console.log('页面加载完成');
+            document.getElementById('test-output').innerHTML += '<p>页面加载完成</p>';
+            setTimeout(testFetch, 1000);
+        });
+    </script>
+    
+    <!-- 测试外部脚本加载 -->
+    <script>
+        console.log('第二个内联脚本执行');
+        document.getElementById('test-output').innerHTML += '<p>第二个内联脚本执行</p>';
+    </script>
+    
+    <!-- 加载navigation-loader.js -->
+    <script src="../js/navigation-loader.js"></script>
+    
+    <script>
+        console.log('navigation-loader.js加载后的脚本执行');
+        document.getElementById('test-output').innerHTML += '<p>navigation-loader.js已加载</p>';
+        
+        setTimeout(function() {
+            if (typeof NavigationLoader !== 'undefined') {
+                document.getElementById('test-output').innerHTML += '<p>NavigationLoader类已定义</p>';
+            } else {
+                document.getElementById('test-output').innerHTML += '<p>NavigationLoader类未定义</p>';
+            }
+            
+            if (window.navigationLoader) {
+                document.getElementById('test-output').innerHTML += '<p>navigationLoader实例存在</p>';
+            } else {
+                document.getElementById('test-output').innerHTML += '<p>navigationLoader实例不存在</p>';
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

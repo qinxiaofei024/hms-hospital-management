@@ -1,0 +1,191 @@
+{
+  "overview": {
+    "totalDataVolume": {
+      "2023": 28.5,
+      "2024": 33.6,
+      "2025": 38.6
+    },
+    "businessSystems": {
+      "2023": 38,
+      "2024": 40,
+      "2025": 42
+    },
+    "patientData": {
+      "2023": 1056890,
+      "2024": 1156890,
+      "2025": 1256890
+    },
+    "dataQualityScore": {
+      "2023": 88.2,
+      "2024": 90.5,
+      "2025": 92.8
+    }
+  },
+  "qualityTrend": {
+    "months": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+    "2023": {
+      "data": [85.2, 86.5, 87.1, 87.8, 88.5, 89.2, 90.1, 91.3, 91.9, 92.3, 92.5, 92.8]
+    },
+    "2024": {
+      "data": [92.8, 93.1, 93.5, 93.8, 94.2, 94.5, 94.8, 95.1, 95.3, 95.5, 95.7, 95.8]
+    },
+    "2025": {
+      "data": [95.8, 96.0, 96.2, 96.4, 96.5, 96.7, 96.8, 96.9, 97.0, 97.1, 97.2, 97.3]
+    }
+  },
+  "qualityDistribution": {
+    "2023": {
+      "categories": ["优秀 (≥90分)", "良好 (80-89分)", "一般 (70-79分)", "较差 (<70分)"],
+      "data": [
+        {"value": 45, "name": "优秀 (≥90分)", "color": "#52c41a"},
+        {"value": 40, "name": "良好 (80-89分)", "color": "#faad14"},
+        {"value": 10, "name": "一般 (70-79分)", "color": "#ff7875"},
+        {"value": 5, "name": "较差 (<70分)", "color": "#ff4d4f"}
+      ]
+    },
+    "2024": {
+      "categories": ["优秀 (≥90分)", "良好 (80-89分)", "一般 (70-79分)", "较差 (<70分)"],
+      "data": [
+        {"value": 55, "name": "优秀 (≥90分)", "color": "#52c41a"},
+        {"value": 40, "name": "良好 (80-89分)", "color": "#faad14"},
+        {"value": 3, "name": "一般 (70-79分)", "color": "#ff7875"},
+        {"value": 2, "name": "较差 (<70分)", "color": "#ff4d4f"}
+      ]
+    },
+    "2025": {
+      "categories": ["优秀 (≥90分)", "良好 (80-89分)", "一般 (70-79分)", "较差 (<70分)"],
+      "data": [
+        {"value": 65, "name": "优秀 (≥90分)", "color": "#52c41a"},
+        {"value": 28, "name": "良好 (80-89分)", "color": "#faad14"},
+        {"value": 5, "name": "一般 (70-79分)", "color": "#ff7875"},
+        {"value": 2, "name": "较差 (<70分)", "color": "#ff4d4f"}
+      ]
+    }
+  },
+  "dataDistribution": {
+    "2023": {
+      "categories": ["电子病历", "检验检查", "影像数据", "用药记录", "财务数据", "运营管理", "其他数据"],
+      "data": [
+        {"value": 9.8, "name": "电子病历", "color": "#0066cc"},
+        {"value": 7.5, "name": "检验检查", "color": "#1890ff"},
+        {"value": 6.2, "name": "影像数据", "color": "#40a9ff"},
+        {"value": 3.1, "name": "用药记录", "color": "#69c0ff"},
+        {"value": 1.5, "name": "财务数据", "color": "#91d5ff"},
+        {"value": 0.3, "name": "运营管理", "color": "#bae7ff"},
+        {"value": 0.1, "name": "其他数据", "color": "#e6f7ff"}
+      ]
+    },
+    "2024": {
+      "categories": ["电子病历", "检验检查", "影像数据", "用药记录", "财务数据", "运营管理", "其他数据"],
+      "data": [
+        {"value": 11.2, "name": "电子病历", "color": "#0066cc"},
+        {"value": 8.7, "name": "检验检查", "color": "#1890ff"},
+        {"value": 7.5, "name": "影像数据", "color": "#40a9ff"},
+        {"value": 3.6, "name": "用药记录", "color": "#69c0ff"},
+        {"value": 2.0, "name": "财务数据", "color": "#91d5ff"},
+        {"value": 0.5, "name": "运营管理", "color": "#bae7ff"},
+        {"value": 0.1, "name": "其他数据", "color": "#e6f7ff"}
+      ]
+    },
+    "2025": {
+      "categories": ["电子病历", "检验检查", "影像数据", "用药记录", "财务数据", "运营管理", "其他数据"],
+      "data": [
+        {"value": 12.5, "name": "电子病历", "color": "#0066cc"},
+        {"value": 9.8, "name": "检验检查", "color": "#1890ff"},
+        {"value": 8.2, "name": "影像数据", "color": "#40a9ff"},
+        {"value": 4.1, "name": "用药记录", "color": "#69c0ff"},
+        {"value": 2.5, "name": "财务数据", "color": "#91d5ff"},
+        {"value": 1.2, "name": "运营管理", "color": "#bae7ff"},
+        {"value": 0.3, "name": "其他数据", "color": "#e6f7ff"}
+      ]
+    }
+  },
+  "securityMetrics": {
+    "encryptionCoverage": "100%",
+    "securityVulnerabilities": 0,
+    "monitoringCoverage": "24/7",
+    "systemAvailability": "99.9%"
+  },
+  "keySystems": [
+    {
+      "id": "1",
+      "name": "电子病历系统",
+      "type": "核心业务系统",
+      "version": "V5.2",
+      "dataVolume": "12.5 TB",
+      "lastUpdated": "2025-06-15 09:15:32",
+      "status": "正常"
+    },
+    {
+      "id": "2",
+      "name": "医院信息系统",
+      "type": "核心业务系统",
+      "version": "V6.0",
+      "dataVolume": "8.2 TB",
+      "lastUpdated": "2025-06-15 09:12:18",
+      "status": "正常"
+    },
+    {
+      "id": "3",
+      "name": "医学影像系统",
+      "type": "医技系统",
+      "version": "V4.8",
+      "dataVolume": "9.8 TB",
+      "lastUpdated": "2025-06-15 09:05:22",
+      "status": "正常"
+    },
+    {
+      "id": "4",
+      "name": "检验信息系统",
+      "type": "医技系统",
+      "version": "V5.5",
+      "dataVolume": "4.1 TB",
+      "lastUpdated": "2025-06-15 09:08:45",
+      "status": "警告"
+    },
+    {
+      "id": "5",
+      "name": "财务管理系统",
+      "type": "管理系统",
+      "version": "V3.6",
+      "dataVolume": "2.5 TB",
+      "lastUpdated": "2025-06-15 09:02:10",
+      "status": "正常"
+    },
+    {
+      "id": "6",
+      "name": "人力资源系统",
+      "type": "管理系统",
+      "version": "V3.2",
+      "dataVolume": "0.3 TB",
+      "lastUpdated": "2025-06-15 08:58:36",
+      "status": "离线"
+    },
+    {
+      "id": "7",
+      "name": "药品管理系统",
+      "type": "业务系统",
+      "version": "V4.0",
+      "dataVolume": "1.2 TB",
+      "lastUpdated": "2025-06-15 08:55:14",
+      "status": "警告"
+    }
+  ],
+  "dataGrowthTrend": {
+    "quarters": [
+      "2023 Q1", "2023 Q2", "2023 Q3", "2023 Q4",
+      "2024 Q1", "2024 Q2", "2024 Q3", "2024 Q4",
+      "2025 Q1", "2025 Q2", "2025 Q3", "2025 Q4"
+    ],
+    "growthRate": [
+      2.1, 2.3, 2.5, 2.8,
+      3.0, 3.2, 3.5, 3.8,
+      4.0, 4.2, 4.5, 4.8
+    ],
+    "newRecords": [
+      45000, 48000, 52000, 55000,
+      60000, 65000, 70000, 75000,
+      80000, 85000, 90000, 95000
+    ]
+  }
+}

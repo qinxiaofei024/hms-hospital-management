@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简化加载器测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #navigation-container { 
+            border: 2px solid #007bff; 
+            min-height: 100px; 
+            margin: 20px 0; 
+            padding: 10px;
+            background: #f8f9fa;
+        }
+        .log { 
+            background: #fff; 
+            border: 1px solid #ddd; 
+            padding: 10px; 
+            margin: 10px 0;
+            max-height: 300px; 
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>简化加载器测试</h1>
+    
+    <div id="navigation-container">
+        <p>等待导航加载...</p>
+    </div>
+    
+    <h2>控制台日志</h2>
+    <div id="console-log" class="log"></div>
+    
+    <button onclick="manualTest()">手动测试</button>
+    
+    <script>
+        // 捕获控制台输出
+        const logDiv = document.getElementById('console-log');
+        
+        function addLog(message) {
+            const p = document.createElement('p');
+            p.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            logDiv.appendChild(p);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        // 重写console方法
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addLog('[LOG] ' + args.join(' '));
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addLog('[ERROR] ' + args.join(' '));
+        };
+        
+        function manualTest() {
+            addLog('=== 手动测试开始 ===');
+            if (window.simpleLoader) {
+                addLog('simpleLoader存在，调用init...');
+                window.simpleLoader.init();
+            } else {
+                addLog('simpleLoader不存在');
+            }
+        }
+        
+        // 监听导航加载事件
+        document.addEventListener('navigationLoaded', function(event) {
+            addLog('收到navigationLoaded事件: ' + JSON.stringify(event.detail));
+        });
+        
+        addLog('页面脚本初始化完成');
+    </script>
+    
+    <!-- 加载简化的测试加载器 -->
+    <script src="test-loader.js"></script>
+</body>
+</html>

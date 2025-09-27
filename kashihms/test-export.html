@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导出功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-warning {
+            background: #ffc107;
+            color: black;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .result.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>导出功能测试页面</h1>
+        
+        <div class="test-section">
+            <h3>1. 基础功能测试</h3>
+            <p>测试导出按钮点击和弹窗显示</p>
+            <button class="btn btn-primary" onclick="testBasicExport()">测试基础导出功能</button>
+            <div id="basic-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Common.js 依赖测试</h3>
+            <p>检查 Common.Export 对象是否可用</p>
+            <button class="btn btn-success" onclick="testCommonExport()">测试 Common.Export</button>
+            <div id="common-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. 简化导出测试</h3>
+            <p>测试简化版本的导出功能</p>
+            <button class="btn btn-warning" onclick="testSimpleExport()">测试简化导出</button>
+            <div id="simple-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. 测试数据</h3>
+            <table id="test-table">
+                <thead>
+                    <tr>
+                        <th>科室</th>
+                        <th>门诊量</th>
+                        <th>住院量</th>
+                        <th>收入(万元)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>心内科</td>
+                        <td>12580</td>
+                        <td>2856</td>
+                        <td>4865</td>
+                    </tr>
+                    <tr>
+                        <td>骨科</td>
+                        <td>10250</td>
+                        <td>2350</td>
+                        <td>3780</td>
+                    </tr>
+                    <tr>
+                        <td>消化内科</td>
+                        <td>9800</td>
+                        <td>2200</td>
+                        <td>3650</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 引入依赖 -->
+    <script src="js/common.js"></script>
+    
+    <script>
+        // 测试基础导出功能
+        function testBasicExport() {
+            const result = document.getElementById('basic-result');
+            result.style.display = 'block';
+            
+            try {
+                // 模拟导出弹窗
+                showTestExportModal();
+                result.className = 'result success';
+                result.textContent = '✓ 基础导出功能正常，弹窗已显示';
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = '✗ 基础导出功能错误: ' + error.message;
+            }
+        }
+
+        // 测试 Common.Export
+        function testCommonExport() {
+            const result = document.getElementById('common-result');
+            result.style.display = 'block';
+            
+            try {
+                if (typeof Common !== 'undefined' && Common.Export) {
+                    result.className = 'result success';
+                    result.innerHTML = '✓ Common.Export 对象可用<br>' +
+                        '- exportToPDF: ' + (typeof Common.Export.exportToPDF === 'function' ? '✓' : '✗') + '<br>' +
+                        '- exportToExcel: ' + (typeof Common.Export.exportToExcel === 'function' ? '✓' : '✗');
+                } else {
+                    result.className = 'result error';
+                    result.textContent = '✗ Common.Export 对象不可用';
+                }
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = '✗ Common.Export 测试错误: ' + error.message;
+            }
+        }
+
+        // 测试简化导出
+        function testSimpleExport() {
+            const result = document.getElementById('simple-result');
+            result.style.display = 'block';
+            
+            try {
+                // 测试 PDF 导出
+                if (typeof Common !== 'undefined' && Common.Export && Common.Export.exportToPDF) {
+                    const table = document.getElementById('test-table');
+                    Common.Export.exportToPDF(table, '测试报告.pdf');
+                    result.className = 'result success';
+                    result.textContent = '✓ PDF 导出功能已触发';
+                } else {
+                    result.className = 'result error';
+                    result.textContent = '✗ PDF 导出功能不可用';
+                }
+            } catch (error) {
+                result.className = 'result error';
+                result.textContent = '✗ 简化导出错误: ' + error.message;
+            }
+        }
+
+        // 显示测试导出弹窗
+        function showTestExportModal() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 8px; max-width: 400px;">
+                    <h3>测试导出弹窗</h3>
+                    <p>这是一个测试导出弹窗，用于验证弹窗功能是否正常。</p>
+                    <button onclick="document.body.removeChild(this.closest('[style*=fixed]'))" 
+                            style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        关闭
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 3秒后自动关闭
+            setTimeout(() => {
+                if (document.body.contains(modal)) {
+                    document.body.removeChild(modal);
+                }
+            }, 3000);
+        }
+
+        // 页面加载完成后的初始检查
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('测试页面加载完成');
+            console.log('Common 对象:', typeof Common !== 'undefined' ? 'Available' : 'Not Available');
+            if (typeof Common !== 'undefined') {
+                console.log('Common.Export:', typeof Common.Export !== 'undefined' ? 'Available' : 'Not Available');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科室运营报告 - 喀什地区第一人民医院数据中心管理平台</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        /* 科室运营报告特殊样式 */
+        .department-report-page {
+            padding: 24px;
+        }
+        
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-item label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .filter-item select {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #fff;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #0066cc;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0052a3;
+        }
+        
+        .btn-default {
+            background-color: #fff;
+            color: #666;
+            border: 1px solid #d9d9d9;
+        }
+        
+        .btn-default:hover {
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 16px;
+            background-color: #f0f7ff;
+            border-radius: 8px;
+        }
+        
+        .report-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0066cc;
+        }
+        
+        .report-info {
+            text-align: right;
+        }
+        
+        .report-info-item {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .chart-container {
+            height: 350px;
+            margin-bottom: 16px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .key-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .metric-card {
+            padding: 16px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+        
+        .metric-card-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0066cc;
+            margin-bottom: 4px;
+        }
+        
+        .metric-card-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .metric-card-change {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .positive {
+            color: #52c41a;
+        }
+        
+        .negative {
+            color: #ff4d4f;
+        }
+        
+        .report-summary {
+            padding: 20px;
+            background-color: #fafafa;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+        
+        .summary-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        
+        .summary-content {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #666;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 24px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        .data-table th {
+            background-color: #fafafa;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #f0f0f0;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .data-table td {
+            padding: 12px;
+            border: 1px solid #f0f0f0;
+            color: #666;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f0f7ff;
+        }
+        
+        .highlight-row {
+            background-color: #fff7e6 !important;
+        }
+        
+        .comparison-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .comparison-item {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .comparison-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        .recommendations-section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+        
+        .recommendations-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        .recommendations-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .recommendation-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        
+        .recommendation-item:last-child {
+            border-bottom: none;
+        }
+        
+        .recommendation-icon {
+            color: #0066cc;
+            font-size: 18px;
+            margin-top: 2px;
+        }
+        
+        .recommendation-content {
+            flex: 1;
+        }
+        
+        .recommendation-subject {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .recommendation-text {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 24px;
+        }
+        
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            background-color: #fff;
+            color: #666;
+            cursor: pointer;
+            margin: 0 4px;
+            border-radius: 4px;
+        }
+        
+        .pagination-btn:hover {
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        .pagination-btn.active {
+            background-color: #0066cc;
+            color: #fff;
+            border-color: #0066cc;
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .export-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .chart-with-legend {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+        
+        .legend-side {
+            width: 200px;
+            flex-shrink: 0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="content-wrapper" style="margin-left: 250px;">
+            <!-- 右侧内容区 -->
+            <main class="department-report-page">
+                <!-- 页面头部 -->
+                <div class="page-header">
+                    <h2>科室运营报告<span class="english-title">Department Operation Report</span></h2>
+                    <div class="breadcrumb">
+                        <a href="../index.html">首页</a> &gt; 
+                        <a href="#department-analysis">科主任运营分析</a> &gt; 
+                        <span>科室运营报告</span>
+                    </div>
+                </div>
+
+                <!-- 筛选控件 -->
+                <div class="filter-controls">
+                    <div class="filter-item">
+                        <label for="time-range">时间范围：</label>
+                        <select id="time-range">
+                            <option value="today">今日</option>
+                            <option value="week">本周</option>
+                            <option value="month" selected>本月</option>
+                            <option value="quarter">本季度</option>
+                            <option value="year">本年</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="department-select">选择科室：</label>
+                        <select id="department-select">
+                            <option value="cardiology">心内科</option>
+                            <option value="orthopedics">骨科</option>
+                            <option value="neurosurgery">神经外科</option>
+                            <option value="digestive">消化内科</option>
+                            <option value="respiratory">呼吸内科</option>
+                            <option value="neurology">神经内科</option>
+                            <option value="obstetrics">妇产科</option>
+                            <option value="pediatrics">儿科</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="report-type">报告类型：</label>
+                        <select id="report-type">
+                            <option value="monthly" selected>月度报告</option>
+                            <option value="quarterly">季度报告</option>
+                            <option value="yearly">年度报告</option>
+                            <option value="special">专项报告</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="generate-report-btn">生成报告</button>
+                </div>
+
+                <!-- 报告导出选项 -->
+                <div class="export-actions">
+                    <button class="btn btn-default" id="exportPDFBtn">导出为PDF</button>
+                    <button class="btn btn-default" id="exportExcelBtn">导出为Excel</button>
+                    <button class="btn btn-default" id="exportWordBtn">导出为Word</button>
+                    <button class="btn btn-default" id="exportChartsBtn">导出图表</button>
+                </div>
+
+                <!-- 报告头部信息 -->
+                <div class="report-header">
+                    <div>
+                        <h3 class="report-title">喀什地区第一人民医院 - 心内科2023年10月运营报告</h3>
+                    </div>
+                    <div class="report-info">
+                        <div class="report-info-item">报告生成日期：2023-11-01</div>
+                        <div class="report-info-item">数据统计周期：2023-10-01 至 2023-10-31</div>
+                        <div class="report-info-item">报告负责人：心内科主任</div>
+                    </div>
+                </div>
+
+                <!-- 报告摘要 -->
+                <div class="report-summary">
+                    <h3 class="summary-title">一、报告摘要</h3>
+                    <div class="summary-content">
+                        <p>2023年10月，心内科运营总体平稳，各项核心指标呈现良好发展态势。门急诊人次、出院人次、手术人次等工作量指标均实现增长，医疗服务质量持续提升，CMI值稳步上升。经济运行方面，医疗收入保持较快增长，但收支结余略有下降，需要关注成本控制。医疗效率指标总体良好，平均住院日继续缩短，病床使用率保持在合理水平。</p>
+                        <p>本月重点工作推进顺利，专科建设取得新进展，新技术、新项目应用效果显著。但仍存在一些需要改进的方面，如抗菌药物使用强度超标、医疗服务收入占比未达目标等，需要制定针对性措施加以解决。</p>
+                    </div>
+                </div>
+
+                <!-- 关键指标概览 -->
+                <div class="section">
+                    <h3 class="section-title">二、关键指标概览</h3>
+                    <div class="key-metrics">
+                        <div class="metric-card">
+                            <div class="metric-card-value">12,580</div>
+                            <div class="metric-card-label">门急诊人次</div>
+                            <div class="metric-card-change positive">+8.2% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">2,856</div>
+                            <div class="metric-card-label">出院人次</div>
+                            <div class="metric-card-change positive">+3.5% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">1,423</div>
+                            <div class="metric-card-label">手术人次</div>
+                            <div class="metric-card-change negative">-1.2% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">¥3.2亿</div>
+                            <div class="metric-card-label">医疗收入</div>
+                            <div class="metric-card-change positive">+14.3% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">¥1.8亿</div>
+                            <div class="metric-card-label">收支结余</div>
+                            <div class="metric-card-change negative">-3.2% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">1.28</div>
+                            <div class="metric-card-label">CMI值</div>
+                            <div class="metric-card-change positive">+0.05 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">7.8天</div>
+                            <div class="metric-card-label">平均住院日</div>
+                            <div class="metric-card-change positive">-0.2天 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">92.5%</div>
+                            <div class="metric-card-label">病床使用率</div>
+                            <div class="metric-card-change positive">+1.2% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">38.2%</div>
+                            <div class="metric-card-label">医疗服务收入占比</div>
+                            <div class="metric-card-change negative">-1.5% 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">45.2 DDD</div>
+                            <div class="metric-card-label">抗菌药物使用强度</div>
+                            <div class="metric-card-change negative">+2.8 DDD 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">48.2</div>
+                            <div class="metric-card-label">医生日均诊疗人次</div>
+                            <div class="metric-card-change positive">+2.3 较上月</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-card-value">98.6%</div>
+                            <div class="metric-card-label">手术完成率</div>
+                            <div class="metric-card-change negative">-0.5% 较上月</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 工作量分析 -->
+                <div class="section">
+                    <h3 class="section-title">三、工作量分析</h3>
+                    <div class="chart-grid">
+                        <div>
+                            <h4 class="chart-title">门急诊人次趋势</h4>
+                            <div id="outpatientTrendChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">出院人次趋势</h4>
+                            <div id="dischargeTrendChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">手术人次趋势</h4>
+                            <div id="surgeryTrendChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">工作量月度对比</h4>
+                            <div id="workloadComparisonChart" class="chart-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <h4 class="chart-title">工作量详细数据</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>指标名称</th>
+                                    <th>本月数值</th>
+                                    <th>上月数值</th>
+                                    <th>环比增长</th>
+                                    <th>去年同期</th>
+                                    <th>同比增长</th>
+                                    <th>年度目标</th>
+                                    <th>完成率</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>门急诊人次</td>
+                                    <td>12,580</td>
+                                    <td>11,626</td>
+                                    <td class="positive">+8.2%</td>
+                                    <td>11,182</td>
+                                    <td class="positive">+12.5%</td>
+                                    <td>11,618</td>
+                                    <td>108.3%</td>
+                                </tr>
+                                <tr>
+                                    <td>出院人次</td>
+                                    <td>2,856</td>
+                                    <td>2,760</td>
+                                    <td class="positive">+3.5%</td>
+                                    <td>2,651</td>
+                                    <td class="positive">+7.8%</td>
+                                    <td>2,767</td>
+                                    <td>103.2%</td>
+                                </tr>
+                                <tr class="highlight-row">
+                                    <td>手术人次</td>
+                                    <td>1,423</td>
+                                    <td>1,440</td>
+                                    <td class="negative">-1.2%</td>
+                                    <td>1,361</td>
+                                    <td class="positive">+4.5%</td>
+                                    <td>1,443</td>
+                                    <td>98.6%</td>
+                                </tr>
+                                <tr>
+                                    <td>专家门诊人次</td>
+                                    <td>3,852</td>
+                                    <td>3,625</td>
+                                    <td class="positive">+6.3%</td>
+                                    <td>3,421</td>
+                                    <td class="positive">+12.6%</td>
+                                    <td>3,650</td>
+                                    <td>105.5%</td>
+                                </tr>
+                                <tr>
+                                    <td>急诊人次</td>
+                                    <td>1,875</td>
+                                    <td>1,762</td>
+                                    <td class="positive">+6.4%</td>
+                                    <td>1,658</td>
+                                    <td class="positive">+13.1%</td>
+                                    <td>1,780</td>
+                                    <td>105.3%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 医疗质量分析 -->
+                <div class="section">
+                    <h3 class="section-title">四、医疗质量分析</h3>
+                    <div class="chart-grid">
+                        <div>
+                            <h4 class="chart-title">CMI值趋势</h4>
+                            <div id="cmiTrendChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">平均住院日趋势</h4>
+                            <div id="lengthOfStayTrendChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">抗菌药物使用强度趋势</h4>
+                            <div id="antibioticUsageTrendChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">医疗质量指标对比</h4>
+                            <div id="qualityIndicatorsComparisonChart" class="chart-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <h4 class="chart-title">医疗质量详细数据</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>指标名称</th>
+                                    <th>本月数值</th>
+                                    <th>上月数值</th>
+                                    <th>环比变化</th>
+                                    <th>去年同期</th>
+                                    <th>同比变化</th>
+                                    <th>目标值</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>CMI值</td>
+                                    <td>1.28</td>
+                                    <td>1.23</td>
+                                    <td class="positive">+0.05</td>
+                                    <td>1.16</td>
+                                    <td class="positive">+0.12</td>
+                                    <td>1.30</td>
+                                    <td>正常</td>
+                                </tr>
+                                <tr>
+                                    <td>平均住院日</td>
+                                    <td>7.8天</td>
+                                    <td>8.0天</td>
+                                    <td class="positive">-0.2天</td>
+                                    <td>8.3天</td>
+                                    <td class="positive">-0.5天</td>
+                                    <td>≤8.0天</td>
+                                    <td>正常</td>
+                                </tr>
+                                <tr class="highlight-row">
+                                    <td>抗菌药物使用强度</td>
+                                    <td>45.2 DDD</td>
+                                    <td>42.4 DDD</td>
+                                    <td class="negative">+2.8 DDD</td>
+                                    <td>43.7 DDD</td>
+                                    <td class="negative">+1.5 DDD</td>
+                                    <td>≤40 DDD</td>
+                                    <td>超标</td>
+                                </tr>
+                                <tr>
+                                    <td>手术并发症发生率</td>
+                                    <td>0.8%</td>
+                                    <td>0.9%</td>
+                                    <td class="positive">-0.1%</td>
+                                    <td>1.2%</td>
+                                    <td class="positive">-0.4%</td>
+                                    <td>≤1.0%</td>
+                                    <td>正常</td>
+                                </tr>
+                                <tr>
+                                    <td>院内感染发生率</td>
+                                    <td>1.2%</td>
+                                    <td>1.3%</td>
+                                    <td class="positive">-0.1%</td>
+                                    <td>1.5%</td>
+                                    <td class="positive">-0.3%</td>
+                                    <td>≤1.5%</td>
+                                    <td>正常</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 经济运行分析 -->
+                <div class="section">
+                    <h3 class="section-title">五、经济运行分析</h3>
+                    <div class="chart-grid">
+                        <div>
+                            <h4 class="chart-title">医疗收入趋势</h4>
+                            <div id="revenueTrendChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">收支结余趋势</h4>
+                            <div id="balanceTrendChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">医疗收入结构</h4>
+                            <div id="revenueStructureChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">成本结构分析</h4>
+                            <div id="costStructureChart" class="chart-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <h4 class="chart-title">经济运行详细数据</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>指标名称</th>
+                                    <th>本月数值</th>
+                                    <th>上月数值</th>
+                                    <th>环比增长</th>
+                                    <th>去年同期</th>
+                                    <th>同比增长</th>
+                                    <th>年度目标</th>
+                                    <th>完成率</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>医疗收入</td>
+                                    <td>¥3.2亿</td>
+                                    <td>¥2.8亿</td>
+                                    <td class="positive">+14.3%</td>
+                                    <td>¥2.7亿</td>
+                                    <td class="positive">+18.6%</td>
+                                    <td>¥2.8亿</td>
+                                    <td>112.5%</td>
+                                </tr>
+                                <tr class="highlight-row">
+                                    <td>收支结余</td>
+                                    <td>¥1.8亿</td>
+                                    <td>¥1.9亿</td>
+                                    <td class="negative">-3.2%</td>
+                                    <td>¥1.7亿</td>
+                                    <td class="positive">+5.8%</td>
+                                    <td>¥1.9亿</td>
+                                    <td>96.8%</td>
+                                </tr>
+                                <tr class="highlight-row">
+                                    <td>医疗服务收入占比</td>
+                                    <td>38.2%</td>
+                                    <td>39.7%</td>
+                                    <td class="negative">-1.5%</td>
+                                    <td>35.4%</td>
+                                    <td class="positive">+2.8%</td>
+                                    <td>≥43%</td>
+                                    <td>88.8%</td>
+                                </tr>
+                                <tr>
+                                    <td>药品收入占比</td>
+                                    <td>42.5%</td>
+                                    <td>41.8%</td>
+                                    <td class="negative">+0.7%</td>
+                                    <td>45.2%</td>
+                                    <td class="positive">-2.7%</td>
+                                    <td>≤40%</td>
+                                    <td>106.3%</td>
+                                </tr>
+                                <tr>
+                                    <td>卫生材料收入占比</td>
+                                    <td>19.3%</td>
+                                    <td>18.5%</td>
+                                    <td class="negative">+0.8%</td>
+                                    <td>19.4%</td>
+                                    <td class="positive">-0.1%</td>
+                                    <td>≤20%</td>
+                                    <td>96.5%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 医疗效率分析 -->
+                <div class="section">
+                    <h3 class="section-title">六、医疗效率分析</h3>
+                    <div class="chart-grid">
+                        <div>
+                            <h4 class="chart-title">病床使用率趋势</h4>
+                            <div id="bedUsageTrendChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">医生日均诊疗人次趋势</h4>
+                            <div id="dailyVisitsTrendChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">医技检查预约等待时间</h4>
+                            <div id="appointmentWaitingTimeChart" class="chart-container"></div>
+                        </div>
+                        <div>
+                            <h4 class="chart-title">出院患者随访率</h4>
+                            <div id="followUpRateChart" class="chart-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <h4 class="chart-title">医疗效率详细数据</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>指标名称</th>
+                                    <th>本月数值</th>
+                                    <th>上月数值</th>
+                                    <th>环比变化</th>
+                                    <th>去年同期</th>
+                                    <th>同比变化</th>
+                                    <th>目标值</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>病床使用率</td>
+                                    <td>92.5%</td>
+                                    <td>91.3%</td>
+                                    <td class="positive">+1.2%</td>
+                                    <td>88.7%</td>
+                                    <td class="positive">+3.8%</td>
+                                    <td>≥90%</td>
+                                    <td>正常</td>
+                                </tr>
+                                <tr>
+                                    <td>医生日均诊疗人次</td>
+                                    <td>48.2</td>
+                                    <td>45.9</td>
+                                    <td class="positive">+2.3</td>
+                                    <td>42.6</td>
+                                    <td class="positive">+5.6</td>
+                                    <td>≥45</td>
+                                    <td>正常</td>
+                                </tr>
+                                <tr>
+                                    <td>平均术前等待日</td>
+                                    <td>2.8天</td>
+                                    <td>3.0天</td>
+                                    <td class="positive">-0.2天</td>
+                                    <td>3.2天</td>
+                                    <td class="positive">-0.4天</td>
+                                    <td>≤3.0天</td>
+                                    <td>正常</td>
+                                </tr>
+                                <tr>
+                                    <td>门诊患者平均等待时间</td>
+                                    <td>18.5分钟</td>
+                                    <td>19.2分钟</td>
+                                    <td class="positive">-0.7分钟</td>
+                                    <td>21.3分钟</td>
+                                    <td class="positive">-2.8分钟</td>
+                                    <td>≤20分钟</td>
+                                    <td>正常</td>
+                                </tr>
+                                <tr>
+                                    <td>出院患者随访率</td>
+                                    <td>96.8%</td>
+                                    <td>96.2%</td>
+                                    <td class="positive">+0.6%</td>
+                                    <td>94.5%</td>
+                                    <td class="positive">+2.3%</td>
+                                    <td>≥95%</td>
+                                    <td>正常</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 问题与建议 -->
+                <div class="recommendations-section">
+                    <h3 class="recommendations-title">七、关键发现与改进建议</h3>
+                    <ul class="recommendations-list">
+                        <li class="recommendation-item">
+                            <span class="recommendation-icon">⚠️</span>
+                            <div class="recommendation-content">
+                                <div class="recommendation-subject">抗菌药物使用强度超标</div>
+                                <div class="recommendation-text">本月抗菌药物使用强度为45.2 DDD，超过目标值（≤40 DDD）。建议加强抗菌药物管理，严格执行处方点评制度，优化抗菌药物使用流程，定期组织抗菌药物合理使用培训。</div>
+                            </div>
+                        </li>
+                        <li class="recommendation-item">
+                            <span class="recommendation-icon">⚠️</span>
+                            <div class="recommendation-content">
+                                <div class="recommendation-subject">医疗服务收入占比未达目标</div>
+                                <div class="recommendation-text">本月医疗服务收入占比为38.2%，低于目标值（≥43%）。建议优化收入结构，提高医疗技术服务价格，发展特色医疗服务项目，控制药品和卫生材料收入占比。</div>
+                            </div>
+                        </li>
+                        <li class="recommendation-item">
+                            <span class="recommendation-icon">⚠️</span>
+                            <div class="recommendation-content">
+                                <div class="recommendation-subject">手术人次略有下降</div>
+                                <div class="recommendation-text">本月手术人次为1,423，较上月下降1.2%。建议加强手术管理，优化手术安排，提高手术台利用率，积极开展新技术、新项目，增加手术量。</div>
+                            </div>
+                        </li>
+                        <li class="recommendation-item">
+                            <span class="recommendation-icon">✅</span>
+                            <div class="recommendation-content">
+                                <div class="recommendation-subject">CMI值稳步提升</div>
+                                <div class="recommendation-text">本月CMI值为1.28，较上月提高0.05，接近年度目标值1.30。建议继续加强疑难重症诊疗能力建设，提高医疗技术水平，扩大重点专科影响力。</div>
+                            </div>
+                        </li>
+                        <li class="recommendation-item">
+                            <span class="recommendation-icon">✅</span>
+                            <div class="recommendation-content">
+                                <div class="recommendation-subject">平均住院日持续缩短</div>
+                                <div class="recommendation-text">本月平均住院日为7.8天，较上月缩短0.2天，低于目标值8.0天。建议继续优化诊疗流程，加强围手术期管理，推广快速康复理念，进一步医疗效率。</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 下阶段工作计划 -->
+                <div class="section">
+                    <h3 class="section-title">八、下阶段工作计划</h3>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>工作内容</th>
+                                    <th>责任科室</th>
+                                    <th>负责人</th>
+                                    <th>计划完成时间</th>
+                                    <th>预期效果</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>制定抗菌药物专项整治方案</td>
+                                    <td>心内科、药剂科</td>
+                                    <td>张医生</td>
+                                    <td>2023-11-15</td>
+                                    <td>抗菌药物使用强度降至40 DDD以下</td>
+                                </tr>
+                                <tr>
+                                    <td>开展医疗服务收入结构优化工作</td>
+                                    <td>心内科、财务科</td>
+                                    <td>李医生</td>
+                                    <td>2023-12-31</td>
+                                    <td>医疗服务收入占比提升至40%以上</td>
+                                </tr>
+                                <tr>
+                                    <td>优化手术安排流程</td>
+                                    <td>心内科、手术室</td>
+                                    <td>王医生</td>
+                                    <td>2023-11-30</td>
+                                    <td>手术台利用率提高10%</td>
+                                </tr>
+                                <tr>
+                                    <td>举办疑难重症诊疗能力培训</td>
+                                    <td>心内科、医务科</td>
+                                    <td>赵医生</td>
+                                    <td>2023-11-20</td>
+                                    <td>提高医护人员专业技能水平</td>
+                                </tr>
+                                <tr>
+                                    <td>推广快速康复理念</td>
+                                    <td>心内科、护理部</td>
+                                    <td>陈医生</td>
+                                    <td>2023-12-15</td>
+                                    <td>平均住院日缩短至7.5天以内</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <!-- ECharts增强版诊断工具 -->
+
+    <script src="../js/department-report.js"></script>
+
+    <!-- 加载统一导航组件 -->
+    <script src="../js/navigation-loader.js?v=20250125-fix3"></script>
+    
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最小化测试</title>
+</head>
+<body>
+    <h1>最小化测试</h1>
+    <div id="navigation-container"></div>
+    <div id="output"></div>
+    
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(message) {
+            const p = document.createElement('p');
+            p.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            output.appendChild(p);
+            console.log(message);
+        }
+        
+        log('开始测试');
+        
+        // 直接测试fetch
+        async function testDirectFetch() {
+            try {
+                log('测试直接fetch...');
+                const response = await fetch('components/nav.html');
+                log('Fetch响应: ' + response.status + ' ' + response.statusText);
+                
+                if (response.ok) {
+                    const text = await response.text();
+                    log('获取内容长度: ' + text.length);
+                    
+                    // 直接注入到容器
+                    const container = document.getElementById('navigation-container');
+                    container.innerHTML = text;
+                    log('内容已注入到容器');
+                    
+                    // 检查注入后的内容
+                    const navElements = container.querySelectorAll('*');
+                    log('注入后容器包含 ' + navElements.length + ' 个元素');
+                    
+                    return true;
+                } else {
+                    log('Fetch失败: ' + response.status);
+                    return false;
+                }
+            } catch (error) {
+                log('Fetch错误: ' + error.message);
+                return false;
+            }
+        }
+        
+        // 页面加载后执行测试
+        window.addEventListener('load', function() {
+            log('页面加载完成');
+            setTimeout(testDirectFetch, 1000);
+        });
+    </script>
+</body>
+</html>

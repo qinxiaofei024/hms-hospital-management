@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Loader Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .debug-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .log-output {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        #navigation-container {
+            border: 2px solid #007bff;
+            min-height: 100px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>Navigation Loader 调试页面</h1>
+        <p>当前页面路径: <span id="current-path"></span></p>
+        <p>服务器状态: <span id="server-status">检查中...</span></p>
+    </div>
+
+    <div class="debug-container">
+        <h2>测试按钮</h2>
+        <button class="test-button" onclick="testFetch()">测试 Fetch nav.html</button>
+        <button class="test-button" onclick="testNavigationLoader()">测试 NavigationLoader</button>
+        <button class="test-button" onclick="manualInit()">手动初始化</button>
+        <button class="test-button" onclick="clearLogs()">清除日志</button>
+    </div>
+
+    <div class="debug-container">
+        <h2>Navigation Container</h2>
+        <div id="navigation-container">
+            <!-- 导航内容将在这里加载 -->
+        </div>
+    </div>
+
+    <div class="debug-container">
+        <h2>调试日志</h2>
+        <div id="log-output" class="log-output"></div>
+    </div>
+
+    <div class="debug-container">
+        <h2>状态信息</h2>
+        <div id="status-info"></div>
+    </div>
+
+    <script>
+        // 日志输出函数
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logOutput = document.getElementById('log-output');
+            const statusInfo = document.getElementById('status-info');
+            
+            const logMessage = `[${timestamp}] ${message}`;
+            logOutput.textContent += logMessage + '\n';
+            logOutput.scrollTop = logOutput.scrollHeight;
+            
+            // 添加状态信息
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = logMessage;
+            statusInfo.appendChild(statusDiv);
+            
+            console.log(logMessage);
+        }
+
+        // 显示当前路径
+        document.getElementById('current-path').textContent = window.location.pathname;
+
+        // 检查服务器状态
+        async function checkServerStatus() {
+            try {
+                const response = await fetch('../components/nav.html');
+                if (response.ok) {
+                    document.getElementById('server-status').textContent = '正常';
+                    document.getElementById('server-status').style.color = 'green';
+                    log('服务器状态检查: 正常', 'success');
+                } else {
+                    document.getElementById('server-status').textContent = `错误 ${response.status}`;
+                    document.getElementById('server-status').style.color = 'red';
+                    log(`服务器状态检查: 错误 ${response.status}`, 'error');
+                }
+            } catch (error) {
+                document.getElementById('server-status').textContent = '连接失败';
+                document.getElementById('server-status').style.color = 'red';
+                log(`服务器状态检查失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 测试直接fetch
+        async function testFetch() {
+            log('开始测试直接 fetch nav.html...', 'info');
+            try {
+                const response = await fetch('../components/nav.html');
+                log(`Fetch 响应状态: ${response.status} ${response.statusText}`, 'info');
+                
+                if (response.ok) {
+                    const html = await response.text();
+                    log(`获取到 HTML 内容，长度: ${html.length} 字符`, 'success');
+                    log(`HTML 内容预览: ${html.substring(0, 200)}...`, 'info');
+                    
+                    // 直接注入到容器
+                    const container = document.getElementById('navigation-container');
+                    container.innerHTML = html;
+                    log('HTML 内容已注入到 navigation-container', 'success');
+                } else {
+                    log(`Fetch 失败: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                log(`Fetch 异常: ${error.message}`, 'error');
+            }
+        }
+
+        // 测试NavigationLoader
+        function testNavigationLoader() {
+            log('开始测试 NavigationLoader...', 'info');
+            
+            if (typeof NavigationLoader !== 'undefined') {
+                log('NavigationLoader 类已定义', 'success');
+                
+                try {
+                    const loader = new NavigationLoader();
+                    log('NavigationLoader 实例创建成功', 'success');
+                    
+                    loader.init().then(() => {
+                        log('NavigationLoader 初始化完成', 'success');
+                    }).catch(error => {
+                        log(`NavigationLoader 初始化失败: ${error.message}`, 'error');
+                    });
+                } catch (error) {
+                    log(`NavigationLoader 实例创建失败: ${error.message}`, 'error');
+                }
+            } else {
+                log('NavigationLoader 类未定义', 'error');
+            }
+        }
+
+        // 手动初始化
+        function manualInit() {
+            log('开始手动初始化...', 'info');
+            
+            if (window.navigationLoader) {
+                log('发现全局 navigationLoader 实例', 'success');
+                window.navigationLoader.init().then(() => {
+                    log('手动初始化完成', 'success');
+                }).catch(error => {
+                    log(`手动初始化失败: ${error.message}`, 'error');
+                });
+            } else {
+                log('未发现全局 navigationLoader 实例', 'error');
+            }
+        }
+
+        // 清除日志
+        function clearLogs() {
+            document.getElementById('log-output').textContent = '';
+            document.getElementById('status-info').innerHTML = '';
+            log('日志已清除', 'info');
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            log('页面 DOMContentLoaded 事件触发', 'info');
+            checkServerStatus();
+            
+            // 检查是否有NavigationLoader
+            setTimeout(() => {
+                if (typeof NavigationLoader !== 'undefined') {
+                    log('NavigationLoader 类可用', 'success');
+                } else {
+                    log('NavigationLoader 类不可用', 'error');
+                }
+                
+                if (window.navigationLoader) {
+                    log('全局 navigationLoader 实例存在', 'success');
+                } else {
+                    log('全局 navigationLoader 实例不存在', 'error');
+                }
+            }, 1000);
+        });
+
+        // 监听导航加载事件
+        document.addEventListener('navigationLoaded', function(event) {
+            log('收到 navigationLoaded 事件', 'success');
+            log(`事件详情: ${JSON.stringify(event.detail)}`, 'info');
+        });
+
+        // 捕获所有错误
+        window.addEventListener('error', function(event) {
+            log(`JavaScript 错误: ${event.error.message}`, 'error');
+            log(`错误位置: ${event.filename}:${event.lineno}:${event.colno}`, 'error');
+        });
+
+        // 捕获未处理的Promise拒绝
+        window.addEventListener('unhandledrejection', function(event) {
+            log(`未处理的 Promise 拒绝: ${event.reason}`, 'error');
+        });
+    </script>
+
+    <!-- 加载navigation-loader -->
+    <script src="js/navigation-loader.js"></script>
+</body>
+</html>

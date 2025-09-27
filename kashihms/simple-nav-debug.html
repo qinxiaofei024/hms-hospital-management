@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Navigation Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 10px 0; }
+        .log { background: #000; color: #0f0; padding: 10px; font-family: monospace; white-space: pre-wrap; }
+        #navigation-container { border: 2px solid #007bff; min-height: 100px; padding: 10px; background: white; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simple Navigation Debug</h1>
+        <p>当前路径: <span id="path"></span></p>
+        <button onclick="testDirectFetch()">测试直接Fetch</button>
+        <button onclick="testNavigationLoader()">测试NavigationLoader</button>
+        <button onclick="clearLog()">清除日志</button>
+    </div>
+
+    <div class="container">
+        <h2>Navigation Container</h2>
+        <div id="navigation-container"></div>
+    </div>
+
+    <div class="container">
+        <h2>日志</h2>
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        function log(msg) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.textContent += `[${timestamp}] ${msg}\n`;
+            console.log(msg);
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+        }
+
+        document.getElementById('path').textContent = window.location.pathname;
+
+        async function testDirectFetch() {
+            log('开始测试直接fetch...');
+            try {
+                const response = await fetch('components/nav.html');
+                log(`响应状态: ${response.status}`);
+                if (response.ok) {
+                    const html = await response.text();
+                    log(`获取HTML成功，长度: ${html.length}`);
+                    document.getElementById('navigation-container').innerHTML = html;
+                    log('HTML已注入到容器');
+                } else {
+                    log(`fetch失败: ${response.statusText}`);
+                }
+            } catch (error) {
+                log(`fetch异常: ${error.message}`);
+            }
+        }
+
+        function testNavigationLoader() {
+            log('测试NavigationLoader...');
+            if (typeof NavigationLoader !== 'undefined') {
+                log('NavigationLoader类存在');
+                try {
+                    const loader = new NavigationLoader();
+                    log('NavigationLoader实例创建成功');
+                    loader.init().then(() => {
+                        log('NavigationLoader初始化完成');
+                    }).catch(error => {
+                        log(`NavigationLoader初始化失败: ${error.message}`);
+                    });
+                } catch (error) {
+                    log(`NavigationLoader创建失败: ${error.message}`);
+                }
+            } else {
+                log('NavigationLoader类不存在');
+            }
+        }
+
+        // 页面加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            log('DOMContentLoaded事件触发');
+            
+            // 检查NavigationLoader
+            setTimeout(() => {
+                if (typeof NavigationLoader !== 'undefined') {
+                    log('NavigationLoader类可用');
+                } else {
+                    log('NavigationLoader类不可用');
+                }
+                
+                if (window.navigationLoader) {
+                    log('全局navigationLoader实例存在');
+                } else {
+                    log('全局navigationLoader实例不存在');
+                }
+            }, 500);
+        });
+
+        // 监听导航加载事件
+        document.addEventListener('navigationLoaded', function(event) {
+            log('收到navigationLoaded事件');
+        });
+
+        // 错误捕获
+        window.addEventListener('error', function(event) {
+            log(`JavaScript错误: ${event.error.message}`);
+        });
+    </script>
+
+    <!-- 加载navigation-loader -->
+    <script src="js/navigation-loader.js"></script>
+</body>
+</html>

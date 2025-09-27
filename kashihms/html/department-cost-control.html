@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科室费用控制分析 - 喀什地区第一人民医院数据中心管理平台</title>
+    <link rel="stylesheet" href="../../static/css/common.css">
+    <link rel="stylesheet" href="../../static/css/economic-operation.css">
+    <script src="../../static/js/jquery.min.js"></script>
+    <script src="../../static/js/echarts.min.js"></script>
+    <script src="../../static/js/common.js"></script>
+</head>
+<body>
+    <div class="main-container">
+        <!-- 顶部导航栏 -->
+        <header class="main-header">
+            <div class="header-left">
+                <h1>喀什地区第一人民医院数据中心管理平台</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span class="username">科主任</span>
+                    <span class="user-role">管理员</span>
+                </div>
+                <button class="logout-btn">退出登录</button>
+            </div>
+        </header>
+        
+        <!-- 侧边菜单栏 -->
+        <aside class="main-sidebar">
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="../../index.html">首页概览</a></li>
+                    <li class="active"><a href="#">科主任运营分析</a>
+                        <ul class="submenu">
+                            <li><a href="department-cockpit.html">科主任驾驶舱</a></li>
+                            <li><a href="key-indicators.html">重点指标监控</a></li>
+                            <li><a href="department-report.html">科室运营报告</a></li>
+                            <li><a href="department-service.html">科室医疗服务</a></li>
+                            <li><a href="department-revenue.html">科室收入分析</a></li>
+                            <li class="active"><a href="department-cost-control.html">科室费用控制分析</a></li>
+                            <li><a href="department-disease.html">科室病种管理</a></li>
+                            <li><a href="department-resource.html">科室资源效益</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">医疗服务分析平台</a></li>
+                    <li><a href="#">综合运营管理分析平台</a></li>
+                    <li><a href="#">医技运营管理平台</a></li>
+                    <li><a href="#">掌上运营</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- 主内容区域 -->
+        <main class="content-container">
+            <div class="page-header">
+                <h2>科室费用控制分析</h2>
+                <div class="header-actions">
+                    <button id="refreshBtn" class="btn btn-refresh"><i class="icon-refresh"></i> 刷新</button>
+                    <button id="exportBtn" class="btn btn-export"><i class="icon-export"></i> 导出</button>
+                </div>
+            </div>
+            
+            <!-- 筛选条件区域 -->
+            <div class="filter-section">
+                <div class="filter-item">
+                    <label for="departmentSelect">科室选择：</label>
+                    <select id="departmentSelect" class="form-control">
+                        <option value="all">全部科室</option>
+                        <option value="internal" selected>内科</option>
+                        <option value="surgery">外科</option>
+                        <option value="pediatrics">儿科</option>
+                        <option value="gynecology">妇产科</option>
+                        <option value="neurology">神经内科</option>
+                        <option value="cardiology">心内科</option>
+                        <option value="orthopedics">骨科</option>
+                        <option value="ophthalmology">眼科</option>
+                        <option value="dermatology">皮肤科</option>
+                        <option value="ent">耳鼻喉科</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="dateRangePicker">日期范围：</label>
+                    <input type="text" id="dateRangePicker" class="form-control" placeholder="选择日期范围">
+                </div>
+                
+                <div class="filter-item">
+                    <label for="costTypeSelect">费用类型：</label>
+                    <select id="costTypeSelect" class="form-control">
+                        <option value="all" selected>全部费用</option>
+                        <option value="drug">药品费用</option>
+                        <option value="material">卫生材料费用</option>
+                        <option value="service">医疗服务费用</option>
+                        <option value="examination">检查费用</option>
+                        <option value="treatment">治疗费用</option>
+                        <option value="surgery">手术费用</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="reportTypeSelect">报告类型：</label>
+                    <select id="reportTypeSelect" class="form-control">
+                        <option value="monthly" selected>月度</option>
+                        <option value="quarterly">季度</option>
+                        <option value="yearly">年度</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- 费用控制概览 -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3>费用控制概览</h3>
+                </div>
+                
+                <div class="overview-cards">
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <span class="card-title">总费用</span>
+                            <span class="card-icon icon-cost"></span>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="totalCostValue">¥48,650,000</div>
+                            <div class="card-extra">
+                                <span class="extra-text">较上期增长</span>
+                                <span class="extra-value positive" id="totalCostGrowth">+8.3%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <span class="card-title">药品费用</span>
+                            <span class="card-icon icon-drug"></span>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="drugCostValue">¥20,430,000</div>
+                            <div class="card-extra">
+                                <span class="extra-text">占比</span>
+                                <span class="extra-value" id="drugCostRatio">42.0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <span class="card-title">卫生材料费用</span>
+                            <span class="card-icon icon-material"></span>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="materialCostValue">¥9,640,000</div>
+                            <div class="card-extra">
+                                <span class="extra-text">占比</span>
+                                <span class="extra-value" id="materialCostRatio">19.8%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <span class="card-title">百元医疗收入消耗</span>
+                            <span class="card-icon icon-consumption"></span>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="consumptionPer100Value">¥32.5</div>
+                            <div class="card-extra">
+                                <span class="extra-text">较上期</span>
+                                <span class="extra-value negative" id="consumptionPer100Growth">-2.4%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <span class="card-title">成本率</span>
+                            <span class="card-icon icon-cost-rate"></span>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="costRateValue">67.7%</div>
+                            <div class="card-extra">
+                                <span class="extra-text">较上期</span>
+                                <span class="extra-value negative" id="costRateGrowth">-2.3%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <span class="card-title">预算执行率</span>
+                            <span class="card-icon icon-budget"></span>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="budgetExecutionValue">96.5%</div>
+                            <div class="card-extra">
+                                <span class="extra-text">控制状态</span>
+                                <span class="extra-value normal" id="budgetStatus">良好</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 费用趋势分析 -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3>费用趋势分析</h3>
+                </div>
+                
+                <div class="chart-container">
+                    <div id="costTrendChart" class="chart-item"></div>
+                    <div id="costStructureChart" class="chart-item"></div>
+                </div>
+            </div>
+            
+            <!-- 药品及材料费用分析 -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3>药品及材料费用分析</h3>
+                </div>
+                
+                <div class="chart-container">
+                    <div id="drugCostTrendChart" class="chart-item"></div>
+                    <div id="materialCostTrendChart" class="chart-item"></div>
+                    <div id="drugCategoryChart" class="chart-item"></div>
+                    <div id="highCostDrugsChart" class="chart-item"></div>
+                </div>
+            </div>
+            
+            <!-- 费用控制详情 -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3>费用控制详情</h3>
+                </div>
+                
+                <div class="tab-container">
+                    <div class="tab-nav">
+                        <button class="tab-btn active" data-tab="department">科室费用对比</button>
+                        <button class="tab-btn" data-tab="drgs">DRGs费用分析</button>
+                        <button class="tab-btn" data-tab="budget">预算执行分析</button>
+                        <button class="tab-btn" data-tab="control">费用控制建议</button>
+                    </div>
+                    
+                    <div class="tab-content">
+                        <!-- 科室费用对比 -->
+                        <div class="tab-panel active" id="department">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>科室名称</th>
+                                            <th>总费用(元)</th>
+                                            <th>药品费用(元)</th>
+                                            <th>材料费用(元)</th>
+                                            <th>百元医疗收入消耗(元)</th>
+                                            <th>成本率(%)</th>
+                                            <th>同比增长(%)</th>
+                                            <th>环比增长(%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="departmentCostTable">
+                                        <!-- 表格数据将通过JavaScript动态加载 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- DRGs费用分析 -->
+                        <div class="tab-panel" id="drgs">
+                            <div class="chart-container">
+                                <div id="drgsCostChart" class="chart-item"></div>
+                            </div>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>疾病组</th>
+                                            <th>例均费用(元)</th>
+                                            <th>例数</th>
+                                            <th>总费用(元)</th>
+                                            <th>药品占比(%)</th>
+                                            <th>材料占比(%)</th>
+                                            <th>费用指数</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="drgsCostTable">
+                                        <!-- 表格数据将通过JavaScript动态加载 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- 预算执行分析 -->
+                        <div class="tab-panel" id="budget">
+                            <div class="chart-container">
+                                <div id="budgetExecutionChart" class="chart-item"></div>
+                                <div id="budgetTrendChart" class="chart-item"></div>
+                            </div>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>预算项目</th>
+                                            <th>预算金额(元)</th>
+                                            <th>实际支出(元)</th>
+                                            <th>执行率(%)</th>
+                                            <th>预算状态</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="budgetExecutionTable">
+                                        <!-- 表格数据将通过JavaScript动态加载 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- 费用控制建议 -->
+                        <div class="tab-panel" id="control">
+                            <div class="control-suggestions">
+                                <div class="suggestion-item">
+                                    <div class="suggestion-header">
+                                        <span class="suggestion-title">药品费用控制建议</span>
+                                        <span class="suggestion-level level-high">高优先级</span>
+                                    </div>
+                                    <div class="suggestion-content">
+                                        <p>1. 优化处方结构，减少高价药品使用，优先使用国家基本药物和集中采购药品</p>
+                                        <p>2. 加强抗菌药物管理，严格控制预防用抗菌药物使用</p>
+                                        <p>3. 建立药品使用监测和预警机制，定期分析药品使用情况</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="suggestion-item">
+                                    <div class="suggestion-header">
+                                        <span class="suggestion-title">卫生材料费用控制建议</span>
+                                        <span class="suggestion-level level-medium">中优先级</span>
+                                    </div>
+                                    <div class="suggestion-content">
+                                        <p>1. 加强高值耗材管理，建立高值耗材使用登记和跟踪制度</p>
+                                        <p>2. 优化材料采购流程，降低采购成本</p>
+                                        <p>3. 推广使用国产替代产品，降低材料成本</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="suggestion-item">
+                                    <div class="suggestion-header">
+                                        <span class="suggestion-title">运营成本控制建议</span>
+                                        <span class="suggestion-level level-medium">中优先级</span>
+                                    </div>
+                                    <div class="suggestion-content">
+                                        <p>1. 加强能源管理，降低水、电、气消耗</p>
+                                        <p>2. 优化人员配置，提高工作效率</p>
+                                        <p>3. 加强设备维护保养，延长设备使用寿命</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 加载遮罩层 -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>数据加载中...</p>
+        </div>
+    </div>
+    
+    <!-- JavaScript文件 -->
+    <script src="../../js/department-cost-control.js"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>喀什地区第一人民医院数据中心管理平台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+    
+    <div class="container">
+        <!-- 主要内容区域 -->
+        <div class="main-content">
+            <!-- 右侧内容区 -->
+            <div class="content-wrapper">
+                <!-- 主内容区域 -->
+                <main class="content">
+                    <div id="dashboard" class="page-header">
+                        <h2>首页概览 <span class="english-title">Home Overview</span></h2>
+                        <div class="breadcrumb">
+                            <span>首页</span>
+                        </div>
+                    </div>
+
+                    <!-- 综合运营管理分析平台锚点 -->
+                    <div id="operation-analysis" class="section-anchor"></div>
+                    
+                    <!-- 医疗服务分析平台锚点 -->
+                    <div id="medical-service" class="section-anchor"></div>
+                    
+                    <!-- 科主任运营分析锚点 -->
+                    <div id="department-analysis" class="section-anchor"></div>
+
+                    <div class="dashboard-grid">
+                        <!-- 数据概览卡片 -->
+                        <div class="overview-cards">
+                            <div class="card" data-status="up">
+                                <div class="card-title">门急诊人次</div>
+                                <div class="card-value">12,580</div>
+                                <div class="card-trend">
+                                    <span class="up">+8.2%</span>
+                                    <span>较上月</span>
+                                </div>
+                            </div>
+                            <div class="card" data-status="up">
+                                <div class="card-title">出院人次</div>
+                                <div class="card-value">2,856</div>
+                                <div class="card-trend">
+                                    <span class="up">+3.5%</span>
+                                    <span>较上月</span>
+                                </div>
+                            </div>
+                            <div class="card" data-status="down">
+                                <div class="card-title">手术人次</div>
+                                <div class="card-value">1,423</div>
+                                <div class="card-trend">
+                                    <span class="down">-1.2%</span>
+                                    <span>较上月</span>
+                                </div>
+                            </div>
+                            <div class="card" data-status="up">
+                                <div class="card-title">医疗收入</div>
+                                <div class="card-value">¥2,865.3万</div>
+                                <div class="card-trend">
+                                    <span class="up">+12.7%</span>
+                                    <span>较上月</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 图表区域 -->
+                        <div class="charts-container">
+                            <div class="chart-item">
+                                <h3>业务趋势分析</h3>
+                                <div id="businessTrendChart" class="chart"></div>
+                            </div>
+                            <div class="chart-item">
+                                <h3>收入结构分析</h3>
+                                <div id="revenueStructureChart" class="chart"></div>
+                            </div>
+                            <div class="chart-item">
+                                <h3>患者年龄分布</h3>
+                                <div id="patientDistributionChart" class="chart"></div>
+                            </div>
+                            <div class="chart-item">
+                                <h3>手术类型分布</h3>
+                                <div id="surgeryTypeChart" class="chart"></div>
+                            </div>
+                            <div class="chart-item">
+                                <h3>科室资源分布</h3>
+                                <div id="resourceUsageChart" class="chart"></div>
+                            </div>
+                            <div class="chart-item">
+                                <h3>设备类型分布</h3>
+                                <div id="equipmentDistributionChart" class="chart"></div>
+                            </div>
+                            <div class="chart-item">
+                                <h3>科室分布</h3>
+                                <div id="departmentDistributionChart" class="chart"></div>
+                            </div>
+                            <div class="chart-item">
+                                <h3>预警趋势</h3>
+                                <div id="warningTrendChart" class="chart"></div>
+                            </div>
+                            <div class="chart-item">
+                                <h3>患者季节性趋势</h3>
+                                <div id="patientSeasonalChart" class="chart"></div>
+                            </div>
+                        </div>
+                </main>
+
+                <!-- 右侧预警信息区域 -->
+                <aside class="sidebar-right">
+                    <!-- 实时预警信息 -->
+                    <div class="warning-section">
+                        <h3 class="section-title">
+                            <span>实时预警信息</span>
+                            <span class="update-time" id="lastUpdateTime"></span>
+                        </h3>
+                        <div class="warning-list" id="warningList">
+                            <!-- 预警消息将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/index.js"></script>
+    
+    
+    
+    <!-- 加载统一导航组件 -->
+    <script src="js/navigation-loader.js?v=20250125-fix3"></script>
+</body>
+</html>

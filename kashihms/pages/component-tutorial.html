@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组件使用教程 - HMS组件库</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+        }
+
+        .loading .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tutorial-nav {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .nav-tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .tutorial-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tutorial-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .step {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .step-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .step-content {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4a5568;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #667eea;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .component-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .component-info h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .component-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .meta-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .meta-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .meta-value {
+            font-weight: 600;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1001;
+            animation: slideIn 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .component-meta {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="goBack()">← 返回组件库</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>组件使用教程</h1>
+            <p>详细的集成指南和最佳实践</p>
+        </div>
+        
+        <div class="content">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>正在加载教程内容...</p>
+            </div>
+            
+            <div id="tutorial-content" style="display: none;">
+                <!-- 组件信息 -->
+                <div class="component-info" id="component-info">
+                    <!-- 动态生成 -->
+                </div>
+                
+                <!-- 教程导航 -->
+                <div class="tutorial-nav">
+                    <div class="nav-tabs" id="nav-tabs">
+                        <div class="nav-tab active" data-section="overview">概述</div>
+                        <div class="nav-tab" data-section="installation">安装</div>
+                        <div class="nav-tab" data-section="basic-usage">基础用法</div>
+                        <div class="nav-tab" data-section="advanced">高级用法</div>
+                        <div class="nav-tab" data-section="api">API文档</div>
+                        <div class="nav-tab" data-section="examples">示例代码</div>
+                    </div>
+                </div>
+                
+                <!-- 教程内容 -->
+                <div id="tutorial-sections">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ComponentTutorial {
+            constructor() {
+                this.componentId = this.getComponentIdFromUrl();
+                this.component = null;
+                this.currentSection = 'overview';
+                this.init();
+            }
+
+            getComponentIdFromUrl() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get('id') || 'disease-benefit-analysis';
+            }
+
+            async init() {
+                try {
+                    await this.loadComponentData();
+                    this.renderComponentInfo();
+                    this.renderTutorialSections();
+                    this.setupEventListeners();
+                    this.hideLoading();
+                } catch (error) {
+                    console.error('初始化失败:', error);
+                    this.showError('加载教程失败，请稍后重试');
+                }
+            }
+
+            async loadComponentData() {
+                const response = await fetch('../data/component-library.json');
+                const data = await response.json();
+                this.component = data.components.find(c => c.id === this.componentId);
+                
+                if (!this.component) {
+                    throw new Error('组件未找到');
+                }
+            }
+
+            renderComponentInfo() {
+                const infoHtml = `
+                    <h2>${this.component.name}</h2>
+                    <p>${this.component.description}</p>
+                    <div class="component-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">版本</div>
+                            <div class="meta-value">${this.component.version}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">分类</div>
+                            <div class="meta-value">${this.component.category}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">作者</div>
+                            <div class="meta-value">${this.component.author}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">状态</div>
+                            <div class="meta-value">${this.component.status}</div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('component-info').innerHTML = infoHtml;
+            }
+
+            renderTutorialSections() {
+                const sectionsContainer = document.getElementById('tutorial-sections');
+                
+                const sections = {
+                    overview: this.renderOverviewSection(),
+                    installation: this.renderInstallationSection(),
+                    'basic-usage': this.renderBasicUsageSection(),
+                    advanced: this.renderAdvancedSection(),
+                    api: this.renderApiSection(),
+                    examples: this.renderExamplesSection()
+                };
+
+                let sectionsHtml = '';
+                Object.entries(sections).forEach(([key, content]) => {
+                    sectionsHtml += `
+                        <div class="tutorial-section ${key === 'overview' ? 'active' : ''}" data-section="${key}">
+                            ${content}
+                        </div>
+                    `;
+                });
+
+                sectionsContainer.innerHTML = sectionsHtml;
+            }
+
+            renderOverviewSection() {
+                return `
+                    <h2 class="section-title">组件概述</h2>
+                    <div class="step">
+                        <div class="step-title">
+                            <span class="step-number">1</span>
+                            功能介绍
+                        </div>
+                        <div class="step-content">
+                            <p>${this.component.description}</p>
+                            <p>该组件主要用于${this.component.category}场景，提供了丰富的功能和灵活的配置选项。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-title">
+                            <span class="step-number">2</span>
+                            主要特性
+                        </div>
+                        <div class="step-content">
+                            <ul>
+                                ${this.component.tags.map(tag => `<li>${tag}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="info">
+                        <strong>提示：</strong> 在使用此组件前，请确保您已经了解基本的HTML、CSS和JavaScript知识。
+                    </div>
+                `;
+            }
+
+            renderInstallationSection() {
+                return `
+                    <h2 class="section-title">安装配置</h2>
+                    <div class="step">
+                        <div class="step-title">
+                            <span class="step-number">1</span>
+                            下载组件文件
+                        </div>
+                        <div class="step-content">
+                            <p>从组件库下载以下文件：</p>
+                            <ul>
+                                ${Object.entries(this.component.files).map(([key, file]) => `<li>${key}: ${file}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-title">
+                            <span class="step-number">2</span>
+                            引入依赖
+                        </div>
+                        <div class="step-content">
+                            <p>在HTML文件中引入必要的依赖：</p>
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre>&lt;!-- CSS文件 --&gt;
+&lt;link rel="stylesheet" href="path/to/${this.component.id}.css"&gt;
+
+&lt;!-- JavaScript文件 --&gt;
+&lt;script src="path/to/${this.component.id}.js"&gt;&lt;/script&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${this.component.dependencies && this.component.dependencies.length > 0 ? `
+                    <div class="step">
+                        <div class="step-title">
+                            <span class="step-number">3</span>
+                            外部依赖
+                        </div>
+                        <div class="step-content">
+                            <p>此组件依赖以下外部库：</p>
+                            <ul>
+                                ${this.component.dependencies.map(dep => `<li>${dep.name} (${dep.version})</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="warning">
+                        <strong>注意：</strong> 请确保所有依赖文件的路径正确，并且文件已正确加载。
+                    </div>
+                `;
+            }
+
+            renderBasicUsageSection() {
+                return `
+                    <h2 class="section-title">基础用法</h2>
+                    <div class="step">
+                        <div class="step-title">
+                            <span class="step-number">1</span>
+                            HTML结构
+                        </div>
+                        <div class="step-content">
+                            <p>创建基本的HTML结构：</p>
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre>&lt;div id="${this.component.id}-container"&gt;
+    &lt;!-- 组件将在这里渲染 --&gt;
+&lt;/div&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-title">
+                            <span class="step-number">2</span>
+                            JavaScript初始化
+                        </div>
+                        <div class="step-content">
+                            <p>使用JavaScript初始化组件：</p>
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre>// 基础初始化
+const ${this.component.id.replace(/-/g, '')} = new ${this.component.name.replace(/\s+/g, '')}({
+    container: '#${this.component.id}-container',
+    // 基础配置选项
+    ${this.component.api.constructor.parameters.slice(0, 3).map(param => 
+                                    `${param.name}: ${this.getDefaultValue(param.type)}`
+                                ).join(',\n    ')}
+});
+
+// 初始化组件
+${this.component.id.replace(/-/g, '')}.init();</pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info">
+                        <strong>提示：</strong> 确保在DOM加载完成后再初始化组件，可以使用 DOMContentLoaded 事件。
+                    </div>
+                `;
+            }
+
+            renderAdvancedSection() {
+                return `
+                    <h2 class="section-title">高级用法</h2>
+                    <div class="step">
+                        <div class="step-title">
+                            <span class="step-number">1</span>
+                            完整配置
+                        </div>
+                        <div class="step-content">
+                            <p>使用所有可用的配置选项：</p>
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre>const ${this.component.id.replace(/-/g, '')} = new ${this.component.name.replace(/\s+/g, '')}({
+    container: '#${this.component.id}-container',
+    ${this.component.api.constructor.parameters.map(param => 
+                                    `${param.name}: ${this.getDefaultValue(param.type)} // ${param.description || '配置参数'}`
+                                ).join(',\n    ')}
+});</pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-title">
+                            <span class="step-number">2</span>
+                            事件监听
+                        </div>
+                        <div class="step-content">
+                            <p>监听组件事件：</p>
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre>// 监听组件事件
+${this.component.id.replace(/-/g, '')}.on('dataLoaded', function(data) {
+    console.log('数据加载完成:', data);
+});
+
+${this.component.id.replace(/-/g, '')}.on('error', function(error) {
+    console.error('组件错误:', error);
+});</pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-title">
+                            <span class="step-number">3</span>
+                            动态更新
+                        </div>
+                        <div class="step-content">
+                            <p>动态更新组件数据和配置：</p>
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre>// 更新数据
+${this.component.id.replace(/-/g, '')}.updateData(newData);
+
+// 更新配置
+${this.component.id.replace(/-/g, '')}.updateConfig({
+    theme: 'dark',
+    animation: true
+});
+
+// 刷新组件
+${this.component.id.replace(/-/g, '')}.refresh();</pre>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderApiSection() {
+                return `
+                    <h2 class="section-title">API文档</h2>
+                    <div class="step">
+                        <div class="step-title">
+                            <span class="step-number">1</span>
+                            构造函数参数
+                        </div>
+                        <div class="step-content">
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                                <thead>
+                                    <tr style="background: #f8f9fa;">
+                                        <th style="padding: 10px; border: 1px solid #dee2e6; text-align: left;">参数名</th>
+                                        <th style="padding: 10px; border: 1px solid #dee2e6; text-align: left;">类型</th>
+                                        <th style="padding: 10px; border: 1px solid #dee2e6; text-align: left;">说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${this.component.api.constructor.parameters.map(param => `
+                                        <tr>
+                                            <td style="padding: 10px; border: 1px solid #dee2e6;">${param.name}</td>
+                                            <td style="padding: 10px; border: 1px solid #dee2e6;">${param.type}</td>
+                                            <td style="padding: 10px; border: 1px solid #dee2e6;">${param.description || '参数说明'}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-title">
+                            <span class="step-number">2</span>
+                            公共方法
+                        </div>
+                        <div class="step-content">
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                                <thead>
+                                    <tr style="background: #f8f9fa;">
+                                        <th style="padding: 10px; border: 1px solid #dee2e6; text-align: left;">方法名</th>
+                                        <th style="padding: 10px; border: 1px solid #dee2e6; text-align: left;">参数</th>
+                                        <th style="padding: 10px; border: 1px solid #dee2e6; text-align: left;">返回值</th>
+                                        <th style="padding: 10px; border: 1px solid #dee2e6; text-align: left;">说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${this.component.api.methods.map(method => `
+                                        <tr>
+                                            <td style="padding: 10px; border: 1px solid #dee2e6;">${method.name}</td>
+                                            <td style="padding: 10px; border: 1px solid #dee2e6;">${method.parameters?.join(', ') || '无'}</td>
+                                            <td style="padding: 10px; border: 1px solid #dee2e6;">${method.returns || 'void'}</td>
+                                            <td style="padding: 10px; border: 1px solid #dee2e6;">${method.description || '方法说明'}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderExamplesSection() {
+                return `
+                    <h2 class="section-title">示例代码</h2>
+                    <div class="step">
+                        <div class="step-title">
+                            <span class="step-number">1</span>
+                            完整示例
+                        </div>
+                        <div class="step-content">
+                            <p>一个完整的使用示例：</p>
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-CN"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;${this.component.name} 示例&lt;/title&gt;
+    &lt;link rel="stylesheet" href="${this.component.id}.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="${this.component.id}-container"&gt;&lt;/div&gt;
+    
+    &lt;script src="${this.component.id}.js"&gt;&lt;/script&gt;
+    &lt;script&gt;
+        document.addEventListener('DOMContentLoaded', function() {
+            const component = new ${this.component.name.replace(/\s+/g, '')}({
+                container: '#${this.component.id}-container',
+                ${this.component.api.constructor.parameters.slice(0, 3).map(param => 
+                                    `${param.name}: ${this.getDefaultValue(param.type)}`
+                                ).join(',\n                ')}
+            });
+            
+            component.init();
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-title">
+                            <span class="step-number">2</span>
+                            常见用法
+                        </div>
+                        <div class="step-content">
+                            <p>一些常见的使用场景：</p>
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre>// 场景1: 基础使用
+const basic = new ${this.component.name.replace(/\s+/g, '')}({
+    container: '#basic-example'
+});
+
+// 场景2: 自定义配置
+const custom = new ${this.component.name.replace(/\s+/g, '')}({
+    container: '#custom-example',
+    theme: 'dark',
+    animation: true
+});
+
+// 场景3: 动态数据
+const dynamic = new ${this.component.name.replace(/\s+/g, '')}({
+    container: '#dynamic-example'
+});
+
+// 加载数据
+fetch('/api/data')
+    .then(response => response.json())
+    .then(data => dynamic.updateData(data));</pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info">
+                        <strong>更多示例：</strong> 您可以在组件演示页面中查看更多交互式示例。
+                    </div>
+                `;
+            }
+
+            getDefaultValue(type) {
+                const defaults = {
+                    'string': "'example'",
+                    'number': '100',
+                    'boolean': 'true',
+                    'object': '{}',
+                    'array': '[]',
+                    'function': 'function() {}'
+                };
+                return defaults[type] || "'value'";
+            }
+
+            setupEventListeners() {
+                // 导航标签切换
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const section = tab.dataset.section;
+                        this.switchSection(section);
+                    });
+                });
+            }
+
+            switchSection(section) {
+                // 更新导航状态
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelector(`[data-section="${section}"]`).classList.add('active');
+
+                // 更新内容显示
+                document.querySelectorAll('.tutorial-section').forEach(sec => {
+                    sec.classList.remove('active');
+                });
+                document.querySelector(`.tutorial-section[data-section="${section}"]`).classList.add('active');
+
+                this.currentSection = section;
+            }
+
+            hideLoading() {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('tutorial-content').style.display = 'block';
+            }
+
+            showError(message) {
+                document.getElementById('loading').innerHTML = `
+                    <div style="color: #dc3545;">
+                        <h3>加载失败</h3>
+                        <p>${message}</p>
+                        <button onclick="location.reload()" style="margin-top: 15px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">重试</button>
+                    </div>
+                `;
+            }
+        }
+
+        // 全局函数
+        function goBack() {
+            window.history.back();
+        }
+
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling;
+            const text = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('代码已复制到剪贴板');
+                button.textContent = '已复制';
+                setTimeout(() => {
+                    button.textContent = '复制';
+                }, 2000);
+            });
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            new ComponentTutorial();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+/**
+ * 模拟的Vite客户端文件
+ * 这个文件是为了解决环境中自动请求@vite/client导致的404错误
+ * 它不包含实际的Vite功能，但可以防止页面加载失败
+ */
+
+// 提供一个空的模块导出对象，防止其他代码依赖错误
+const mockViteClient = {
+  // 空的热模块替换API
+  hot: {
+    accept: function() {},
+    dispose: function() {},
+    data: {}
+  },
+  // 空的模块ID映射
+  moduleGraph: {
+    getModuleById: function() { return null; },
+    on: function() {},
+    off: function() {}
+  }
+};
+
+// 兼容CommonJS和ES模块
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = mockViteClient;
+} else if (typeof define === 'function' && define.amd) {
+  define(function() { return mockViteClient; });
+} else {
+  window.__vite__ = mockViteClient;
+}
+
+// 记录日志，表示模拟的Vite客户端已加载
+console.log('Mock Vite client loaded - this is a placeholder to prevent 404 errors');

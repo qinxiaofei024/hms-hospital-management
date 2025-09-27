@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>病种效益组件诊断</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="disease-benefit.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .diagnostic-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #f9f9f9;
+        }
+        .step.success { border-color: #28a745; background: #d4edda; }
+        .step.error { border-color: #dc3545; background: #f8d7da; }
+        .step.warning { border-color: #ffc107; background: #fff3cd; }
+        .step-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .step-content {
+            font-size: 14px;
+            color: #666;
+        }
+        .test-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-btn:hover { background: #0056b3; }
+        .test-btn:disabled { background: #6c757d; cursor: not-allowed; }
+        #component-container {
+            min-height: 600px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            background: white;
+        }
+        .log-container {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 0;
+        }
+        .log-entry.info { color: #0066cc; }
+        .log-entry.success { color: #28a745; }
+        .log-entry.error { color: #dc3545; }
+        .log-entry.warning { color: #ffc107; }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #28a745);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="diagnostic-container">
+        <h1>病种效益组件诊断工具</h1>
+        <p>系统性地检查组件的各个功能模块</p>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        
+        <div>
+            <button class="test-btn" onclick="runFullDiagnostic()">运行完整诊断</button>
+            <button class="test-btn" onclick="runStepByStep()">逐步诊断</button>
+            <button class="test-btn" onclick="clearLogs()">清空日志</button>
+            <button class="test-btn" onclick="exportLogs()">导出日志</button>
+        </div>
+        
+        <div id="diagnostic-steps">
+            <!-- 诊断步骤将在这里显示 -->
+        </div>
+        
+        <div class="log-container" id="log-container">
+            <!-- 日志将在这里显示 -->
+        </div>
+        
+        <div id="component-container">
+            <!-- 组件将在这里渲染 -->
+        </div>
+    </div>
+
+    <script src="disease-benefit.js"></script>
+    <script>
+        let component = null;
+        let currentStep = 0;
+        let totalSteps = 0;
+        let logs = [];
+        
+        const diagnosticSteps = [
+            {
+                name: '环境检查',
+                description: '检查必要的依赖和环境',
+                test: checkEnvironment
+            },
+            {
+                name: '容器验证',
+                description: '验证DOM容器是否存在',
+                test: checkContainer
+            },
+            {
+                name: '组件创建',
+                description: '创建组件实例',
+                test: createComponent
+            },
+            {
+                name: 'HTML结构生成',
+                description: '检查HTML结构是否正确生成',
+                test: checkHTMLStructure
+            },
+            {
+                name: '事件监听器绑定',
+                description: '验证事件监听器是否正确绑定',
+                test: checkEventListeners
+            },
+            {
+                name: '数据加载',
+                description: '测试数据加载功能',
+                test: testDataLoading
+            },
+            {
+                name: '图表初始化',
+                description: '检查ECharts图表是否正确初始化',
+                test: testChartInitialization
+            },
+            {
+                name: '表格渲染',
+                description: '验证数据表格是否正确渲染',
+                test: testTableRendering
+            },
+            {
+                name: '筛选功能',
+                description: '测试病种筛选功能',
+                test: testFilterFunction
+            },
+            {
+                name: '交互功能',
+                description: '测试按钮和交互功能',
+                test: testInteractions
+            }
+        ];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = {
+                timestamp,
+                message,
+                type
+            };
+            logs.push(logEntry);
+            
+            const logContainer = document.getElementById('log-container');
+            const logElement = document.createElement('div');
+            logElement.className = `log-entry ${type}`;
+            logElement.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logElement);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function updateProgress(step) {
+            const progress = (step / totalSteps) * 100;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+        }
+        
+        function updateStepStatus(stepIndex, status, message = '') {
+            const stepElement = document.getElementById(`step-${stepIndex}`);
+            if (stepElement) {
+                stepElement.className = `step ${status}`;
+                if (message) {
+                    const contentElement = stepElement.querySelector('.step-content');
+                    contentElement.textContent = message;
+                }
+            }
+        }
+        
+        function renderSteps() {
+            const container = document.getElementById('diagnostic-steps');
+            container.innerHTML = '';
+            
+            diagnosticSteps.forEach((step, index) => {
+                const stepElement = document.createElement('div');
+                stepElement.id = `step-${index}`;
+                stepElement.className = 'step';
+                stepElement.innerHTML = `
+                    <div class="step-title">${index + 1}. ${step.name}</div>
+                    <div class="step-content">${step.description}</div>
+                `;
+                container.appendChild(stepElement);
+            });
+            
+            totalSteps = diagnosticSteps.length;
+        }
+        
+        async function runFullDiagnostic() {
+            log('开始运行完整诊断', 'info');
+            currentStep = 0;
+            
+            for (let i = 0; i < diagnosticSteps.length; i++) {
+                const step = diagnosticSteps[i];
+                log(`执行步骤 ${i + 1}: ${step.name}`, 'info');
+                updateStepStatus(i, 'warning', '执行中...');
+                
+                try {
+                    const result = await step.test();
+                    if (result.success) {
+                        updateStepStatus(i, 'success', result.message || '成功');
+                        log(`步骤 ${i + 1} 成功: ${result.message || ''}`, 'success');
+                    } else {
+                        updateStepStatus(i, 'error', result.message || '失败');
+                        log(`步骤 ${i + 1} 失败: ${result.message || ''}`, 'error');
+                        break;
+                    }
+                } catch (error) {
+                    updateStepStatus(i, 'error', `错误: ${error.message}`);
+                    log(`步骤 ${i + 1} 异常: ${error.message}`, 'error');
+                    break;
+                }
+                
+                currentStep = i + 1;
+                updateProgress(currentStep);
+                
+                // 添加延迟以便观察过程
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            log('诊断完成', 'info');
+        }
+        
+        async function runStepByStep() {
+            if (currentStep >= diagnosticSteps.length) {
+                log('所有步骤已完成', 'info');
+                return;
+            }
+            
+            const step = diagnosticSteps[currentStep];
+            log(`执行步骤 ${currentStep + 1}: ${step.name}`, 'info');
+            updateStepStatus(currentStep, 'warning', '执行中...');
+            
+            try {
+                const result = await step.test();
+                if (result.success) {
+                    updateStepStatus(currentStep, 'success', result.message || '成功');
+                    log(`步骤 ${currentStep + 1} 成功: ${result.message || ''}`, 'success');
+                } else {
+                    updateStepStatus(currentStep, 'error', result.message || '失败');
+                    log(`步骤 ${currentStep + 1} 失败: ${result.message || ''}`, 'error');
+                }
+            } catch (error) {
+                updateStepStatus(currentStep, 'error', `错误: ${error.message}`);
+                log(`步骤 ${currentStep + 1} 异常: ${error.message}`, 'error');
+            }
+            
+            currentStep++;
+            updateProgress(currentStep);
+        }
+        
+        // 诊断测试函数
+        async function checkEnvironment() {
+            const checks = [
+                { name: 'ECharts', test: () => typeof echarts !== 'undefined' },
+                { name: 'DiseaseBenefitComponent', test: () => typeof DiseaseBenefitComponent !== 'undefined' },
+                { name: 'Document Ready', test: () => document.readyState === 'complete' }
+            ];
+            
+            const results = checks.map(check => ({
+                name: check.name,
+                passed: check.test()
+            }));
+            
+            const allPassed = results.every(r => r.passed);
+            const failedChecks = results.filter(r => !r.passed).map(r => r.name);
+            
+            return {
+                success: allPassed,
+                message: allPassed ? 
+                    `所有环境检查通过: ${results.map(r => r.name).join(', ')}` :
+                    `环境检查失败: ${failedChecks.join(', ')}`
+            };
+        }
+        
+        async function checkContainer() {
+            const container = document.getElementById('component-container');
+            return {
+                success: !!container,
+                message: container ? 
+                    `容器存在，ID: component-container` :
+                    '容器不存在'
+            };
+        }
+        
+        async function createComponent() {
+            try {
+                component = new DiseaseBenefitComponent('component-container', {
+                    debug: true,
+                    autoLoad: false,
+                    autoInit: false
+                });
+                
+                return {
+                    success: !!component,
+                    message: '组件实例创建成功'
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    message: `组件创建失败: ${error.message}`
+                };
+            }
+        }
+        
+        async function checkHTMLStructure() {
+            if (!component) {
+                return { success: false, message: '组件未创建' };
+            }
+            
+            try {
+                component.createComponentHTML();
+                
+                const container = document.getElementById('component-container');
+                const hasContent = container.innerHTML.trim().length > 0;
+                const hasMainDiv = container.querySelector('.disease-benefit-component');
+                
+                return {
+                    success: hasContent && hasMainDiv,
+                    message: hasContent && hasMainDiv ?
+                        'HTML结构生成成功' :
+                        'HTML结构生成失败或不完整'
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    message: `HTML结构生成异常: ${error.message}`
+                };
+            }
+        }
+        
+        async function checkEventListeners() {
+            if (!component) {
+                return { success: false, message: '组件未创建' };
+            }
+            
+            try {
+                component.initEventListeners();
+                
+                // 检查关键元素是否存在
+                const searchInput = document.getElementById('disease-search');
+                const refreshBtn = document.getElementById('refresh-btn');
+                const exportBtn = document.getElementById('export-btn');
+                
+                const elementsExist = searchInput && refreshBtn && exportBtn;
+                
+                return {
+                    success: elementsExist,
+                    message: elementsExist ?
+                        '事件监听器绑定成功' :
+                        '关键元素缺失，事件监听器可能未正确绑定'
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    message: `事件监听器绑定异常: ${error.message}`
+                };
+            }
+        }
+        
+        async function testDataLoading() {
+            if (!component) {
+                return { success: false, message: '组件未创建' };
+            }
+            
+            try {
+                await component.loadData();
+                
+                const hasData = component.state.currentData && 
+                               component.state.currentData.diseases && 
+                               component.state.currentData.diseases.length > 0;
+                
+                return {
+                    success: hasData,
+                    message: hasData ?
+                        `数据加载成功，病种数量: ${component.state.currentData.diseases.length}` :
+                        '数据加载失败或数据为空'
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    message: `数据加载异常: ${error.message}`
+                };
+            }
+        }
+        
+        async function testChartInitialization() {
+            if (!component || !component.state.currentData) {
+                return { success: false, message: '组件或数据未准备好' };
+            }
+            
+            try {
+                component.initCharts();
+                
+                // 检查图表容器
+                const chartContainer1 = document.getElementById('disease-benefit-chart');
+                const chartContainer2 = document.getElementById('drg-benefit-chart');
+                
+                const chartsExist = chartContainer1 && chartContainer2;
+                
+                return {
+                    success: chartsExist,
+                    message: chartsExist ?
+                        '图表初始化成功' :
+                        '图表容器缺失'
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    message: `图表初始化异常: ${error.message}`
+                };
+            }
+        }
+        
+        async function testTableRendering() {
+            if (!component || !component.state.currentData) {
+                return { success: false, message: '组件或数据未准备好' };
+            }
+            
+            try {
+                component.updateTables();
+                
+                const diseaseTable = document.getElementById('disease-tbody');
+                const doctorTable = document.getElementById('doctor-disease-tbody');
+                
+                const tablesExist = diseaseTable && doctorTable;
+                const hasTableData = diseaseTable && diseaseTable.children.length > 0;
+                
+                return {
+                    success: tablesExist && hasTableData,
+                    message: tablesExist && hasTableData ?
+                        `表格渲染成功，病种表格行数: ${diseaseTable.children.length}` :
+                        '表格渲染失败或无数据'
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    message: `表格渲染异常: ${error.message}`
+                };
+            }
+        }
+        
+        async function testFilterFunction() {
+            if (!component || !component.state.allDiseases) {
+                return { success: false, message: '组件或病种数据未准备好' };
+            }
+            
+            try {
+                component.renderDiseaseFilter();
+                
+                const filterContainer = document.querySelector('.disease-filter-container');
+                const searchInput = document.getElementById('disease-search');
+                
+                const filterExists = filterContainer && searchInput;
+                
+                return {
+                    success: filterExists,
+                    message: filterExists ?
+                        '筛选功能初始化成功' :
+                        '筛选功能初始化失败'
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    message: `筛选功能测试异常: ${error.message}`
+                };
+            }
+        }
+        
+        async function testInteractions() {
+            const refreshBtn = document.getElementById('refresh-btn');
+            const exportBtn = document.getElementById('export-btn');
+            const aiBtn = document.getElementById('ai-insight-btn');
+            
+            const buttonsExist = refreshBtn && exportBtn && aiBtn;
+            
+            return {
+                success: buttonsExist,
+                message: buttonsExist ?
+                    '交互按钮存在，功能可用' :
+                    '部分交互按钮缺失'
+            };
+        }
+        
+        function clearLogs() {
+            logs = [];
+            document.getElementById('log-container').innerHTML = '';
+            log('日志已清空', 'info');
+        }
+        
+        function exportLogs() {
+            const logText = logs.map(log => 
+                `[${log.timestamp}] [${log.type.toUpperCase()}] ${log.message}`
+            ).join('\n');
+            
+            const blob = new Blob([logText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `diagnostic-logs-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            log('日志已导出', 'success');
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', function() {
+            log('诊断工具加载完成', 'info');
+            renderSteps();
+        });
+        
+        // 错误监听
+        window.addEventListener('error', function(e) {
+            log(`页面错误: ${e.message} (${e.filename}:${e.lineno})`, 'error');
+        });
+    </script>
+</body>
+</html>

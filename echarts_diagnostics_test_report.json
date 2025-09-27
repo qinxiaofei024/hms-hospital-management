@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-09-18 23:48:29",
+  "access_success": true,
+  "script_integrated": true,
+  "echarts_available": true,
+  "chart_containers_found": 4,
+  "chart_containers": [
+    "overall-trend-chart",
+    "department-benefit-chart",
+    "service-benefit-chart",
+    "service-cost-chart"
+  ],
+  "total_score": 100,
+  "max_score": 100
+}

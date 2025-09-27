@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科室运营报告 - 喀什地区第一人民医院数据中心管理平台</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/department-cockpit.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* 科室运营报告特殊样式 */
+        .department-cockpit {
+            padding: 24px;
+        }
+        
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .dashboard-item {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .dashboard-item h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        .chart-standard {
+            height: 300px;
+        }
+        
+        .key-indicators {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .indicator-card {
+            padding: 16px;
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .indicator-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .indicator-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0066cc;
+            margin-bottom: 4px;
+        }
+        
+        .indicator-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .clickable-indicator {
+            text-decoration: underline;
+            cursor: pointer;
+            color: #0066cc !important;
+            transition: color 0.3s;
+        }
+        
+        .clickable-indicator:hover {
+            color: #0052a3 !important;
+        }
+        
+        /* 弹出窗口样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .doctor-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+        
+        .doctor-card {
+            padding: 16px;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        
+        .doctor-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0066cc;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+        
+        .doctor-name:hover {
+            color: #0052a3;
+        }
+        
+        .doctor-stats {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .doctor-detail-content {
+            line-height: 1.6;
+        }
+        
+        .detail-section {
+            margin-bottom: 20px;
+        }
+        
+        .detail-section h4 {
+            color: #333;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #e8e8e8;
+            padding-bottom: 5px;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        
+        .detail-label {
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .detail-value {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .indicator-change {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .positive {
+            color: #52c41a;
+        }
+        
+        .negative {
+            color: #ff4d4f;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-item label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .filter-item select {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #fff;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #0066cc;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0052a3;
+        }
+        
+        .btn-default {
+            background-color: #fff;
+            color: #666;
+            border: 1px solid #d9d9d9;
+        }
+        
+        .btn-default:hover {
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        .warning-level {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .warning-level.normal {
+            background-color: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+        
+        .warning-level.warning {
+            background-color: #fff7e6;
+            color: #fa8c16;
+            border: 1px solid #ffd591;
+        }
+        
+        .warning-level.danger {
+            background-color: #fff1f0;
+            color: #ff4d4f;
+            border: 1px solid #ffccc7;
+        }
+        
+        .shift-indicator {
+            margin-top: 16px;
+            padding: 12px;
+            background-color: #fafafa;
+            border-radius: 6px;
+            border-left: 4px solid #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <!-- 右侧内容区 -->
+        <main class="department-cockpit">
+                <!-- 页面头部 -->
+                <div class="page-header">
+                    <h2>科室运营报告<span class="english-title">Department Operation Report</span></h2>
+                    <div class="breadcrumb">
+                        <a href="../index.html">首页</a> &gt; 
+                        <a href="#department-analysis">科主任运营分析</a> &gt; 
+                        <span>科室运营报告</span>
+                    </div>
+                </div>
+
+                <!-- 筛选控件 -->
+                <div class="filter-controls">
+                    <div class="filter-item">
+                        <label for="time-range">时间范围：</label>
+                        <select id="time-range">
+                            <option value="today">今日</option>
+                            <option value="week">本周</option>
+                            <option value="month" selected>本月</option>
+                            <option value="quarter">本季度</option>
+                            <option value="year">本年</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="department-select">选择科室：</label>
+                        <select id="department-select">
+                            <option value="cardiology">心内科</option>
+                            <option value="orthopedics">骨科</option>
+                            <option value="neurosurgery">神经外科</option>
+                            <option value="digestive">消化内科</option>
+                            <option value="respiratory">呼吸内科</option>
+                            <option value="neurology">神经内科</option>
+                            <option value="obstetrics">妇产科</option>
+                            <option value="pediatrics">儿科</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="time-dimension">时间维度：</label>
+                        <select id="time-dimension">
+                            <option value="day">日</option>
+                            <option value="month" selected>月</option>
+                            <option value="year">年</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="refresh-btn">刷新数据</button>
+                    <button class="btn btn-default" id="export-btn">导出报告</button>
+                </div>
+
+                <!-- 关键指标卡片 -->
+                <div class="key-indicators">
+                    <div class="indicator-card drillable" data-metric="门急诊人次">
+                        <div class="indicator-value" id="outpatient-volume">12,580</div>
+                        <div class="indicator-label clickable-indicator" data-indicator="outpatient">门急诊人次</div>
+                        <div class="indicator-change positive">+8.2% 较上月</div>
+                    </div>
+                    <div class="indicator-card drillable" data-metric="出院人次">
+                        <div class="indicator-value" id="inpatient-volume">2,856</div>
+                        <div class="indicator-label clickable-indicator" data-indicator="inpatient">出院人次</div>
+                        <div class="indicator-change positive">+3.5% 较上月</div>
+                    </div>
+                    <div class="indicator-card drillable" data-metric="手术人次">
+                        <div class="indicator-value" id="surgery-volume">1,423</div>
+                        <div class="indicator-label clickable-indicator" data-indicator="surgery">手术人次</div>
+                        <div class="indicator-change negative">-1.2% 较上月</div>
+                    </div>
+                    <div class="indicator-card drillable" data-metric="医疗收入">
+                        <div class="indicator-value" id="medical-revenue">¥3.2亿</div>
+                        <div class="indicator-label clickable-indicator" data-indicator="revenue">医疗收入</div>
+                        <div class="indicator-change positive">+14.3% 较上月</div>
+                    </div>
+                    <div class="indicator-card drillable" data-metric="CMI值">
+                        <div class="indicator-value" id="cmi-value">1.28</div>
+                        <div class="indicator-label clickable-indicator" data-indicator="cmi">CMI值</div>
+                        <div class="indicator-change positive">+0.05 较上月</div>
+                    </div>
+                    <div class="indicator-card drillable" data-metric="平均住院日">
+                        <div class="indicator-value" id="avg-stay">7.8天</div>
+                        <div class="indicator-label clickable-indicator" data-indicator="avgstay">平均住院日</div>
+                        <div class="indicator-change positive">-0.2天 较上月</div>
+                    </div>
+                </div>
+
+                <!-- 预警信息 -->
+                <div class="section">
+                    <h3 class="section-title">运营状态监控</h3>
+                    <div class="warning-list">
+                        <div class="warning-item">
+                            <span class="warning-level warning">关注</span>
+                            <span>医疗服务收入占比需要进一步提升</span>
+                        </div>
+                        <div class="warning-item">
+                            <span class="warning-level danger">重要</span>
+                            <span>抗菌药物使用强度需要严格控制</span>
+                        </div>
+                        <div class="warning-item">
+                            <span class="warning-level normal">良好</span>
+                            <span>平均住院日控制效果显著</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 运营概览图表 -->
+                <div class="dashboard-grid">
+                    <div class="dashboard-item">
+                        <h3>运营效率趋势</h3>
+                        <div id="workloadTrendChart" class="chart-standard"></div>
+                    </div>
+                    <div class="dashboard-item">
+                        <h3>收入构成分析</h3>
+                        <div id="revenueStructureChart" class="chart-standard"></div>
+                    </div>
+                    <div class="dashboard-item">
+                        <h3>医疗质量指标</h3>
+                        <div id="doctorEfficiencyChart" class="chart-standard"></div>
+                    </div>
+                    <div class="dashboard-item">
+                        <h3>病种诊疗分析</h3>
+                        <div id="diseaseDistributionChart" class="chart-standard"></div>
+                    </div>
+                </div>
+
+                <!-- 科室对比分析 -->
+                <div class="section">
+                    <h3 class="section-title">运营绩效对比</h3>
+                    <div id="departmentComparisonChart" class="chart-standard" style="height: 400px;"></div>
+                </div>
+
+                <!-- 关键发现与建议 -->
+                <div class="section">
+                    <h3 class="section-title">运营分析总结</h3>
+                    <div class="key-findings">
+                        <h4>运营亮点</h4>
+                        <ul>
+                            <li>门急诊服务量稳步增长，医疗服务能力持续提升</li>
+                            <li>医疗收入结构逐步优化，技术服务收入占比提高</li>
+                            <li>医疗质量指标保持稳定，患者满意度持续改善</li>
+                            <li>重点专科建设成效显著，诊疗技术水平不断提升</li>
+                        </ul>
+                    </div>
+                    <div class="recommendations">
+                        <h4>改进方向</h4>
+                        <ul>
+                            <li>进一步优化医疗流程，提升患者就医体验</li>
+                            <li>加强成本控制管理，提高运营效率和盈利能力</li>
+                            <li>完善人才培养体系，提升医疗团队整体素质</li>
+                            <li>强化信息化建设，推进智慧医院发展</li>
+                        </ul>
+                    </div>
+                </div>
+            </main>
+    </div>
+
+    <!-- 医生详情弹出窗口 -->
+    <div id="doctorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">指标详情</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="doctorList" class="doctor-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 医生个人详情弹出窗口 -->
+    <div id="doctorDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="doctorDetailTitle">医生详情</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="doctorDetailContent" class="doctor-detail-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/department-operation-report.js"></script>
+    
+    <!-- 弹窗关闭事件 -->
+    <script>
+        // 弹窗关闭事件
+        document.addEventListener('DOMContentLoaded', function() {
+            // 关闭按钮事件
+            document.querySelectorAll('.close').forEach(function(closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    this.closest('.modal').style.display = 'none';
+                });
+            });
+            
+            // 点击弹窗外部关闭
+            document.querySelectorAll('.modal').forEach(function(modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
+            
+            // ESC键关闭弹窗
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal').forEach(function(modal) {
+                        modal.style.display = 'none';
+                    });
+                }
+            });
+        });
+    </script>
+    
+    <!-- 加载ECharts库 -->
+    <script src="../js/echarts.min.js"></script>
+    
+    <!-- 加载通用功能库 -->
+    <script src="../js/common.js"></script>
+    
+    <!-- 加载科室运营报告页面JavaScript -->
+    <script src="../js/department-operation-report.js"></script>
+    
+    <!-- 加载统一导航组件 -->
+    <script src="../js/navigation-loader.js?v=20250125-fix3"></script>
+</body>
+</html>

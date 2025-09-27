@@ -1,0 +1,2081 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>患者满意度管理 - 喀什地区第一人民医院数据中心管理平台</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        /* 重点指标监控特殊样式 */
+        .key-indicators-page {
+            padding: 24px 32px;
+            max-width: 100%;
+            overflow-x: hidden;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        
+        .section {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .section:hover {
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+        }
+        
+        /* 针对超大屏幕优化 */
+        @media (min-width: 1600px) {
+            .key-indicators-page {
+                padding: 32px 48px;
+            }
+            
+            .section {
+                padding: 32px;
+                margin-bottom: 32px;
+            }
+        }
+        
+        /* 针对大屏幕增加内边距 */
+        @media (min-width: 1400px) and (max-width: 1599px) {
+            .key-indicators-page {
+                padding: 28px 40px;
+            }
+            
+            .section {
+                padding: 28px;
+                margin-bottom: 28px;
+            }
+        }
+        
+        /* 针对中等屏幕优化 */
+        @media (min-width: 1200px) and (max-width: 1399px) {
+            .key-indicators-page {
+                padding: 24px 32px;
+            }
+            
+            .section {
+                padding: 24px;
+                margin-bottom: 24px;
+            }
+        }
+        
+        /* 针对平板屏幕优化 */
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .key-indicators-page {
+                padding: 20px 24px;
+            }
+            
+            .section {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+        }
+        
+        /* 针对小屏幕优化 */
+        @media (max-width: 767px) {
+            .key-indicators-page {
+                padding: 16px;
+                background-color: #f8f9fa;
+            }
+            
+            .section {
+                padding: 16px;
+                margin-bottom: 16px;
+                border-radius: 8px;
+            }
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex-shrink: 0;
+        }
+        
+        .filter-item label {
+            font-size: 14px;
+            color: #374151;
+            white-space: nowrap;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+        
+        .filter-item select {
+            padding: 8px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #fff;
+            min-width: 140px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .filter-item select:hover {
+            border-color: #0078d4;
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+        }
+        
+        .filter-item select:focus {
+            outline: none;
+            border-color: #0078d4;
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.2);
+        }
+        
+        /* 小屏幕下的筛选控件布局 */
+        @media (max-width: 768px) {
+            .filter-controls {
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+            
+            .filter-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+                width: 100%;
+            }
+            
+            .filter-item select {
+                width: 100%;
+                min-width: auto;
+            }
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #fff;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.3px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            border-color: #0078d4;
+            color: #0078d4;
+            box-shadow: 0 4px 12px rgba(0, 120, 212, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #0078d4, #106ebe);
+            border-color: #0078d4;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #106ebe, #005a9e);
+            border-color: #106ebe;
+            color: #fff;
+            box-shadow: 0 6px 16px rgba(0, 120, 212, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .btn-default {
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
+            color: #475569;
+        }
+        
+        .btn-default:hover {
+            background-color: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #334155;
+        }
+        
+        .overview-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+            margin-bottom: 32px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* 针对超大屏幕调整卡片布局 */
+        @media (min-width: 1600px) {
+            .overview-cards {
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 40px;
+                margin-bottom: 48px;
+            }
+        }
+        
+        /* 针对大屏幕调整卡片布局 */
+        @media (min-width: 1400px) and (max-width: 1599px) {
+            .overview-cards {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 36px;
+                margin-bottom: 40px;
+            }
+        }
+        
+        @media (min-width: 1200px) and (max-width: 1399px) {
+            .overview-cards {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 32px;
+                margin-bottom: 36px;
+            }
+        }
+        
+        @media (min-width: 900px) and (max-width: 1199px) {
+            .overview-cards {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                margin-bottom: 28px;
+            }
+        }
+        
+        @media (min-width: 768px) and (max-width: 899px) {
+            .overview-cards {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 18px;
+                margin-bottom: 24px;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .overview-cards {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                margin-bottom: 20px;
+            }
+        }
+        
+        /* 确保卡片内容不会溢出 */
+        .overview-cards .card {
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            word-wrap: break-word;
+            overflow: hidden;
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        
+        .overview-cards .card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px);
+            border-color: rgba(0, 120, 212, 0.2);
+        }
+        
+        .overview-cards .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0078d4, #40e0d0);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .overview-cards .card:hover::before {
+            opacity: 1;
+        }
+        
+        .card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px);
+            border-color: rgba(0, 120, 212, 0.2);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0078d4, #40e0d0);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .card:hover::before {
+            opacity: 1;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .metric-chart {
+            width: 100%;
+            height: 250px;
+            margin: 16px 0;
+            color: #333;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        
+        /* 针对不同屏幕尺寸调整图表高度 */
+        @media (min-width: 1400px) {
+            .metric-chart {
+                height: 300px;
+            }
+        }
+        
+        @media (min-width: 1200px) and (max-width: 1399px) {
+            .metric-chart {
+                height: 280px;
+            }
+        }
+        
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .metric-chart {
+                height: 260px;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .metric-chart {
+                height: 200px;
+            }
+        }
+        
+        /* 确保图表容器在小屏幕上不会被截断 */
+        @media (max-width: 480px) {
+            .metric-chart {
+                height: 180px;
+                margin: 12px 0;
+            }
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 240px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            background-color: #f8fafc;
+        }
+        
+        .search-input:hover {
+            border-color: #0078d4;
+            background-color: #fff;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #0078d4;
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+            background-color: #fff;
+        }
+        
+        .search-input::placeholder {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+        
+        /* 小屏幕下的搜索栏和筛选控件布局 */
+        @media (max-width: 768px) {
+            .filter-controls {
+                gap: 12px;
+                margin-bottom: 24px;
+                padding: 16px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-item {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .filter-item select {
+                min-width: 160px;
+                flex: 1;
+                max-width: 200px;
+            }
+            
+            .search-bar {
+                gap: 12px;
+                margin-bottom: 24px;
+                padding: 16px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-input {
+                width: 100%;
+                min-width: auto;
+                margin-bottom: 12px;
+            }
+            
+            .search-bar .btn {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 8px;
+            }
+            
+            .search-bar .btn:last-child {
+                margin-bottom: 0;
+            }
+        }
+        
+        /* 超小屏幕优化 */
+        @media (max-width: 480px) {
+            .filter-controls {
+                padding: 12px;
+                margin-bottom: 20px;
+            }
+            
+            .filter-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+            
+            .filter-item select {
+                width: 100%;
+                max-width: none;
+                min-width: auto;
+            }
+            
+            .search-bar {
+                padding: 12px;
+                margin-bottom: 20px;
+            }
+            
+            .search-input {
+                padding: 10px 14px;
+                font-size: 16px; /* 防止iOS缩放 */
+            }
+        }
+        
+        .metric-detail {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .detail-label {
+            color: #666;
+        }
+        
+        /* 卡片内容样式优化 */
+        .card .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .card .metric-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+            flex: 1;
+            min-width: 0;
+            letter-spacing: 0.3px;
+            line-height: 1.4;
+        }
+        
+        .card .metric-status {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .card .metric-status.normal {
+            background-color: #ecfdf5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+        }
+        
+        .card .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 12px 0 16px 0;
+            line-height: 1.1;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .card .metric-compare {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .card .metric-compare-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .card .metric-compare-label {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.3;
+            font-weight: 500;
+        }
+        
+        .card .metric-compare-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1.2;
+        }
+        
+        .card .metric-compare-value.positive {
+            color: #10b981;
+            position: relative;
+        }
+        
+        .card .metric-compare-value.positive::before {
+            content: '↗';
+            font-size: 14px;
+            margin-right: 4px;
+        }
+        
+        .card .metric-compare-value.negative {
+            color: #ef4444;
+            position: relative;
+        }
+        
+        .card .metric-compare-value.negative::before {
+            content: '↘';
+            font-size: 14px;
+            margin-right: 4px;
+        }
+        
+        /* 小屏幕下的卡片内容优化 */
+        @media (max-width: 768px) {
+            .card .metric-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                margin-bottom: 12px;
+            }
+            
+            .card .metric-title {
+                font-size: 15px;
+            }
+            
+            .card .metric-value {
+                font-size: 28px;
+                margin: 10px 0 14px 0;
+            }
+            
+            .card .metric-compare {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+            
+            .card .metric-compare-label {
+                font-size: 12px;
+            }
+            
+            .card .metric-compare-value {
+                font-size: 14px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .card .metric-compare {
+                grid-template-columns: 1fr;
+            }
+            
+            .card .metric-value {
+                font-size: 24px;
+            }
+        }
+        
+        .detail-value {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .threshold-setting {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-top: 16px;
+            padding: 12px;
+            background-color: #fafafa;
+            border-radius: 6px;
+        }
+        
+        .threshold-input {
+            padding: 4px 8px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            width: 80px;
+            font-size: 14px;
+        }
+        
+        /* 主要内容区域布局优化 */
+        .main-content {
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* 页面头部优化 */
+        .page-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .page-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        .page-header .english-title {
+            font-size: 12px;
+            color: #999;
+            font-weight: 400;
+            margin-left: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .breadcrumb a {
+            color: #1890ff;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        /* 小屏幕下的页面头部优化 */
+        @media (max-width: 768px) {
+            .page-header {
+                margin-bottom: 20px;
+                padding-bottom: 12px;
+            }
+            
+            .page-header h2 {
+                font-size: 20px;
+                line-height: 1.4;
+            }
+            
+            .page-header .english-title {
+                display: block;
+                margin-left: 0;
+                margin-top: 4px;
+            }
+            
+            .breadcrumb {
+                font-size: 13px;
+                word-break: break-all;
+            }
+        }
+
+        /* 指标项样式 */
+        .indicator-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .indicator-item:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+            border-color: rgba(0, 120, 212, 0.2);
+        }
+
+        .indicator-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0078d4, #40e0d0);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .indicator-item:hover::before {
+            opacity: 1;
+        }
+
+        .indicator-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .indicator-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .indicator-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+        }
+
+        .indicator-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 12px 0;
+            line-height: 1.1;
+        }
+
+        .indicator-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .indicator-detail {
+            text-align: center;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .indicator-detail-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .indicator-detail-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .indicator-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+
+        .indicator-detail-btn {
+            padding: 6px 12px;
+            background: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .indicator-detail-btn:hover {
+            background: #106ebe;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .indicator-item {
+                padding: 16px;
+                margin-bottom: 12px;
+            }
+
+            .indicator-name {
+                font-size: 14px;
+            }
+
+            .indicator-value {
+                font-size: 24px;
+            }
+
+            .indicator-details {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+        }
+
+        /* 调查管理弹窗样式 */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #0078d4, #40e0d0);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 30px;
+            max-height: calc(90vh - 80px);
+            overflow-y: auto;
+        }
+
+        .survey-tabs {
+            display: flex;
+            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: #0078d4;
+            border-bottom-color: #0078d4;
+            font-weight: 600;
+        }
+
+        .tab-btn:hover {
+            color: #0078d4;
+            background-color: #f8f9fa;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .survey-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #0078d4;
+        }
+
+        .search-btn {
+            padding: 10px 20px;
+            background: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: #106ebe;
+        }
+
+        .filter-box select {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .survey-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .survey-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .survey-table th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .survey-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        .survey-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-published {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-reviewing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-archived {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #0078d4;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #106ebe;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .survey-form {
+            max-width: 600px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #0078d4;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .template-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .template-card:hover {
+            border-color: #0078d4;
+            box-shadow: 0 4px 15px rgba(0, 120, 212, 0.1);
+        }
+
+        .template-card h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .template-card p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* 模板详情弹窗样式 */
+        .template-detail-modal {
+            max-width: 800px;
+            width: 90%;
+        }
+
+        .template-detail-content {
+            padding: 20px;
+        }
+
+        .template-basic-info {
+            margin-bottom: 30px;
+        }
+
+        .template-title-section {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .template-name {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .editable-title {
+            border-bottom: 2px solid transparent;
+            padding: 2px 0;
+            transition: border-color 0.3s;
+        }
+
+        .editable-title:hover {
+            border-bottom-color: #007bff;
+            cursor: pointer;
+        }
+
+        .editable-title.editing {
+            border-bottom-color: #007bff;
+            background-color: #f8f9fa;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .template-code {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .template-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .info-item label {
+            font-weight: 600;
+            color: #555;
+            margin-right: 10px;
+            min-width: 80px;
+        }
+
+        .info-item span {
+            color: #333;
+        }
+
+        .template-questions-section {
+            margin-bottom: 30px;
+        }
+
+        .template-questions-section h5 {
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .question-count {
+            color: #666;
+            font-weight: normal;
+            font-size: 14px;
+        }
+
+        .questions-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            background-color: #f8f9fa;
+        }
+
+        .question-item {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background-color: white;
+            border-radius: 4px;
+            border-left: 3px solid #007bff;
+        }
+
+        .question-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .question-text {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .question-type {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .template-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .template-actions .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .template-actions .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <!-- 右侧内容区 -->
+        <main class="key-indicators-page">
+                <!-- 页面头部 -->
+                <div class="page-header">
+                    <h2>患者满意度管理<span class="english-title">Patient Satisfaction Management</span></h2>
+                    <div class="breadcrumb">
+                        <a href="../index.html">首页</a> &gt; 
+                        <a href="#department-analysis">科主任运营分析</a> &gt; 
+                        <span>患者满意度管理</span>
+                    </div>
+                </div>
+
+                <!-- 筛选控件 -->
+                <div class="filter-controls">
+                    <div class="filter-item">
+                        <label for="time-range">时间范围：</label>
+                        <select id="time-range">
+                            <option value="week">本周</option>
+                            <option value="month" selected>本月</option>
+                            <option value="quarter">本季度</option>
+                            <option value="year">本年度</option>
+                            <option value="custom">自定义</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="satisfaction-dimension">满意度维度：</label>
+                        <select id="satisfaction-dimension">
+                            <option value="all">全部维度</option>
+                            <option value="process">诊疗流程效率</option>
+                            <option value="quality">医疗服务质量</option>
+                            <option value="communication">医患沟通效果</option>
+                            <option value="environment">环境设施体验</option>
+                            <option value="cost">费用透明度</option>
+                            <option value="care">情感关怀感知</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="department-select">科室：</label>
+                        <select id="department-select">
+                            <option value="all">全院</option>
+                            <option value="internal">内科</option>
+                            <option value="surgery">外科</option>
+                            <option value="pediatrics">儿科</option>
+                            <option value="obstetrics">妇产科</option>
+                            <option value="emergency">急诊科</option>
+                            <option value="outpatient">门诊部</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="refresh-btn">筛选</button>
+                    <button class="btn btn-default" id="export-btn">导出报告</button>
+                    <button class="btn btn-default" id="survey-btn">发起调查</button>
+                </div>
+
+                <!-- 搜索框 -->
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="搜索患者、科室、调查问卷...">
+                    <button class="btn btn-default">高级筛选</button>
+                    <button class="btn btn-default">满意度预警</button>
+                </div>
+
+                <!-- 满意度概览仪表板 -->
+                <div class="section">
+                    <h3 class="section-title">满意度概览仪表板</h3>
+                    <!-- 新组件库统计卡片容器 -->
+                    <div id="satisfaction-overview-cards" class="overview-cards" data-component="stat-cards">
+                        <!-- 统计卡片将由新组件库动态生成 -->
+                    </div>
+                    <!-- 保留原有卡片作为回退方案 -->
+                    <div class="overview-cards legacy-cards" style="display: none;">
+                        <!-- 总体满意度 -->
+                        <div class="card" data-status="up">
+                            <div class="card-title">总体满意度</div>
+                            <div class="card-value">88.6分</div>
+                            <div class="card-trend">
+                                <span class="up">+2.4%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+
+                        <!-- 门诊满意度 -->
+                        <div class="card" data-status="up">
+                            <div class="card-title">门诊满意度</div>
+                            <div class="card-value">87.8分</div>
+                            <div class="card-trend">
+                                <span class="up">+2.3%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+
+                        <!-- 住院满意度 -->
+                        <div class="card" data-status="up">
+                            <div class="card-title">住院满意度</div>
+                            <div class="card-value">89.4分</div>
+                            <div class="card-trend">
+                                <span class="up">+2.3%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+
+                        <!-- 服务态度满意度 -->
+                        <div class="card" data-status="up">
+                            <div class="card-title">服务态度满意度</div>
+                            <div class="card-value">90.2分</div>
+                            <div class="card-trend">
+                                <span class="up">+1.8%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 六大评价维度 -->
+                <div class="section">
+                    <h3 class="section-title">六大评价维度</h3>
+                    <!-- 新组件库统计卡片容器 -->
+                    <div id="satisfaction-dimensions-cards" class="overview-cards" data-component="stat-cards">
+                        <!-- 统计卡片将由新组件库动态生成 -->
+                    </div>
+                    <!-- 保留原有卡片作为回退方案 -->
+                    <div class="overview-cards legacy-cards" style="display: none;">
+                        <!-- 诊疗流程效率 -->
+                        <div class="card" data-status="up">
+                            <div class="card-title">诊疗流程效率</div>
+                            <div class="card-value">86.5分</div>
+                            <div class="card-trend">
+                                <span class="up">+2.1%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+
+                        <!-- 医疗服务质量 -->
+                        <div class="card" data-status="up">
+                            <div class="card-title">医疗服务质量</div>
+                            <div class="card-value">91.2分</div>
+                            <div class="card-trend">
+                                <span class="up">+2.4%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+
+                        <!-- 医患沟通效果 -->
+                        <div class="card" data-status="up">
+                            <div class="card-title">医患沟通效果</div>
+                            <div class="card-value">87.3分</div>
+                            <div class="card-trend">
+                                <span class="up">+1.8%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+
+                        <!-- 环境设施体验 -->
+                        <div class="card" data-status="up">
+                            <div class="card-title">环境设施体验</div>
+                            <div class="card-value">85.9分</div>
+                            <div class="card-trend">
+                                <span class="up">+2.6%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+
+                        <!-- 费用透明度 -->
+                        <div class="card" data-status="down">
+                            <div class="card-title">费用透明度</div>
+                            <div class="card-value">82.7分</div>
+                            <div class="card-trend">
+                                <span class="down">-1.0%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+
+                        <!-- 情感关怀感知 -->
+                        <div class="card" data-status="up">
+                            <div class="card-title">情感关怀感知</div>
+                            <div class="card-value">89.4分</div>
+                            <div class="card-trend">
+                                <span class="up">+2.1%</span>
+                                <span>较上月</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 调查管理功能 -->
+                <div class="metrics-category">
+                    <h3 class="category-title">调查管理功能</h3>
+                    <div class="overview-cards">
+                        <!-- 在线调查统计 -->
+                        <div class="card survey-stats-card" id="surveyStatsCard" style="cursor: pointer;">
+                            <div class="metric-header">
+                                <h4 class="metric-title">在线调查统计</h4>
+                                <span class="metric-status normal">正常</span>
+                            </div>
+                            <div class="metric-value">1,256份</div>
+                            <div class="metric-compare">
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">本月完成</div>
+                                    <div class="metric-compare-value positive">+185份</div>
+                                </div>
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">回收率</div>
+                                    <div class="metric-compare-value">78.5%</div>
+                                </div>
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">有效率</div>
+                                    <div class="metric-compare-value">94.2%</div>
+                                </div>
+                            </div>
+                            <div id="surveyStatsChart" class="metric-chart"></div>
+                            <div class="metric-detail">
+                                <div class="detail-row">
+                                    <span class="detail-label">门诊调查</span>
+                                    <span class="detail-value">856份</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">住院调查</span>
+                                    <span class="detail-value">400份</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">平均用时</span>
+                                    <span class="detail-value">3.2分钟</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 调查问卷模板 -->
+                        <div class="card template-management-card" id="templateManagementCard" style="cursor: pointer;">
+                            <div class="metric-header">
+                                <h4 class="metric-title">问卷模板管理</h4>
+                                <span class="metric-status normal">正常</span>
+                            </div>
+                            <div class="metric-value">12个</div>
+                            <div class="metric-compare">
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">门诊模板</div>
+                                    <div class="metric-compare-value">6个</div>
+                                </div>
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">住院模板</div>
+                                    <div class="metric-compare-value">4个</div>
+                                </div>
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">专科模板</div>
+                                    <div class="metric-compare-value">2个</div>
+                                </div>
+                            </div>
+                            <div id="templateChart" class="metric-chart"></div>
+                            <div class="metric-detail">
+                                <div class="detail-row">
+                                    <span class="detail-label">使用频率最高</span>
+                                    <span class="detail-value">门诊通用版</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">最新更新</span>
+                                    <span class="detail-value">2024-01-15</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">平均题目数</span>
+                                    <span class="detail-value">15题</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 数据分析报告 -->
+                        <div class="card">
+                            <div class="metric-header">
+                                <h4 class="metric-title">数据分析报告</h4>
+                                <span class="metric-status normal">正常</span>
+                            </div>
+                            <div class="metric-value">24份</div>
+                            <div class="metric-compare">
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">月度报告</div>
+                                    <div class="metric-compare-value">12份</div>
+                                </div>
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">季度报告</div>
+                                    <div class="metric-compare-value">4份</div>
+                                </div>
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">年度报告</div>
+                                    <div class="metric-compare-value">1份</div>
+                                </div>
+                            </div>
+                            <div id="reportChart" class="metric-chart"></div>
+                            <div class="metric-detail">
+                                <div class="detail-row">
+                                    <span class="detail-label">自动生成</span>
+                                    <span class="detail-value">18份</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">手动生成</span>
+                                    <span class="detail-value">6份</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">导出次数</span>
+                                    <span class="detail-value">156次</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据可视化展示 -->
+                <div class="metrics-category">
+                    <h3 class="category-title">数据可视化展示</h3>
+                    <div class="overview-cards">
+                        <!-- 满意度趋势分析 -->
+                        <div class="card">
+                            <div class="metric-header">
+                                <h4 class="metric-title">满意度趋势分析</h4>
+                                <span class="metric-status normal">正常</span>
+                            </div>
+                            <div class="metric-value">持续上升</div>
+                            <div class="metric-compare">
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">近3月平均</div>
+                                    <div class="metric-compare-value positive">87.8分</div>
+                                </div>
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">增长幅度</div>
+                                    <div class="metric-compare-value positive">+3.2分</div>
+                                </div>
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">预测下月</div>
+                                    <div class="metric-compare-value">89.1分</div>
+                                </div>
+                            </div>
+                            <div id="satisfactionTrendChart" class="metric-chart"></div>
+                            <div class="metric-detail">
+                                <div class="detail-row">
+                                    <span class="detail-label">最高分月份</span>
+                                    <span class="detail-value">2024年1月</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">改善最明显</span>
+                                    <span class="detail-value">费用透明度</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">波动系数</span>
+                                    <span class="detail-value">0.12</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 科室满意度对比 -->
+                        <div class="card">
+                            <div class="metric-header">
+                                <h4 class="metric-title">科室满意度对比</h4>
+                                <span class="metric-status normal">正常</span>
+                            </div>
+                            <div class="metric-value">15个科室</div>
+                            <div class="metric-compare">
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">最高分科室</div>
+                                    <div class="metric-compare-value positive">心内科</div>
+                                </div>
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">最高分</div>
+                                    <div class="metric-compare-value positive">93.2分</div>
+                                </div>
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">平均分</div>
+                                    <div class="metric-compare-value">88.6分</div>
+                                </div>
+                            </div>
+                            <div id="departmentComparisonChart" class="metric-chart"></div>
+                            <div class="metric-detail">
+                                <div class="detail-row">
+                                    <span class="detail-label">优秀科室</span>
+                                    <span class="detail-value">8个</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">良好科室</span>
+                                    <span class="detail-value">6个</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">需改进科室</span>
+                                    <span class="detail-value">1个</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 患者画像分析 -->
+                        <div class="card">
+                            <div class="metric-header">
+                                <h4 class="metric-title">患者画像分析</h4>
+                                <span class="metric-status normal">正常</span>
+                            </div>
+                            <div class="metric-value">多维度</div>
+                            <div class="metric-compare">
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">年龄分布</div>
+                                    <div class="metric-compare-value">40-60岁占比最高</div>
+                                </div>
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">性别比例</div>
+                                    <div class="metric-compare-value">女性52.3%</div>
+                                </div>
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">就诊类型</div>
+                                    <div class="metric-compare-value">门诊68.2%</div>
+                                </div>
+                            </div>
+                            <div id="patientProfileChart" class="metric-chart"></div>
+                            <div class="metric-detail">
+                                <div class="detail-row">
+                                    <span class="detail-label">满意度最高群体</span>
+                                    <span class="detail-value">60岁以上</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">关注点差异</span>
+                                    <span class="detail-value">年轻人重效率</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">投诉率</span>
+                                    <span class="detail-value">0.8%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 满意度维度雷达图 -->
+                        <div class="card">
+                            <div class="metric-header">
+                                <h4 class="metric-title">满意度维度分析</h4>
+                                <span class="metric-status normal">正常</span>
+                            </div>
+                            <div class="metric-value">多维度评估</div>
+                            <div class="metric-compare">
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">服务态度</div>
+                                    <div class="metric-compare-value positive">92.1分</div>
+                                </div>
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">医疗技术</div>
+                                    <div class="metric-compare-value positive">89.5分</div>
+                                </div>
+                                <div class="metric-compare-item">
+                                    <div class="metric-compare-label">环境设施</div>
+                                    <div class="metric-compare-value">85.3分</div>
+                                </div>
+                            </div>
+                            <div id="dimensionRadarChart" class="metric-chart"></div>
+                            <div class="metric-detail">
+                                <div class="detail-row">
+                                    <span class="detail-label">最强维度</span>
+                                    <span class="detail-value">服务态度</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">改进重点</span>
+                                    <span class="detail-value">等待时间</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">综合评分</span>
+                                    <span class="detail-value">88.7分</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+    </div>
+
+    <!-- 调查管理弹窗模态框 -->
+    <div id="surveyManagementModal" class="modal" style="display: none;">
+        <div class="modal-content survey-modal">
+            <div class="modal-header">
+                <h3>在线调查管理</h3>
+                <span class="close" id="closeSurveyModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="survey-tabs">
+                    <button class="tab-btn active" data-tab="survey-list">调查列表</button>
+                    <button class="tab-btn" data-tab="survey-create">创建调查</button>
+                    <button class="tab-btn" data-tab="survey-templates">模板管理</button>
+                </div>
+                
+                <!-- 调查列表 -->
+                <div id="survey-list" class="tab-content active">
+                    <div class="survey-toolbar">
+                        <div class="search-box">
+                            <input type="text" placeholder="搜索调查问卷..." id="surveySearch">
+                            <button class="search-btn">搜索</button>
+                        </div>
+                        <div class="filter-box">
+                            <select id="statusFilter">
+                                <option value="">全部状态</option>
+                                <option value="draft">草稿</option>
+                                <option value="published">已发布</option>
+                                <option value="reviewing">审核中</option>
+                                <option value="archived">已归档</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="survey-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>调查名称</th>
+                                    <th>类型</th>
+                                    <th>状态</th>
+                                    <th>创建时间</th>
+                                    <th>回收数量</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="surveyTableBody">
+                                <!-- 动态生成调查列表 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 创建调查 -->
+                <div id="survey-create" class="tab-content">
+                    <div class="survey-form">
+                        <div class="form-group">
+                            <label>调查名称</label>
+                            <input type="text" id="surveyTitle" placeholder="请输入调查名称">
+                        </div>
+                        <div class="form-group">
+                            <label>调查类型</label>
+                            <select id="surveyType">
+                                <option value="outpatient">门诊满意度调查</option>
+                                <option value="inpatient">住院满意度调查</option>
+                                <option value="service">服务质量调查</option>
+                                <option value="custom">自定义调查</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>调查描述</label>
+                            <textarea id="surveyDescription" placeholder="请输入调查描述"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" id="saveSurveyDraft">保存草稿</button>
+                            <button class="btn btn-success" id="publishSurvey">发布调查</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 模板管理 -->
+                <div id="survey-templates" class="tab-content">
+                    <div class="template-grid" id="templateGrid">
+                        <!-- 动态生成模板列表 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模板详情弹窗 -->
+    <div id="templateDetailModal" class="modal" style="display: none;">
+        <div class="modal-content template-detail-modal">
+            <div class="modal-header">
+                <h3>问卷模板详情</h3>
+                <span class="close" id="closeTemplateModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="template-detail-content">
+                    <div class="template-basic-info">
+                        <div class="template-title-section">
+                            <h4 class="template-name editable-title" id="templateName">门诊满意度调查模板</h4>
+                            <div class="template-code">模板编码：<span id="templateCode">MZMY-001</span></div>
+                        </div>
+                        
+                        <div class="template-info-grid">
+                            <div class="info-item">
+                                <label>起效时间：</label>
+                                <span id="templateStartDate">2024-01-01</span>
+                            </div>
+                            <div class="info-item">
+                                <label>失效时间：</label>
+                                <span id="templateEndDate">2024-12-31</span>
+                            </div>
+                            <div class="info-item">
+                                <label>编制时间：</label>
+                                <span id="templateCreateDate">2023-12-15</span>
+                            </div>
+                            <div class="info-item">
+                                <label>编制人员：</label>
+                                <span id="templateCreator">张医生</span>
+                            </div>
+                            <div class="info-item">
+                                <label>模板状态：</label>
+                                <span class="status-badge status-published" id="templateStatus">已发布</span>
+                            </div>
+                            <div class="info-item">
+                                <label>使用次数：</label>
+                                <span id="templateUsageCount">1,256次</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="template-questions-section">
+                        <h5>问卷题目 <span class="question-count">(共15题)</span></h5>
+                        <div class="questions-list" id="questionsList">
+                            <!-- 动态生成问题列表 -->
+                        </div>
+                    </div>
+                    
+                    <div class="template-actions">
+                        <button class="btn btn-primary" id="editTemplateBtn">编辑模板</button>
+                        <button class="btn btn-success" id="publishTemplateBtn">发布</button>
+                        <button class="btn btn-warning" id="reviewTemplateBtn">提交审核</button>
+                        <button class="btn btn-danger" id="withdrawTemplateBtn">撤回</button>
+                        <button class="btn btn-secondary" id="saveTemplateBtn" style="display: none;">保存</button>
+                        <button class="btn btn-secondary" id="cancelEditBtn" style="display: none;">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/common.js?v=2"></script>
+    <script src="../js/key-indicators.js?v=7"></script>
+
+    <!-- 加载统一导航组件 -->
+    <script src="../js/navigation-loader.js"></script>
+    
+    <!-- 初始化患者满意度页面 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof PatientSatisfactionPage !== 'undefined') {
+                PatientSatisfactionPage.init();
+            }
+        });
+    </script>
+</body>
+</html>

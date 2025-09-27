@@ -1,0 +1,276 @@
+department-cockpit.js:2 department-cockpit.js 文件已加载
+department-cockpit.js:2 department-cockpit.js 文件已加载
+navigation-loader.js?v=20250125-fix3:2 Navigation loader script starting...
+navigation-loader.js?v=20250125-fix3:9 NavigationLoader constructor called
+navigation-loader.js?v=20250125-fix3:17 Current path: /pages/department-cockpit.html
+navigation-loader.js?v=20250125-fix3:27 NavigationLoader initialized with paths: Object
+navigation-loader.js?v=20250125-fix3:215 Document still loading, adding DOMContentLoaded listener
+navigation-loader.js?v=20250125-fix3:225 Navigation loader script setup complete
+department-cockpit.js:1892 DOMContentLoaded 事件已触发
+department-cockpit.js:1899 ECharts库已加载
+department-cockpit.js:1892 DOMContentLoaded 事件已触发
+department-cockpit.js:1899 ECharts库已加载
+navigation-loader.js?v=20250125-fix3:40 NavigationLoader init started
+navigation-loader.js?v=20250125-fix3:51 Navigation container found, loading content...
+navigation-loader.js?v=20250125-fix3:55 Fetch response: 200 OK
+navigation-loader.js?v=20250125-fix3:62 Navigation HTML loaded successfully, length: 4968
+navigation-loader.js?v=20250125-fix3:106 Processing links in HTML...
+navigation-loader.js?v=20250125-fix3:70 Links processed
+navigation-loader.js?v=20250125-fix3:74 Navigation HTML injected into container
+navigation-loader.js?v=20250125-fix3:127 Loading sidebar script...
+navigation-loader.js?v=20250125-fix3:144 Sidebar script loaded successfully
+navigation-loader.js?v=20250125-fix3:168 Initializing SidebarManager...
+navigation-loader.js?v=20250125-fix3:175 SidebarManager initialized successfully
+navigation-loader.js?v=20250125-fix3:176 Available as window.sidebarManager and window._sidebarManager
+navigation-loader.js?v=20250125-fix3:85 NavigationLoader initialization completed successfully
+department-cockpit.js:1903 开始初始化科主任驾驶舱页面
+department-cockpit.js:258 DepartmentCockpitPage.init() 开始执行
+department-cockpit.js:295 检查容器 workloadTrendChart: <div id=​"workloadTrendChart" class=​"chart-standard" _echarts_instance_=​"ec_1758837374826" style=​"user-select:​ none;​ -webkit-tap-highlight-color:​ rgba(0, 0, 0, 0)​;​ position:​ relative;​">​…​</div>​
+department-cockpit.js:298 初始化图表容器: workloadTrendChart 686 x 300
+department-cockpit.js:303 图表容器 workloadTrendChart 初始化成功
+department-cockpit.js:295 检查容器 revenueStructureChart: <div id=​"revenueStructureChart" class=​"chart-standard" _echarts_instance_=​"ec_1758837374827" style=​"user-select:​ none;​ -webkit-tap-highlight-color:​ rgba(0, 0, 0, 0)​;​ position:​ relative;​">​…​</div>​
+department-cockpit.js:298 初始化图表容器: revenueStructureChart 686 x 300
+department-cockpit.js:303 图表容器 revenueStructureChart 初始化成功
+department-cockpit.js:295 检查容器 doctorEfficiencyChart: <div id=​"doctorEfficiencyChart" class=​"chart-standard" _echarts_instance_=​"ec_1758837374828" style=​"user-select:​ none;​ -webkit-tap-highlight-color:​ rgba(0, 0, 0, 0)​;​ position:​ relative;​">​…​</div>​
+department-cockpit.js:298 初始化图表容器: doctorEfficiencyChart 686 x 300
+department-cockpit.js:303 图表容器 doctorEfficiencyChart 初始化成功
+department-cockpit.js:295 检查容器 diseaseDistributionChart: <div id=​"diseaseDistributionChart" class=​"chart-standard" _echarts_instance_=​"ec_1758837374829" style=​"user-select:​ none;​ -webkit-tap-highlight-color:​ rgba(0, 0, 0, 0)​;​ position:​ relative;​">​…​</div>​
+department-cockpit.js:298 初始化图表容器: diseaseDistributionChart 686 x 300
+department-cockpit.js:303 图表容器 diseaseDistributionChart 初始化成功
+department-cockpit.js:295 检查容器 departmentComparisonChart: <div id=​"departmentComparisonChart" class=​"chart-standard" style=​"height:​ 400px;​ user-select:​ none;​ -webkit-tap-highlight-color:​ rgba(0, 0, 0, 0)​;​ position:​ relative;​" _echarts_instance_=​"ec_1758837374830">​…​</div>​
+department-cockpit.js:298 初始化图表容器: departmentComparisonChart 678 x 400
+department-cockpit.js:303 图表容器 departmentComparisonChart 初始化成功
+department-cockpit.js:261 initCharts() 完成
+department-cockpit.js:270 loadData() 出错: TypeError: Cannot set properties of null (setting 'value')
+    at Object.loadData (department-cockpit.js:437:58)
+    at Object.init (department-cockpit.js:267:18)
+    at department-cockpit.js:1904:31
+init @ department-cockpit.js:270
+department-cockpit.js:334 initEventListeners 函数开始执行
+department-cockpit.js:404 找到可点击指标元素数量: 6
+department-cockpit.js:407 绑定事件到指标: outpatient <div class=​"indicator-label clickable-indicator" data-indicator=​"outpatient">​门急诊人次​</div>​
+department-cockpit.js:407 绑定事件到指标: inpatient <div class=​"indicator-label clickable-indicator" data-indicator=​"inpatient">​出院人次​</div>​
+department-cockpit.js:407 绑定事件到指标: surgery <div class=​"indicator-label clickable-indicator" data-indicator=​"surgery">​手术人次​</div>​
+department-cockpit.js:407 绑定事件到指标: revenue <div class=​"indicator-label clickable-indicator" data-indicator=​"revenue">​医疗收入​</div>​
+department-cockpit.js:407 绑定事件到指标: cmi <div class=​"indicator-label clickable-indicator" data-indicator=​"cmi">​CMI值​</div>​
+department-cockpit.js:407 绑定事件到指标: avgstay <div class=​"indicator-label clickable-indicator" data-indicator=​"avgstay">​平均住院日​</div>​
+department-cockpit.js:275 initEventListeners() 完成
+department-cockpit.js:279 DepartmentCockpitPage.init() 执行完成
+department-cockpit.js:1903 开始初始化科主任驾驶舱页面
+department-cockpit.js:258 DepartmentCockpitPage.init() 开始执行
+department-cockpit.js:295 检查容器 workloadTrendChart: <div id=​"workloadTrendChart" class=​"chart-standard" _echarts_instance_=​"ec_1758837374826" style=​"user-select:​ none;​ -webkit-tap-highlight-color:​ rgba(0, 0, 0, 0)​;​ position:​ relative;​">​…​</div>​
+department-cockpit.js:298 初始化图表容器: workloadTrendChart 686 x 300
+department-cockpit.js:303 图表容器 workloadTrendChart 初始化成功
+department-cockpit.js:295 检查容器 revenueStructureChart: <div id=​"revenueStructureChart" class=​"chart-standard" _echarts_instance_=​"ec_1758837374827" style=​"user-select:​ none;​ -webkit-tap-highlight-color:​ rgba(0, 0, 0, 0)​;​ position:​ relative;​">​…​</div>​
+department-cockpit.js:298 初始化图表容器: revenueStructureChart 686 x 300
+department-cockpit.js:303 图表容器 revenueStructureChart 初始化成功
+department-cockpit.js:295 检查容器 doctorEfficiencyChart: <div id=​"doctorEfficiencyChart" class=​"chart-standard" _echarts_instance_=​"ec_1758837374828" style=​"user-select:​ none;​ -webkit-tap-highlight-color:​ rgba(0, 0, 0, 0)​;​ position:​ relative;​">​…​</div>​
+department-cockpit.js:298 初始化图表容器: doctorEfficiencyChart 686 x 300
+department-cockpit.js:303 图表容器 doctorEfficiencyChart 初始化成功
+department-cockpit.js:295 检查容器 diseaseDistributionChart: <div id=​"diseaseDistributionChart" class=​"chart-standard" _echarts_instance_=​"ec_1758837374829" style=​"user-select:​ none;​ -webkit-tap-highlight-color:​ rgba(0, 0, 0, 0)​;​ position:​ relative;​">​…​</div>​
+department-cockpit.js:298 初始化图表容器: diseaseDistributionChart 686 x 300
+department-cockpit.js:303 图表容器 diseaseDistributionChart 初始化成功
+department-cockpit.js:295 检查容器 departmentComparisonChart: <div id=​"departmentComparisonChart" class=​"chart-standard" style=​"height:​ 400px;​ user-select:​ none;​ -webkit-tap-highlight-color:​ rgba(0, 0, 0, 0)​;​ position:​ relative;​" _echarts_instance_=​"ec_1758837374830">​…​</div>​
+department-cockpit.js:298 初始化图表容器: departmentComparisonChart 678 x 400
+department-cockpit.js:303 图表容器 departmentComparisonChart 初始化成功
+department-cockpit.js:261 initCharts() 完成
+department-cockpit.js:270 loadData() 出错: TypeError: Cannot set properties of null (setting 'value')
+    at Object.loadData (department-cockpit.js:437:58)
+    at Object.init (department-cockpit.js:267:18)
+    at department-cockpit.js:1904:31
+init @ department-cockpit.js:270
+department-cockpit.js:334 initEventListeners 函数开始执行
+department-cockpit.js:404 找到可点击指标元素数量: 6
+department-cockpit.js:407 绑定事件到指标: outpatient <div class=​"indicator-label clickable-indicator" data-indicator=​"outpatient">​门急诊人次​</div>​
+department-cockpit.js:407 绑定事件到指标: inpatient <div class=​"indicator-label clickable-indicator" data-indicator=​"inpatient">​出院人次​</div>​
+department-cockpit.js:407 绑定事件到指标: surgery <div class=​"indicator-label clickable-indicator" data-indicator=​"surgery">​手术人次​</div>​
+department-cockpit.js:407 绑定事件到指标: revenue <div class=​"indicator-label clickable-indicator" data-indicator=​"revenue">​医疗收入​</div>​
+department-cockpit.js:407 绑定事件到指标: cmi <div class=​"indicator-label clickable-indicator" data-indicator=​"cmi">​CMI值​</div>​
+department-cockpit.js:407 绑定事件到指标: avgstay <div class=​"indicator-label clickable-indicator" data-indicator=​"avgstay">​平均住院日​</div>​
+department-cockpit.js:275 initEventListeners() 完成
+department-cockpit.js:279 DepartmentCockpitPage.init() 执行完成
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.js:409 指标被点击: surgery
+department-cockpit.js:1705 showDoctorModal被调用，指标类型: surgery
+department-cockpit.js:1707 找到弹窗元素: <div id=​"doctorModal" class=​"modal">​…​</div>​
+department-cockpit.js:1720 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
+    at Object.showDoctorModal (department-cockpit.js:1720:32)
+    at HTMLDivElement.<anonymous> (department-cockpit.js:412:39)
+showDoctorModal @ department-cockpit.js:1720
+（匿名） @ department-cockpit.js:412
+department-cockpit.html:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>病种效益组件使用示例</title>
+    
+    <!-- 引入ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    
+    <!-- 引入组件样式 -->
+    <link rel="stylesheet" href="disease-benefit.css">
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .example-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .example-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .example-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .example-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .example-content {
+            padding: 0;
+        }
+        
+        .config-panel {
+            background: #fafafa;
+            border-bottom: 1px solid #e8e8e8;
+            padding: 20px;
+        }
+        
+        .config-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .config-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .config-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .config-group label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .config-group select,
+        .config-group input {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .config-group button {
+            padding: 8px 16px;
+            background: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .config-group button:hover {
+            background: #40a9ff;
+        }
+        
+        .status-bar {
+            background: #f0f0f0;
+            padding: 10px 20px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .status-item {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        
+        .status-value {
+            font-weight: 600;
+            color: #1890ff;
+        }
+        
+        @media (max-width: 768px) {
+            .config-options {
+                flex-direction: column;
+            }
+            
+            .example-header {
+                padding: 20px;
+            }
+            
+            .example-header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="example-container">
+        <!-- 示例头部 -->
+        <div class="example-header">
+            <h1>病种效益分析组件</h1>
+            <p>功能完整的医院病种经济效益分析工具</p>
+        </div>
+        
+        <!-- 配置面板 -->
+        <div class="config-panel">
+            <div class="config-title">配置选项</div>
+            <div class="config-options">
+                <div class="config-group">
+                    <label>图表主题</label>
+                    <select id="chart-theme">
+                        <option value="light">浅色主题</option>
+                        <option value="dark">深色主题</option>
+                    </select>
+                </div>
+                
+                <div class="config-group">
+                    <label>动画效果</label>
+                    <select id="chart-animation">
+                        <option value="true">启用</option>
+                        <option value="false">禁用</option>
+                    </select>
+                </div>
+                
+                <div class="config-group">
+                    <label>每页显示</label>
+                    <select id="page-size">
+                        <option value="10">10条</option>
+                        <option value="20" selected>20条</option>
+                        <option value="50">50条</option>
+                    </select>
+                </div>
+                
+                <div class="config-group">
+                    <label>模拟科室</label>
+                    <select id="demo-department">
+                        <option value="">全部科室</option>
+                        <option value="内科">内科</option>
+                        <option value="外科">外科</option>
+                        <option value="儿科">儿科</option>
+                        <option value="妇产科">妇产科</option>
+                    </select>
+                </div>
+                
+                <div class="config-group">
+                    <label>操作</label>
+                    <button onclick="reloadComponent()">重新加载</button>
+                </div>
+                
+                <div class="config-group">
+                    <label>导出数据</label>
+                    <button onclick="exportData()">导出Excel</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <span class="status-item">状态: <span class="status-value" id="status-text">准备就绪</span></span>
+            <span class="status-item">数据条数: <span class="status-value" id="data-count">0</span></span>
+            <span class="status-item">最后更新: <span class="status-value" id="last-update">--</span></span>
+        </div>
+        
+        <!-- 组件容器 -->
+        <div class="example-content">
+            <div id="disease-benefit-example"></div>
+        </div>
+    </div>
+
+    <!-- 引入组件文件 -->
+    <script src="config.js"></script>
+    <script src="disease-benefit.js"></script>
+    
+    <script>
+        // 全局变量
+        let componentInstance = null;
+        
+        // 模拟数据
+        const mockData = {
+            total: 45,
+            list: [
+                {
+                    id: "001",
+                    diseaseName: "高血压",
+                    department: "内科",
+                    totalRevenue: 150000,
+                    totalCost: 120000,
+                    profit: 30000,
+                    profitRate: 0.2,
+                    patientCount: 50,
+                    avgCostPerPatient: 2400,
+                    avgRevenuePerPatient: 3000
+                },
+                {
+                    id: "002",
+                    diseaseName: "糖尿病",
+                    department: "内科",
+                    totalRevenue: 200000,
+                    totalCost: 150000,
+                    profit: 50000,
+                    profitRate: 0.25,
+                    patientCount: 60,
+                    avgCostPerPatient: 2500,
+                    avgRevenuePerPatient: 3333
+                },
+                {
+                    id: "003",
+                    diseaseName: "阑尾炎",
+                    department: "外科",
+                    totalRevenue: 180000,
+                    totalCost: 140000,
+                    profit: 40000,
+                    profitRate: 0.22,
+                    patientCount: 30,
+                    avgCostPerPatient: 4667,
+                    avgRevenuePerPatient: 6000
+                },
+                {
+                    id: "004",
+                    diseaseName: "肺炎",
+                    department: "内科",
+                    totalRevenue: 120000,
+                    totalCost: 100000,
+                    profit: 20000,
+                    profitRate: 0.17,
+                    patientCount: 40,
+                    avgCostPerPatient: 2500,
+                    avgRevenuePerPatient: 3000
+                },
+                {
+                    id: "005",
+                    diseaseName: "骨折",
+                    department: "外科",
+                    totalRevenue: 250000,
+                    totalCost: 180000,
+                    profit: 70000,
+                    profitRate: 0.28,
+                    patientCount: 25,
+                    avgCostPerPatient: 7200,
+                    avgRevenuePerPatient: 10000
+                }
+            ],
+            summary: {
+                totalProfit: 210000,
+                totalRevenue: 900000,
+                totalCost: 690000,
+                profitRate: 0.23
+            }
+        };
+        
+        // 初始化组件
+        function initComponent() {
+            const config = getComponentConfig();
+            
+            // 销毁现有实例
+            if (componentInstance) {
+                componentInstance.destroy();
+            }
+            
+            // 创建新实例
+            componentInstance = new DiseaseBenefitComponent('disease-benefit-example', {
+                enableExport: true,
+                enableAIInsight: true,
+                enableDoctorProfile: true,
+                enableDiseaseDetail: true,
+                enableFilters: true,
+                enableCharts: true,
+                enableTables: true,
+                theme: config.charts.theme,
+                language: 'zh-CN',
+                debug: true,
+                ...config
+            });
+            
+            // 监听事件
+            setupEventListeners();
+            
+            // 模拟数据加载
+            setTimeout(() => {
+                updateStatus('数据加载中...');
+                
+                // 模拟API延迟
+                setTimeout(() => {
+                    componentInstance.setData(mockData);
+                    updateStatus('加载完成');
+                    updateDataCount(mockData.total);
+                    updateLastUpdate();
+                }, 1000);
+            }, 500);
+        }
+        
+        // 获取组件配置
+        function getComponentConfig() {
+            const theme = document.getElementById('chart-theme').value;
+            const animation = document.getElementById('chart-animation').value === 'true';
+            const pageSize = parseInt(document.getElementById('page-size').value);
+            
+            return {
+                charts: {
+                    theme: theme,
+                    animation: animation,
+                    responsive: true
+                },
+                table: {
+                    pageSize: pageSize,
+                    sortable: true,
+                    exportable: true
+                },
+                filters: {
+                    showDepartment: true,
+                    showDateRange: true,
+                    showDiseaseType: true
+                }
+            };
+        }
+        
+        // 设置事件监听
+        function setupEventListeners() {
+            componentInstance.on('dataLoaded', (data) => {
+                console.log('数据加载完成:', data);
+                updateStatus('数据加载完成');
+            });
+            
+            componentInstance.on('filterChanged', (filters) => {
+                console.log('筛选条件变化:', filters);
+                updateStatus('筛选条件已更新');
+            });
+            
+            componentInstance.on('chartClicked', (params) => {
+                console.log('图表被点击:', params);
+                updateStatus(`点击了: ${params.name}`);
+            });
+            
+            componentInstance.on('exportCompleted', (result) => {
+                console.log('导出完成:', result);
+                updateStatus('数据导出完成');
+            });
+        }
+        
+        // 重新加载组件
+        function reloadComponent() {
+            updateStatus('重新加载中...');
+            initComponent();
+        }
+        
+        // 导出数据
+        function exportData() {
+            if (componentInstance) {
+                updateStatus('导出数据中...');
+                componentInstance.exportData('excel');
+            }
+        }
+        
+        // 更新状态
+        function updateStatus(text) {
+            document.getElementById('status-text').textContent = text;
+        }
+        
+        // 更新数据条数
+        function updateDataCount(count) {
+            document.getElementById('data-count').textContent = count;
+        }
+        
+        // 更新最后更新时间
+        function updateLastUpdate() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('zh-CN');
+            document.getElementById('last-update').textContent = timeString;
+        }
+        
+        // 配置变化监听
+        document.getElementById('chart-theme').addEventListener('change', () => {
+            if (componentInstance) {
+                reloadComponent();
+            }
+        });
+        
+        document.getElementById('chart-animation').addEventListener('change', () => {
+            if (componentInstance) {
+                reloadComponent();
+            }
+        });
+        
+        document.getElementById('page-size').addEventListener('change', () => {
+            if (componentInstance) {
+                reloadComponent();
+            }
+        });
+        
+        document.getElementById('demo-department').addEventListener('change', (e) => {
+            if (componentInstance) {
+                const department = e.target.value;
+                let filteredData = { ...mockData };
+                
+                if (department) {
+                    filteredData.list = mockData.list.filter(item => item.department === department);
+                    filteredData.total = filteredData.list.length;
+                }
+                
+                componentInstance.setData(filteredData);
+                updateDataCount(filteredData.total);
+                updateStatus(`已筛选: ${department || '全部科室'}`);
+            }
+        });
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStatus('初始化中...');
+            initComponent();
+        });
+        
+        // 响应式处理
+        window.addEventListener('resize', () => {
+            if (componentInstance) {
+                componentInstance.refreshCharts();
+            }
+        });
+    </script>
+</body>
+</html>

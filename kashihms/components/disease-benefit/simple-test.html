@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单图表测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            border: 2px solid #ddd;
+            margin: 20px 0;
+            background: #fafafa;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>图表显示诊断测试</h1>
+        
+        <div id="status-container">
+            <div id="echarts-status" class="status info">检查ECharts加载状态...</div>
+            <div id="dom-status" class="status info">检查DOM状态...</div>
+        </div>
+        
+        <button onclick="runDiagnostics()">运行诊断</button>
+        <button onclick="createSimpleChart()">创建简单图表</button>
+        <button onclick="createComplexChart()">创建复杂图表</button>
+        <button onclick="clearChart()">清空图表</button>
+        
+        <div id="chart1" class="chart-container"></div>
+        
+        <div id="log-container">
+            <h3>诊断日志:</h3>
+            <div id="log" style="background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; max-height: 300px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <script>
+        let chart = null;
+        
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+        
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${type}`;
+        }
+        
+        function runDiagnostics() {
+            log('开始运行诊断...');
+            
+            // 检查ECharts
+            if (typeof echarts !== 'undefined') {
+                updateStatus('echarts-status', 'ECharts已加载 ✓', 'success');
+                log(`ECharts版本: ${echarts.version || '未知'}`);
+            } else {
+                updateStatus('echarts-status', 'ECharts未加载 ✗', 'error');
+                log('错误: ECharts未加载');
+                return;
+            }
+            
+            // 检查DOM
+            const container = document.getElementById('chart1');
+            if (container) {
+                const rect = container.getBoundingClientRect();
+                updateStatus('dom-status', `容器存在，尺寸: ${rect.width}x${rect.height} ✓`, 'success');
+                log(`容器尺寸: 宽度=${rect.width}px, 高度=${rect.height}px`);
+            } else {
+                updateStatus('dom-status', '容器不存在 ✗', 'error');
+                log('错误: 图表容器不存在');
+                return;
+            }
+            
+            log('诊断完成');
+        }
+        
+        function createSimpleChart() {
+            log('创建简单图表...');
+            
+            try {
+                const container = document.getElementById('chart1');
+                
+                // 销毁现有图表
+                if (chart) {
+                    chart.dispose();
+                    chart = null;
+                }
+                
+                // 创建新图表
+                chart = echarts.init(container);
+                
+                const option = {
+                    title: {
+                        text: '简单测试图表'
+                    },
+                    tooltip: {},
+                    xAxis: {
+                        data: ['A', 'B', 'C', 'D', 'E']
+                    },
+                    yAxis: {},
+                    series: [{
+                        name: '测试数据',
+                        type: 'bar',
+                        data: [10, 20, 30, 40, 50],
+                        itemStyle: {
+                            color: '#5470c6'
+                        }
+                    }]
+                };
+                
+                chart.setOption(option);
+                log('简单图表创建成功');
+                
+                // 触发resize
+                setTimeout(() => {
+                    chart.resize();
+                    log('图表resize完成');
+                }, 100);
+                
+            } catch (error) {
+                log(`创建简单图表失败: ${error.message}`);
+                console.error(error);
+            }
+        }
+        
+        function createComplexChart() {
+            log('创建复杂图表...');
+            
+            try {
+                const container = document.getElementById('chart1');
+                
+                // 销毁现有图表
+                if (chart) {
+                    chart.dispose();
+                    chart = null;
+                }
+                
+                // 创建新图表
+                chart = echarts.init(container);
+                
+                const option = {
+                    title: {
+                        text: '病种效益分析',
+                        left: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    },
+                    legend: {
+                        data: ['收入', '成本', '利润'],
+                        top: 30
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: ['急性心肌梗死', '脑梗死', '肺炎', '胆囊炎', '阑尾炎']
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [
+                        {
+                            name: '收入',
+                            type: 'bar',
+                            data: [50000, 45000, 30000, 25000, 20000],
+                            itemStyle: { color: '#5470c6' }
+                        },
+                        {
+                            name: '成本',
+                            type: 'bar',
+                            data: [30000, 28000, 18000, 15000, 12000],
+                            itemStyle: { color: '#91cc75' }
+                        },
+                        {
+                            name: '利润',
+                            type: 'bar',
+                            data: [20000, 17000, 12000, 10000, 8000],
+                            itemStyle: { color: '#fac858' }
+                        }
+                    ]
+                };
+                
+                chart.setOption(option);
+                log('复杂图表创建成功');
+                
+                // 触发resize
+                setTimeout(() => {
+                    chart.resize();
+                    log('图表resize完成');
+                }, 100);
+                
+            } catch (error) {
+                log(`创建复杂图表失败: ${error.message}`);
+                console.error(error);
+            }
+        }
+        
+        function clearChart() {
+            log('清空图表...');
+            
+            if (chart) {
+                chart.dispose();
+                chart = null;
+                log('图表已清空');
+            } else {
+                log('没有图表需要清空');
+            }
+        }
+        
+        // 页面加载完成后自动运行诊断
+        window.addEventListener('load', function() {
+            log('页面加载完成');
+            setTimeout(runDiagnostics, 500);
+        });
+        
+        // 窗口大小改变时调整图表
+        window.addEventListener('resize', function() {
+            if (chart) {
+                chart.resize();
+                log('窗口大小改变，图表已调整');
+            }
+        });
+    </script>
+</body>
+</html>

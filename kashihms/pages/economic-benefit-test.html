@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经济效益分析测试 - 医院管理系统</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/economic-benefit.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>经济效益分析测试</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="window.economicBenefitTest?.loadData()">刷新数据</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- 效率分析 -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>人员效率分析</h2>
+                </div>
+                <div class="chart-container">
+                    <div id="department-efficiency-chart" class="chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/economic-benefit-test.js"></script>
+</body>
+</html>

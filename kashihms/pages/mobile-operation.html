@@ -1,0 +1,2335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>掌上运营 - 喀什地区第一人民医院数据中心管理平台</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script src="../js/common.js"></script>
+    <style>
+        /* 掌上运营特有样式 */
+        .mobile-operation-container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .mobile-devices-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .mobile-device-frame {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .mobile-device-frame:hover {
+            transform: translateY(-5px);
+        }
+        
+        .device-label {
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            text-align: center;
+        }
+        
+        .device-description {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-top: 5px;
+            max-width: 380px;
+        }
+        
+        .device-display {
+            width: 380px;
+            height: 720px;
+            background-color: #f5f7fa;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 12px solid #333;
+            position: relative;
+        }
+        
+        .device-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 25px;
+            background-color: #333;
+            border-radius: 0 0 15px 15px;
+            z-index: 10;
+        }
+        
+        .device-status-bar {
+            height: 30px;
+            background-color: #333;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-size: 12px;
+            position: relative;
+            z-index: 5;
+        }
+        
+        .status-time {
+            font-weight: 500;
+        }
+        
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-signal {
+            display: flex;
+            align-items: flex-end;
+            height: 10px;
+            gap: 2px;
+        }
+        
+        .signal-bar {
+            width: 3px;
+            background-color: white;
+            border-radius: 1px;
+        }
+        
+        .signal-bar:nth-child(1) { height: 3px; }
+        .signal-bar:nth-child(2) { height: 5px; }
+        .signal-bar:nth-child(3) { height: 7px; }
+        .signal-bar:nth-child(4) { height: 10px; }
+        
+        .status-wifi {
+            position: relative;
+            width: 12px;
+            height: 12px;
+        }
+        
+        .status-wifi::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 12px;
+            height: 12px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            transform: rotate(45deg);
+        }
+        
+        .status-battery {
+            display: flex;
+            align-items: center;
+        }
+        
+        .battery-icon {
+            width: 20px;
+            height: 10px;
+            border: 1px solid white;
+            border-radius: 2px;
+            position: relative;
+        }
+        
+        .battery-icon::after {
+            content: '';
+            position: absolute;
+            right: -3px;
+            top: 3px;
+            width: 2px;
+            height: 4px;
+            background-color: white;
+            border-radius: 0 1px 1px 0;
+        }
+        
+        .battery-level {
+            position: absolute;
+            left: 1px;
+            top: 1px;
+            height: 6px;
+            background-color: white;
+            border-radius: 1px;
+            width: 75%;
+        }
+        
+        .device-header {
+            height: 50px;
+            background-color: #0066cc;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        
+        .device-header.doctor {
+            background-color: #1890ff;
+        }
+        
+        .device-header.nurse {
+            background-color: #52c41a;
+        }
+        
+        .device-header.patient {
+            background-color: #722ed1;
+        }
+        
+        .device-header.admin {
+            background-color: #fa8c16;
+        }
+        
+        .device-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .device-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #f5f7fa;
+        }
+        
+        .mobile-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .mobile-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-card-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .mobile-card-title i {
+            margin-right: 8px;
+            color: #0066cc;
+        }
+        
+        .mobile-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .mobile-stat-item {
+            text-align: center;
+        }
+        
+        .mobile-stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .mobile-stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .mobile-chart-container {
+            height: 180px;
+            margin-bottom: 10px;
+        }
+        
+        .mobile-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+        
+        .mobile-list-item:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .mobile-list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .mobile-list-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .mobile-list-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #e6f7ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 14px;
+            color: #0066cc;
+        }
+        
+        .mobile-list-text {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .mobile-list-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .mobile-tab-container {
+            display: flex;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 15px;
+        }
+        
+        .mobile-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .mobile-tab.active {
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+        }
+        
+        .mobile-tab-content {
+            display: none;
+        }
+        
+        .mobile-tab-content.active {
+            display: block;
+        }
+        
+        .mobile-progress-container {
+            margin-bottom: 15px;
+        }
+        
+        .mobile-progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .mobile-progress-bar {
+            height: 6px;
+            background-color: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .mobile-progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1s ease-in-out;
+        }
+        
+        .mobile-button {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #0066cc;
+            color: white;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .mobile-button:hover {
+            background-color: #0052a3;
+        }
+        
+        .mobile-button.secondary {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .mobile-button.secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .mobile-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            background-color: #f5222d;
+            color: white;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        
+        .mobile-badge.warning {
+            background-color: #fa8c16;
+        }
+        
+        .mobile-badge.success {
+            background-color: #52c41a;
+        }
+        
+        .mobile-badge.info {
+            background-color: #1890ff;
+        }
+        
+        .mobile-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .mobile-grid-item {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .mobile-grid-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .mobile-grid-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .theme-analysis-section {
+            margin-top: 30px;
+        }
+        
+        .theme-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e8e8e8;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .theme-tab-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .theme-tab-item.active {
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+        }
+        
+        .theme-content {
+            display: none;
+        }
+        
+        .theme-content.active {
+            display: block;
+        }
+        
+        .analysis-charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .analysis-chart-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .analysis-chart {
+            height: 250px;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .chart-action-btn {
+            background-color: #f5f7fa;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            padding: 4px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .chart-action-btn:hover {
+            background-color: #e6f7ff;
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        .chart-action-btn.active {
+            background-color: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+        
+        .data-table-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-table th {
+            background-color: #f5f7fa;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .data-table td {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f5f7fa;
+        }
+        
+        @media (max-width: 768px) {
+            .device-display {
+                width: 320px;
+                height: 640px;
+            }
+            
+            .analysis-charts {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 8px;
+                font-size: 12px;
+            }
+        }
+
+        /* PC端信息发布中心样式 */
+        .pc-message-center {
+            margin: 40px 0;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .pc-message-center h2 {
+            color: #1a1a1a;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .message-center-container {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .message-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message-item {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #e0e0e0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .message-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .message-item.clickable {
+            cursor: pointer;
+            border-left-color: #1890ff;
+        }
+
+        .message-item.clickable:hover {
+            border-left-color: #40a9ff;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .message-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        .message-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .message-status.pending {
+            background: #fff7e6;
+            color: #fa8c16;
+            border: 1px solid #ffd591;
+        }
+
+        .message-status.published {
+            background: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+
+        .message-status.draft {
+            background: #f0f0f0;
+            color: #666;
+            border: 1px solid #d9d9d9;
+        }
+
+        .message-status.archived {
+            background: #f5f5f5;
+            color: #999;
+            border: 1px solid #d9d9d9;
+        }
+
+        .message-status.reviewing {
+            background: #e6f7ff;
+            color: #1890ff;
+            border: 1px solid #91d5ff;
+        }
+
+        .message-content {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .message-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .message-meta span {
+            display: flex;
+            align-items: center;
+        }
+
+        /* 消息弹窗样式 */
+        .message-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 600px;
+            max-width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #1a1a1a;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            font-size: 24px;
+            font-weight: bold;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #666;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .message-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            padding: 10px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn:hover {
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+
+        .edit-btn {
+            background: #1890ff;
+            color: white;
+            border-color: #1890ff;
+        }
+
+        .edit-btn:hover {
+            background: #40a9ff;
+            border-color: #40a9ff;
+        }
+
+        .publish-btn {
+            background: #52c41a;
+            color: white;
+            border-color: #52c41a;
+        }
+
+        .publish-btn:hover {
+            background: #73d13d;
+            border-color: #73d13d;
+        }
+
+        .withdraw-btn {
+            background: #fa8c16;
+            color: white;
+            border-color: #fa8c16;
+        }
+
+        .withdraw-btn:hover {
+            background: #ffa940;
+            border-color: #ffa940;
+        }
+
+        .archive-btn {
+            background: #8c8c8c;
+            color: white;
+            border-color: #8c8c8c;
+        }
+
+        .archive-btn:hover {
+            background: #a6a6a6;
+            border-color: #a6a6a6;
+        }
+
+        .review-btn {
+            background: #722ed1;
+            color: white;
+            border-color: #722ed1;
+        }
+
+        .review-btn:hover {
+            background: #9254de;
+            border-color: #9254de;
+        }
+
+        /* 移动端消息通知样式 - 模拟真实手机通知 */
+        .mobile-notification {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: #333;
+            padding: 12px 16px;
+            border-radius: 0;
+            font-size: 13px;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            transform: translateY(-100%);
+            animation: slideDownNotification 0.4s ease-out forwards;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .notification-icon {
+            width: 24px;
+            height: 24px;
+            background: #1890ff;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1a1a1a;
+            line-height: 1.2;
+        }
+
+        .notification-text {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.3;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .notification-time {
+            font-size: 11px;
+            color: #999;
+            flex-shrink: 0;
+            align-self: flex-start;
+        }
+
+        /* 通知震动效果 */
+        .mobile-device-frame.vibrate {
+            animation: vibrate 0.3s ease-in-out;
+        }
+
+        .mobile-message-popup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        .mobile-message-content {
+            background: white;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 300px;
+        }
+
+        .mobile-message-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+
+        .mobile-message-text {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .mobile-message-close {
+            background: #1890ff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideDownNotification {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUpNotification {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes vibrate {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+            20%, 40%, 60%, 80% { transform: translateX(2px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="content-wrapper" style="margin-left: 250px;">
+            <!-- 右侧内容区 -->
+        
+
+        <!-- 右侧内容区 -->
+        <main class="content">
+            <div class="page-header">
+                <h2>掌上运营<span class="english-title">Mobile Operation</span></h2>
+                <div class="breadcrumb">
+                    <a href="../index.html">首页</a> &gt; 
+                    <a href="#operation-analysis">综合运营管理分析平台</a> &gt; 
+                    <span>掌上运营</span>
+                </div>
+            </div>
+
+            <div class="mobile-operation-container">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #333;">移动应用展示</h2>
+                
+                <!-- 移动端展示区 - 多个设备 -->
+                <div class="mobile-devices-row">
+                    <!-- 管理员端 -->
+                    <div class="mobile-device-frame">
+                        <div class="device-display">
+                            <div class="device-notch"></div>
+                            <div class="device-status-bar">
+                                <div class="status-time">14:30</div>
+                                <div class="status-right">
+                                    <div class="status-signal">
+                                        <div class="signal-bar"></div>
+                                        <div class="signal-bar"></div>
+                                        <div class="signal-bar"></div>
+                                        <div class="signal-bar"></div>
+                                    </div>
+                                    <div class="status-wifi"></div>
+                                    <div class="status-battery">
+                                        <div class="battery-icon">
+                                            <div class="battery-level"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="device-header admin">
+                                <h3>掌上医院运营助手</h3>
+                                <div class="device-time">14:30</div>
+                            </div>
+                            <div class="device-content">
+                                <!-- 运营概览卡片 -->
+                                <div class="mobile-card">
+                                    <div class="mobile-card-title">
+                                        <i class="icon-stat"></i>运营概览
+                                    </div>
+                                    <div class="mobile-stats">
+                                        <div class="mobile-stat-item">
+                                            <div class="mobile-stat-value">1,286</div>
+                                            <div class="mobile-stat-label">今日门诊</div>
+                                        </div>
+                                        <div class="mobile-stat-item">
+                                            <div class="mobile-stat-value">352</div>
+                                            <div class="mobile-stat-label">今日住院</div>
+                                        </div>
+                                        <div class="mobile-stat-item">
+                                            <div class="mobile-stat-value">¥128万</div>
+                                            <div class="mobile-stat-label">今日收入</div>
+                                        </div>
+                                    </div>
+                                    <div class="mobile-chart-container" id="mobile-overview-chart"></div>
+                                </div>
+
+                                <!-- 待办事项卡片 -->
+                                <div class="mobile-card">
+                                    <div class="mobile-card-title">
+                                        <i class="icon-todo"></i>待办事项
+                                    </div>
+                                    <div class="mobile-list-item">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon">会</div>
+                                            <div class="mobile-list-text">运营分析会议</div>
+                                        </div>
+                                        <div class="mobile-list-value">15:30</div>
+                                    </div>
+                                    <div class="mobile-list-item">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon">审</div>
+                                            <div class="mobile-list-text">设备采购审批</div>
+                                        </div>
+                                        <div class="mobile-list-value">待处理</div>
+                                    </div>
+                                    <div class="mobile-list-item">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon">报</div>
+                                            <div class="mobile-list-text">月度报表审核</div>
+                                        </div>
+                                        <div class="mobile-list-value">今日截止</div>
+                                    </div>
+                                </div>
+
+                                <!-- 预警信息卡片 -->
+                                <div class="mobile-card">
+                                    <div class="mobile-card-title">
+                                        <i class="icon-alert"></i>预警信息
+                                    </div>
+                                    <!-- 系统维护预警 - 新增 -->
+                                    <div class="mobile-list-item" onclick="showMaintenanceAlert()" style="cursor: pointer;">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon" style="background-color: #fff1f0; color: #f5222d;">维</div>
+                                            <div class="mobile-list-text" style="color: #f5222d; font-weight: bold;">系统维护</div>
+                                        </div>
+                                        <div class="mobile-list-value" style="color: #f5222d;">刚刚</div>
+                                    </div>
+                                    <div class="mobile-list-item">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon" style="background-color: #fff2e8; color: #fa8c16;">预</div>
+                                            <div class="mobile-list-text">儿科床位紧张</div>
+                                        </div>
+                                        <div class="mobile-list-value">30分钟前</div>
+                                    </div>
+                                    <div class="mobile-list-item">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon" style="background-color: #fff1f0; color: #f5222d;">警</div>
+                                            <div class="mobile-list-text">CT设备故障</div>
+                                        </div>
+                                        <div class="mobile-list-value">2小时前</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="device-label">管理员端</div>
+                        <div class="device-description">提供医院整体运营数据、预警信息和决策支持</div>
+                    </div>
+
+                    <!-- 医生端 -->
+                    <div class="mobile-device-frame">
+                        <div class="device-display">
+                            <div class="device-notch"></div>
+                            <div class="device-status-bar">
+                                <div class="status-time">14:30</div>
+                                <div class="status-right">
+                                    <div class="status-signal">
+                                        <div class="signal-bar"></div>
+                                        <div class="signal-bar"></div>
+                                        <div class="signal-bar"></div>
+                                        <div class="signal-bar"></div>
+                                    </div>
+                                    <div class="status-wifi"></div>
+                                    <div class="status-battery">
+                                        <div class="battery-icon">
+                                            <div class="battery-level"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="device-header doctor">
+                                <h3>医生工作站</h3>
+                                <div class="device-time">14:30</div>
+                            </div>
+                            <div class="device-content">
+                                <!-- 医生信息卡片 -->
+                                <div class="mobile-card">
+                                    <div class="mobile-card-title">
+                                        <i class="icon-user"></i>张医生 · 骨科
+                                    </div>
+                                    <div class="mobile-stats">
+                                        <div class="mobile-stat-item">
+                                            <div class="mobile-stat-value">28</div>
+                                            <div class="mobile-stat-label">今日门诊</div>
+                                        </div>
+                                        <div class="mobile-stat-item">
+                                            <div class="mobile-stat-value">12</div>
+                                            <div class="mobile-stat-label">住院患者</div>
+                                        </div>
+                                        <div class="mobile-stat-item">
+                                            <div class="mobile-stat-value">3</div>
+                                            <div class="mobile-stat-label">待手术</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 今日排班卡片 -->
+                                <div class="mobile-card">
+                                    <div class="mobile-card-title">
+                                        <i class="icon-calendar"></i>今日排班
+                                    </div>
+                                    <div class="mobile-list-item">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon" style="background-color: #e6f7ff; color: #1890ff;">门</div>
+                                            <div class="mobile-list-text">门诊 <span class="mobile-badge">8:00-12:00</span></div>
+                                        </div>
+                                        <div class="mobile-list-value">进行中</div>
+                                    </div>
+                                    <div class="mobile-list-item">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon" style="background-color: #f6ffed; color: #52c41a;">手</div>
+                                            <div class="mobile-list-text">手术 <span class="mobile-badge warning">14:00-16:00</span></div>
+                                        </div>
+                                        <div class="mobile-list-value">待开始</div>
+                                    </div>
+                                    <div class="mobile-list-item">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon" style="background-color: #fff2e8; color: #fa8c16;">查</div>
+                                            <div class="mobile-list-text">查房 <span class="mobile-badge info">16:30-17:30</span></div>
+                                        </div>
+                                        <div class="mobile-list-value">待开始</div>
+                                    </div>
+                                </div>
+
+                                <!-- 患者列表卡片 -->
+                                <div class="mobile-card">
+                                    <div class="mobile-card-title">
+                                        <i class="icon-patient"></i>待诊患者
+                                    </div>
+                                    <div class="mobile-list-item">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon" style="background-color: #f9f0ff; color: #722ed1;">李</div>
+                                            <div class="mobile-list-text">李明 · 复诊</div>
+                                        </div>
+                                        <div class="mobile-list-value">3号</div>
+                                    </div>
+                                    <div class="mobile-list-item">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon" style="background-color: #f9f0ff; color: #722ed1;">王</div>
+                                            <div class="mobile-list-text">王芳 · 初诊</div>
+                                        </div>
+                                        <div class="mobile-list-value">4号</div>
+                                    </div>
+                                    <div class="mobile-list-item">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon" style="background-color: #f9f0ff; color: #722ed1;">张</div>
+                                            <div class="mobile-list-text">张伟 · 复诊</div>
+                                        </div>
+                                        <div class="mobile-list-value">5号</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="device-label">医生端</div>
+                        <div class="device-description">提供患者管理、排班信息、诊疗记录等功能</div>
+                    </div>
+
+                    <!-- 护士端 -->
+                    <div class="mobile-device-frame">
+                        <div class="device-display">
+                            <div class="device-notch"></div>
+                            <div class="device-status-bar">
+                                <div class="status-time">14:30</div>
+                                <div class="status-right">
+                                    <div class="status-signal">
+                                        <div class="signal-bar"></div>
+                                        <div class="signal-bar"></div>
+                                        <div class="signal-bar"></div>
+                                        <div class="signal-bar"></div>
+                                    </div>
+                                    <div class="status-wifi"></div>
+                                    <div class="status-battery">
+                                        <div class="battery-icon">
+                                            <div class="battery-level"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="device-header nurse">
+                                <h3>护士工作站</h3>
+                                <div class="device-time">14:30</div>
+                            </div>
+                            <div class="device-content">
+                                <!-- 护士信息卡片 -->
+                                <div class="mobile-card">
+                                    <div class="mobile-card-title">
+                                        <i class="icon-user"></i>王护士 · 骨科病房
+                                    </div>
+                                    <div class="mobile-stats">
+                                        <div class="mobile-stat-item">
+                                            <div class="mobile-stat-value">24</div>
+                                            <div class="mobile-stat-label">负责患者</div>
+                                        </div>
+                                        <div class="mobile-stat-item">
+                                            <div class="mobile-stat-value">8</div>
+                                            <div class="mobile-stat-label">待执行医嘱</div>
+                                        </div>
+                                        <div class="mobile-stat-value">
+                                            <div class="mobile-stat-value">3</div>
+                                            <div class="mobile-stat-label">待测体征</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 工作任务卡片 -->
+                                <div class="mobile-card">
+                                    <div class="mobile-card-title">
+                                        <i class="icon-task"></i>工作任务
+                                    </div>
+                                    <div class="mobile-tab-container">
+                                        <div class="mobile-tab active" data-tab="medication">用药</div>
+                                        <div class="mobile-tab" data-tab="vital">体征</div>
+                                        <div class="mobile-tab" data-tab="care">护理</div>
+                                    </div>
+                                    
+                                    <div class="mobile-tab-content active" id="medication-tab">
+                                        <div class="mobile-list-item">
+                                            <div class="mobile-list-left">
+                                                <div class="mobile-list-icon" style="background-color: #e6f7ff; color: #1890ff;">药</div>
+                                                <div class="mobile-list-text">301床 · 阿莫西林</div>
+                                            </div>
+                                            <div class="mobile-list-value">15:00</div>
+                                        </div>
+                                        <div class="mobile-list-item">
+                                            <div class="mobile-list-left">
+                                                <div class="mobile-list-icon" style="background-color: #e6f7ff; color: #1890ff;">药</div>
+                                                <div class="mobile-list-text">305床 · 头孢克肟</div>
+                                            </div>
+                                            <div class="mobile-list-value">16:00</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mobile-tab-content" id="vital-tab">
+                                        <div class="mobile-list-item">
+                                            <div class="mobile-list-left">
+                                                <div class="mobile-list-icon" style="background-color: #f6ffed; color: #52c41a;">体</div>
+                                                <div class="mobile-list-text">302床 · 体温测量</div>
+                                            </div>
+                                            <div class="mobile-list-value">14:45</div>
+                                        </div>
+                                        <div class="mobile-list-item">
+                                            <div class="mobile-list-left">
+                                                <div class="mobile-list-icon" style="background-color: #f6ffed; color: #52c41a;">体</div>
+                                                <div class="mobile-list-text">306床 · 血压测量</div>
+                                            </div>
+                                            <div class="mobile-list-value">15:30</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mobile-tab-content" id="care-tab">
+                                        <div class="mobile-list-item">
+                                            <div class="mobile-list-left">
+                                                <div class="mobile-list-icon" style="background-color: #fff2e8; color: #fa8c16;">护</div>
+                                                <div class="mobile-list-text">303床 · 伤口换药</div>
+                                            </div>
+                                            <div class="mobile-list-value">15:15</div>
+                                        </div>
+                                        <div class="mobile-list-item">
+                                            <div class="mobile-list-left">
+                                                <div class="mobile-list-icon" style="background-color: #fff2e8; color: #fa8c16;">护</div>
+                                                <div class="mobile-list-text">307床 · 康复训练</div>
+                                            </div>
+                                            <div class="mobile-list-value">16:30</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 病房状态卡片 -->
+                                <div class="mobile-card">
+                                    <div class="mobile-card-title">
+                                        <i class="icon-ward"></i>病房状态
+                                    </div>
+                                    <div class="mobile-grid">
+                                        <div class="mobile-grid-item">
+                                            <div class="mobile-grid-value">24/30</div>
+                                            <div class="mobile-grid-label">床位使用率</div>
+                                        </div>
+                                        <div class="mobile-grid-item">
+                                            <div class="mobile-grid-value">2</div>
+                                            <div class="mobile-grid-label">重症患者</div>
+                                        </div>
+                                        <div class="mobile-grid-item">
+                                            <div class="mobile-grid-value">5</div>
+                                            <div class="mobile-grid-label">今日出院</div>
+                                        </div>
+                                        <div class="mobile-grid-item">
+                                            <div class="mobile-grid-value">3</div>
+                                            <div class="mobile-grid-label">今日入院</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="device-label">护士端</div>
+                        <div class="device-description">提供患者护理、医嘱执行、病房管理等功能</div>
+                    </div>
+
+                    <!-- 患者端 -->
+                    <div class="mobile-device-frame">
+                        <div class="device-display">
+                            <div class="device-notch"></div>
+                            <div class="device-status-bar">
+                                <div class="status-time">14:30</div>
+                                <div class="status-right">
+                                    <div class="status-signal">
+                                        <div class="signal-bar"></div>
+                                        <div class="signal-bar"></div>
+                                        <div class="signal-bar"></div>
+                                        <div class="signal-bar"></div>
+                                    </div>
+                                    <div class="status-wifi"></div>
+                                    <div class="status-battery">
+                                        <div class="battery-icon">
+                                            <div class="battery-level"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="device-header patient">
+                                <h3>智慧患者服务</h3>
+                                <div class="device-time">14:30</div>
+                            </div>
+                            <div class="device-content">
+                                <!-- 患者信息卡片 -->
+                                <div class="mobile-card">
+                                    <div class="mobile-card-title">
+                                        <i class="icon-user"></i>李明 · 男 · 45岁
+                                    </div>
+                                    <div class="mobile-stats">
+                                        <div class="mobile-stat-item">
+                                            <div class="mobile-stat-value">A12345</div>
+                                            <div class="mobile-stat-label">病历号</div>
+                                        </div>
+                                        <div class="mobile-stat-item">
+                                            <div class="mobile-stat-value">骨科</div>
+                                            <div class="mobile-stat-label">就诊科室</div>
+                                        </div>
+                                        <div class="mobile-stat-item">
+                                            <div class="mobile-stat-value">张医生</div>
+                                            <div class="mobile-stat-label">主治医生</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 就诊记录卡片 -->
+                                <div class="mobile-card">
+                                    <div class="mobile-card-title">
+                                        <i class="icon-record"></i>就诊记录
+                                    </div>
+                                    <div class="mobile-list-item">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon" style="background-color: #e6f7ff; color: #1890ff;">门</div>
+                                            <div class="mobile-list-text">门诊复诊</div>
+                                        </div>
+                                        <div class="mobile-list-value">今天 14:30</div>
+                                    </div>
+                                    <div class="mobile-list-item">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon" style="background-color: #f6ffed; color: #52c41a;">检</div>
+                                            <div class="mobile-list-text">CT检查</div>
+                                        </div>
+                                        <div class="mobile-list-value">昨天 10:00</div>
+                                    </div>
+                                    <div class="mobile-list-item">
+                                        <div class="mobile-list-left">
+                                            <div class="mobile-list-icon" style="background-color: #fff2e8; color: #fa8c16;">化</div>
+                                            <div class="mobile-list-text">血液化验</div>
+                                        </div>
+                                        <div class="mobile-list-value">3天前</div>
+                                    </div>
+                                </div>
+
+                                <!-- 健康数据卡片 -->
+                                <div class="mobile-card">
+                                    <div class="mobile-card-title">
+                                        <i class="icon-health"></i>健康数据
+                                    </div>
+                                    <div class="mobile-progress-container">
+                                        <div class="mobile-progress-label">
+                                            <span>血压</span>
+                                            <span>120/80 mmHg</span>
+                                        </div>
+                                        <div class="mobile-progress-bar">
+                                            <div class="mobile-progress-fill" style="width: 75%; background-color: #52c41a;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mobile-progress-container">
+                                        <div class="mobile-progress-label">
+                                            <span>血糖</span>
+                                            <span>5.6 mmol/L</span>
+                                        </div>
+                                        <div class="mobile-progress-bar">
+                                            <div class="mobile-progress-fill" style="width: 65%; background-color: #52c41a;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mobile-progress-container">
+                                        <div class="mobile-progress-label">
+                                            <span>心率</span>
+                                            <span>72 次/分</span>
+                                        </div>
+                                        <div class="mobile-progress-bar">
+                                            <div class="mobile-progress-fill" style="width: 80%; background-color: #52c41a;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 快捷服务卡片 -->
+                                <div class="mobile-card">
+                                    <div class="mobile-card-title">
+                                        <i class="icon-service"></i>快捷服务
+                                    </div>
+                                    <div class="mobile-button">预约挂号</div>
+                                    <div class="mobile-button secondary">报告查询</div>
+                                    <div class="mobile-button secondary">缴费充值</div>
+                                    <div class="mobile-button secondary">在线咨询</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="device-label">患者端</div>
+                        <div class="device-description">提供预约挂号、报告查询、健康管理等便民服务</div>
+                    </div>
+                </div>
+
+                <!-- PC端信息发布中心 -->
+                <div class="pc-message-center">
+                    <h2>PC端信息发布中心</h2>
+                    <div class="message-center-container">
+                        <div class="message-list">
+                            <div class="message-item clickable" onclick="openMessageModal(this)">
+                                <div class="message-header">
+                                    <div class="message-title">紧急通知：系统维护公告</div>
+                                    <div class="message-status pending">待发布</div>
+                                </div>
+                                <div class="message-content">
+                                    系统将于今晚22:00-24:00进行维护升级，期间可能影响部分功能使用，请各科室提前做好准备。
+                                </div>
+                                <div class="message-meta">
+                                    <span class="message-author">信息科 - 张工程师</span>
+                                    <span class="message-time">2024-01-15 14:30</span>
+                                    <span class="message-target">目标：全院</span>
+                                </div>
+                            </div>
+                            
+                            <div class="message-item">
+                                <div class="message-header">
+                                    <div class="message-title">会议通知：月度科室主任会议</div>
+                                    <div class="message-status published">已发布</div>
+                                </div>
+                                <div class="message-content">
+                                    定于本周五下午3点在行政楼会议室召开月度科室主任会议，请各科室主任准时参加。
+                                </div>
+                                <div class="message-meta">
+                                    <span class="message-author">院办 - 李主任</span>
+                                    <span class="message-time">2024-01-14 09:15</span>
+                                    <span class="message-target">目标：科室主任</span>
+                                </div>
+                            </div>
+
+                            <div class="message-item">
+                                <div class="message-header">
+                                    <div class="message-title">培训通知：新版HIS系统操作培训</div>
+                                    <div class="message-status draft">草稿</div>
+                                </div>
+                                <div class="message-content">
+                                    为提高工作效率，医院将组织新版HIS系统操作培训，请相关人员积极参与。
+                                </div>
+                                <div class="message-meta">
+                                    <span class="message-author">培训科 - 王老师</span>
+                                    <span class="message-time">2024-01-13 16:45</span>
+                                    <span class="message-target">目标：医护人员</span>
+                                </div>
+                            </div>
+
+                            <div class="message-item">
+                                <div class="message-header">
+                                    <div class="message-title">安全提醒：加强病房安全管理</div>
+                                    <div class="message-status archived">已归档</div>
+                                </div>
+                                <div class="message-content">
+                                    近期发现部分病房存在安全隐患，请各科室加强病房安全管理，确保患者安全。
+                                </div>
+                                <div class="message-meta">
+                                    <span class="message-author">保卫科 - 赵队长</span>
+                                    <span class="message-time">2024-01-12 11:20</span>
+                                    <span class="message-target">目标：护理部</span>
+                                </div>
+                            </div>
+
+                            <div class="message-item">
+                                <div class="message-header">
+                                    <div class="message-title">设备维护：CT设备例行保养通知</div>
+                                    <div class="message-status reviewing">审核中</div>
+                                </div>
+                                <div class="message-content">
+                                    放射科CT设备将于本周末进行例行保养，请相关科室合理安排检查时间。
+                                </div>
+                                <div class="message-meta">
+                                    <span class="message-author">设备科 - 陈工程师</span>
+                                    <span class="message-time">2024-01-11 14:10</span>
+                                    <span class="message-target">目标：放射科</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 消息发布弹窗 -->
+                <div id="messageModal" class="message-modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>消息发布管理</h3>
+                            <span class="modal-close" onclick="closeMessageModal()">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="message-form">
+                                <div class="form-group">
+                                    <label>消息标题：</label>
+                                    <input type="text" id="messageTitle" class="form-input" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>消息内容：</label>
+                                    <textarea id="messageContent" class="form-textarea" readonly></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>发送部门：</label>
+                                    <select id="targetDepartment" class="form-select">
+                                        <option value="all">全院</option>
+                                        <option value="medical">医务科</option>
+                                        <option value="nursing">护理部</option>
+                                        <option value="admin">行政部门</option>
+                                        <option value="logistics">后勤部门</option>
+                                        <option value="emergency">急诊科</option>
+                                        <option value="surgery">外科</option>
+                                        <option value="internal">内科</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>优先级：</label>
+                                    <select id="messagePriority" class="form-select">
+                                        <option value="normal">普通</option>
+                                        <option value="important">重要</option>
+                                        <option value="urgent">紧急</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="modal-btn edit-btn" onclick="editMessage()">编辑</button>
+                            <button class="modal-btn review-btn" onclick="reviewMessage()">审核</button>
+                            <button class="modal-btn publish-btn" onclick="publishMessage()">发布</button>
+                            <button class="modal-btn withdraw-btn" onclick="withdrawMessage()">撤回</button>
+                            <button class="modal-btn archive-btn" onclick="archiveMessage()">归档</button>
+                            <button class="modal-btn cancel-btn" onclick="closeMessageModal()">取消</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 主题分析区域 -->
+                <div class="theme-analysis-section">
+                    <h2>主题分析</h2>
+                    <div class="theme-tabs">
+                        <div class="theme-tab-item active" data-theme="user-activity">用户活跃度</div>
+                        <div class="theme-tab-item" data-theme="service-usage">服务使用情况</div>
+                        <div class="theme-tab-item" data-theme="satisfaction">满意度分析</div>
+                        <div class="theme-tab-item" data-theme="operation-efficiency">运营效率</div>
+                    </div>
+
+                    <!-- 用户活跃度分析 -->
+                    <div class="theme-content active" id="user-activity">
+                        <div class="analysis-charts">
+                            <div class="analysis-chart-container">
+                                <div class="chart-header">
+                                    <div class="chart-title">用户活跃趋势</div>
+                                    <div class="chart-actions">
+                                        <button class="chart-action-btn active" data-period="week">周</button>
+                                        <button class="chart-action-btn" data-period="month">月</button>
+                                        <button class="chart-action-btn" data-period="quarter">季</button>
+                                    </div>
+                                </div>
+                                <div class="analysis-chart" id="user-active-trend-chart"></div>
+                            </div>
+                            <div class="analysis-chart-container">
+                                <div class="chart-header">
+                                    <div class="chart-title">用户构成分析</div>
+                                    <div class="chart-actions">
+                                        <button class="chart-action-btn active" data-type="role">角色</button>
+                                        <button class="chart-action-btn" data-type="department">科室</button>
+                                    </div>
+                                </div>
+                                <div class="analysis-chart" id="user-composition-chart"></div>
+                            </div>
+                        </div>
+                        <div class="data-table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>排名</th>
+                                        <th>用户</th>
+                                        <th>科室</th>
+                                        <th>登录次数</th>
+                                        <th>使用时长(小时)</th>
+                                        <th>最近登录</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>张医生</td>
+                                        <td>骨科</td>
+                                        <td>28</td>
+                                        <td>12.5</td>
+                                        <td>今天 10:23</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>李主任</td>
+                                        <td>内科</td>
+                                        <td>24</td>
+                                        <td>10.3</td>
+                                        <td>今天 09:15</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>王护士长</td>
+                                        <td>护理部</td>
+                                        <td>22</td>
+                                        <td>9.8</td>
+                                        <td>今天 11:42</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>陈医生</td>
+                                        <td>外科</td>
+                                        <td>20</td>
+                                        <td>8.7</td>
+                                        <td>昨天 16:30</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>赵院长</td>
+                                        <td>院长办公室</td>
+                                        <td>18</td>
+                                        <td>15.2</td>
+                                        <td>今天 08:05</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 服务使用情况分析 -->
+                    <div class="theme-content" id="service-usage">
+                        <div class="analysis-charts">
+                            <div class="analysis-chart-container">
+                                <div class="chart-header">
+                                    <div class="chart-title">功能模块使用分布</div>
+                                </div>
+                                <div class="analysis-chart" id="service-distribution-chart"></div>
+                            </div>
+                            <div class="analysis-chart-container">
+                                <div class="chart-header">
+                                    <div class="chart-title">服务使用增长趋势</div>
+                                    <div class="chart-actions">
+                                        <button class="chart-action-btn active" data-period="month">月</button>
+                                        <button class="chart-action-btn" data-period="quarter">季</button>
+                                        <button class="chart-action-btn" data-period="year">年</button>
+                                    </div>
+                                </div>
+                                <div class="analysis-chart" id="service-growth-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 满意度分析 -->
+                    <div class="theme-content" id="satisfaction">
+                        <div class="analysis-charts">
+                            <div class="analysis-chart-container">
+                                <div class="chart-header">
+                                    <div class="chart-title">用户满意度评分</div>
+                                </div>
+                                <div class="analysis-chart" id="satisfaction-score-chart"></div>
+                            </div>
+                            <div class="analysis-chart-container">
+                                <div class="chart-header">
+                                    <div class="chart-title">满意度分布</div>
+                                </div>
+                                <div class="analysis-chart" id="satisfaction-distribution-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 运营效率分析 -->
+                    <div class="theme-content" id="operation-efficiency">
+                        <div class="analysis-charts">
+                            <div class="analysis-chart-container">
+                                <div class="chart-header">
+                                    <div class="chart-title">运营效率指标</div>
+                                </div>
+                                <div class="analysis-chart" id="efficiency-metrics-chart"></div>
+                            </div>
+                            <div class="analysis-chart-container">
+                                <div class="chart-header">
+                                    <div class="chart-title">响应时间分析</div>
+                                </div>
+                                <div class="analysis-chart" id="response-time-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 消息发布功能
+        let currentMessage = null;
+
+        function openMessageModal(messageElement) {
+            currentMessage = messageElement;
+            const modal = document.getElementById('messageModal');
+            
+            // 获取消息信息
+            const title = messageElement.querySelector('.message-title').textContent;
+            const content = messageElement.querySelector('.message-content').textContent;
+            const target = messageElement.querySelector('.message-target').textContent.replace('目标：', '');
+            
+            // 填充表单
+            document.getElementById('messageTitle').value = title;
+            document.getElementById('messageContent').value = content;
+            
+            // 设置目标部门
+            const targetSelect = document.getElementById('targetDepartment');
+            const targetMap = {
+                '全院': 'all',
+                '科室主任': 'admin',
+                '医护人员': 'medical',
+                '护理部': 'nursing',
+                '放射科': 'medical'
+            };
+            targetSelect.value = targetMap[target] || 'all';
+            
+            modal.style.display = 'block';
+        }
+
+        function closeMessageModal() {
+            document.getElementById('messageModal').style.display = 'none';
+            currentMessage = null;
+        }
+
+        function editMessage() {
+            const titleInput = document.getElementById('messageTitle');
+            const contentTextarea = document.getElementById('messageContent');
+            
+            titleInput.readOnly = false;
+            contentTextarea.readOnly = false;
+            titleInput.style.backgroundColor = '#fff';
+            contentTextarea.style.backgroundColor = '#fff';
+            
+            showToast('已进入编辑模式', 'info');
+        }
+
+        function reviewMessage() {
+            if (currentMessage) {
+                const statusElement = currentMessage.querySelector('.message-status');
+                statusElement.textContent = '审核中';
+                statusElement.className = 'message-status reviewing';
+                showToast('消息已提交审核', 'success');
+                closeMessageModal();
+            }
+        }
+
+        function publishMessage() {
+            if (currentMessage) {
+                const statusElement = currentMessage.querySelector('.message-status');
+                statusElement.textContent = '已发布';
+                statusElement.className = 'message-status published';
+                
+                // 获取目标部门
+                const targetDepartment = document.getElementById('targetDepartment').value;
+                const priority = document.getElementById('messagePriority').value;
+                
+                // 获取消息内容
+                const messageContent = document.getElementById('messageContent').value || '系统维护';
+                
+                // 显示发布成功消息
+                showToast('消息发布成功！', 'success');
+                
+                // 根据优先级确定预警类型
+                const alertType = priority === 'urgent' ? 'urgent' : 'warning';
+                
+                // 添加预警到移动端设备
+                setTimeout(() => {
+                    addAlertToMobileDevice(messageContent, alertType);
+                }, 1000);
+                
+                closeMessageModal();
+            }
+        }
+
+        function withdrawMessage() {
+            if (currentMessage) {
+                const statusElement = currentMessage.querySelector('.message-status');
+                statusElement.textContent = '已撤回';
+                statusElement.className = 'message-status draft';
+                
+                // 移除掌上医院运营助手中对应的预警信息
+                removeAlertFromMobileDevice();
+                
+                showToast('消息已撤回', 'warning');
+                closeMessageModal();
+            }
+        }
+
+        // 移除掌上医院运营助手中的预警信息
+        function removeAlertFromMobileDevice() {
+            // 找到掌上医院运营助手设备
+            const devices = document.querySelectorAll('.mobile-device-frame');
+            let targetDevice = null;
+            
+            devices.forEach(device => {
+                const deviceTitle = device.querySelector('.device-header h3');
+                if (deviceTitle && deviceTitle.textContent.includes('掌上医院运营助手')) {
+                    targetDevice = device;
+                }
+            });
+            
+            if (targetDevice) {
+                // 找到预警信息卡片
+                const alertCard = targetDevice.querySelector('.mobile-card');
+                if (alertCard) {
+                    // 查找包含"系统维护"的预警项并移除
+                    const alertItems = alertCard.querySelectorAll('.mobile-list-item');
+                    alertItems.forEach(item => {
+                        const alertText = item.querySelector('.mobile-list-text');
+                        if (alertText && alertText.textContent.includes('系统维护')) {
+                            item.remove();
+                            console.log('已移除预警信息:', alertText.textContent);
+                            
+                            // 显示撤回成功提示
+                            showToast('预警信息已从掌上医院运营助手中移除', 'success');
+                        }
+                    });
+                }
+            }
+        }
+
+        function archiveMessage() {
+            if (currentMessage) {
+                const statusElement = currentMessage.querySelector('.message-status');
+                statusElement.textContent = '已归档';
+                statusElement.className = 'message-status archived';
+                showToast('消息已归档', 'info');
+                closeMessageModal();
+            }
+        }
+
+        function sendToMobileDevice() {
+            // 找到掌上医院运营助手设备
+            const devices = document.querySelectorAll('.mobile-device-frame');
+            let targetDevice = null;
+            
+            devices.forEach(device => {
+                const deviceTitle = device.querySelector('.device-header h3');
+                if (deviceTitle && deviceTitle.textContent.includes('掌上医院运营助手')) {
+                    targetDevice = device;
+                }
+            });
+            
+            if (targetDevice) {
+                // 添加震动效果
+                targetDevice.classList.add('vibrate');
+                setTimeout(() => targetDevice.classList.remove('vibrate'), 300);
+                
+                // 播放通知声音（模拟）
+                playNotificationSound();
+                
+                // 移除已存在的通知
+                const existingNotification = targetDevice.querySelector('.mobile-notification');
+                if (existingNotification) {
+                    existingNotification.remove();
+                }
+                
+                // 创建通知
+                const notification = document.createElement('div');
+                notification.className = 'mobile-notification';
+                
+                const currentTime = new Date().toLocaleTimeString('zh-CN', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const message = '系统维护公告：系统将于今晚22:00-24:00进行维护升级';
+                
+                notification.innerHTML = `
+                    <div class="notification-icon">医</div>
+                    <div class="notification-content">
+                        <div class="notification-title">掌上医院</div>
+                        <div class="notification-text">${message}</div>
+                    </div>
+                    <div class="notification-time">${currentTime}</div>
+                `;
+                
+                notification.onclick = () => showMobileMessage(message);
+                
+                targetDevice.appendChild(notification);
+                
+                // 不自动移除通知，等待用户点击
+            }
+        }
+
+        function showMobileMessage(message = '系统维护公告：系统将于今晚22:00-24:00进行维护升级') {
+            // 移除通知（添加滑出动画）
+            const notification = document.querySelector('.mobile-notification');
+            if (notification) {
+                notification.style.animation = 'slideUpNotification 0.3s ease-in forwards';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }
+            
+            // 显示消息内容
+            const adminDevice = document.querySelector('.mobile-device-frame');
+            if (adminDevice) {
+                const popup = document.createElement('div');
+                popup.className = 'mobile-message-popup';
+                popup.style.display = 'flex';
+                popup.innerHTML = `
+                    <div class="mobile-message-content">
+                        <div class="mobile-message-title">系统维护公告</div>
+                        <div class="mobile-message-text">${message}，期间可能影响部分功能使用，请各科室提前做好准备。</div>
+                        <button class="mobile-message-close" onclick="closeMobileMessage(this)">确定</button>
+                    </div>
+                `;
+                
+                adminDevice.appendChild(popup);
+            }
+        }
+
+        function closeMobileMessage(button) {
+            const popup = button.closest('.mobile-message-popup');
+            if (popup) {
+                popup.parentNode.removeChild(popup);
+            }
+        }
+
+        function playNotificationSound() {
+            // 模拟通知声音 - 使用Web Audio API创建简单的提示音
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+            } catch (e) {
+                // 如果Web Audio API不支持，则静默失败
+                console.log('通知声音播放失败:', e);
+            }
+        }
+
+        function showMaintenanceAlert() {
+            // 找到掌上医院运营助手设备
+            const devices = document.querySelectorAll('.mobile-device-frame');
+            let targetDevice = null;
+            
+            devices.forEach(device => {
+                const deviceTitle = device.querySelector('.device-header h3');
+                if (deviceTitle && deviceTitle.textContent.includes('掌上医院运营助手')) {
+                    targetDevice = device;
+                }
+            });
+            
+            if (!targetDevice) return;
+            
+            // 检查是否已经有通知显示
+            const existingModal = targetDevice.querySelector('.mobile-maintenance-modal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // 创建手机内的通知模态框
+            const modal = document.createElement('div');
+            modal.className = 'mobile-maintenance-modal';
+            modal.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+                border-radius: 20px;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white;
+                border-radius: 12px;
+                padding: 16px;
+                width: 85%;
+                max-height: 80%;
+                overflow-y: auto;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                position: relative;
+                font-size: 12px;
+            `;
+            
+            modalContent.innerHTML = `
+                <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                    <div style="width: 24px; height: 24px; background-color: #fff1f0; color: #f5222d; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 8px; font-size: 10px;">维</div>
+                    <h3 style="margin: 0; color: #f5222d; font-size: 14px;">系统维护通知</h3>
+                </div>
+                <div style="color: #666; line-height: 1.4; margin-bottom: 16px; font-size: 11px;">
+                    <p style="margin: 0 0 8px 0;"><strong>维护时间：</strong>今晚 22:00 - 24:00</p>
+                    <p style="margin: 0 0 8px 0;"><strong>影响范围：</strong>医院管理系统全部功能</p>
+                    <p style="margin: 0 0 6px 0;"><strong>维护内容：</strong></p>
+                    <ul style="margin: 0 0 8px 16px; padding: 0; font-size: 10px;">
+                        <li>系统性能优化升级</li>
+                        <li>数据库维护和备份</li>
+                        <li>安全补丁更新</li>
+                        <li>新功能模块部署</li>
+                    </ul>
+                    <p style="margin: 0; color: #f5222d; font-size: 10px;"><strong>注意事项：</strong>维护期间系统将暂停服务，请提前保存工作数据。如有紧急情况，请联系值班人员。</p>
+                </div>
+                <div style="text-align: right;">
+                    <button onclick="closeMobileMaintenanceAlert()" style="background: #1890ff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px;">我知道了</button>
+                </div>
+            `;
+            
+            modal.appendChild(modalContent);
+            
+            // 将模态框添加到手机设备内
+            targetDevice.style.position = 'relative';
+            targetDevice.appendChild(modal);
+            
+            // 点击背景关闭弹框
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeMobileMaintenanceAlert();
+                }
+            });
+            
+            // 存储modal引用以便关闭
+            window.currentMobileMaintenanceModal = modal;
+        }
+
+        function closeMaintenanceAlert() {
+            if (window.currentMaintenanceModal) {
+                document.body.removeChild(window.currentMaintenanceModal);
+                window.currentMaintenanceModal = null;
+            }
+        }
+
+        function closeMobileMaintenanceAlert() {
+            if (window.currentMobileMaintenanceModal) {
+                window.currentMobileMaintenanceModal.remove();
+                window.currentMobileMaintenanceModal = null;
+            }
+        }
+
+        function addAlertToMobileDevice(alertText = '系统维护', alertType = 'urgent') {
+            // 找到掌上医院运营助手设备
+            const devices = document.querySelectorAll('.mobile-device-frame');
+            let targetDevice = null;
+            
+            devices.forEach(device => {
+                const deviceTitle = device.querySelector('.device-header h3');
+                if (deviceTitle && deviceTitle.textContent.includes('掌上医院运营助手')) {
+                    targetDevice = device;
+                }
+            });
+            
+            if (targetDevice) {
+                // 找到预警信息卡片
+                const alertCard = targetDevice.querySelector('.mobile-card');
+                if (alertCard) {
+                    // 获取当前时间
+                    const currentTime = new Date();
+                    const timeText = currentTime.getMinutes() < 1 ? '刚刚' : `${currentTime.getMinutes()}分钟前`;
+                    
+                    // 创建新的预警项
+                    const newAlert = document.createElement('div');
+                    newAlert.className = 'mobile-list-item';
+                    newAlert.style.cursor = 'pointer';
+                    
+                    // 根据预警类型设置样式
+                    let iconText = '急';
+                    let iconStyle = 'background-color: #fff1f0; color: #f5222d;';
+                    let textStyle = 'color: #f5222d; font-weight: bold;';
+                    let timeStyle = 'color: #f5222d;';
+                    
+                    if (alertType === 'warning') {
+                        iconText = '预';
+                        iconStyle = 'background-color: #fff2e8; color: #fa8c16;';
+                        textStyle = 'color: #fa8c16; font-weight: bold;';
+                        timeStyle = 'color: #fa8c16;';
+                    }
+                    
+                    newAlert.innerHTML = `
+                        <div class="mobile-list-left">
+                            <div class="mobile-list-icon" style="${iconStyle}">${iconText}</div>
+                            <div class="mobile-list-text" style="${textStyle}">${alertText}</div>
+                        </div>
+                        <div class="mobile-list-value" style="${timeStyle}">${timeText}</div>
+                    `;
+                    
+                    // 如果是系统维护类型，添加点击事件
+                    if (alertText.includes('系统维护')) {
+                        newAlert.onclick = () => showMaintenanceAlert();
+                    }
+                    
+                    // 将新预警插入到预警信息标题后面（第一条位置）
+                    const alertTitle = alertCard.querySelector('.mobile-card-title');
+                    if (alertTitle && alertTitle.nextElementSibling) {
+                        alertCard.insertBefore(newAlert, alertTitle.nextElementSibling);
+                    } else {
+                        alertCard.appendChild(newAlert);
+                    }
+                    
+                    // 添加震动效果
+                    targetDevice.classList.add('vibrate');
+                    setTimeout(() => targetDevice.classList.remove('vibrate'), 300);
+                    
+                    // 播放通知声音
+                    playNotificationSound();
+                    
+                    // 显示成功提示
+                    showToast(`预警信息"${alertText}"已添加到掌上医院运营助手`, 'success');
+                }
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 6px;
+                color: white;
+                font-size: 14px;
+                z-index: 10000;
+                animation: slideInRight 0.3s ease;
+            `;
+            
+            switch(type) {
+                case 'success':
+                    toast.style.backgroundColor = '#52c41a';
+                    break;
+                case 'warning':
+                    toast.style.backgroundColor = '#fa8c16';
+                    break;
+                case 'error':
+                    toast.style.backgroundColor = '#ff4d4f';
+                    break;
+                default:
+                    toast.style.backgroundColor = '#1890ff';
+            }
+            
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 3000);
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('messageModal');
+            if (event.target === modal) {
+                closeMessageModal();
+            }
+        }
+    </script>
+
+    <script src="../js/mobile-operation.js?v=20230601"></script>
+
+    <!-- 加载统一导航组件 -->
+    <script src="../js/navigation-loader.js"></script>
+</body>
+</html>

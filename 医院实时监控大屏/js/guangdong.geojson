@@ -1,0 +1,123 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "广东省",
+        "adcode": "440000"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [109.7, 20.2], [109.7, 25.5], [117.2, 25.5], [117.2, 20.2], [109.7, 20.2]
+        ]]
+      }
+    },
+    {
+      "type": "Feature", 
+      "properties": {"name": "广州市", "adcode": "440100"},
+      "geometry": {"type": "Point", "coordinates": [113.264434, 23.129162]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "深圳市", "adcode": "440300"}, 
+      "geometry": {"type": "Point", "coordinates": [114.085947, 22.547]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "珠海市", "adcode": "440400"},
+      "geometry": {"type": "Point", "coordinates": [113.553986, 22.224979]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "汕头市", "adcode": "440500"},
+      "geometry": {"type": "Point", "coordinates": [116.708463, 23.37102]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "佛山市", "adcode": "440600"},
+      "geometry": {"type": "Point", "coordinates": [113.122717, 23.028762]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "韶关市", "adcode": "440200"},
+      "geometry": {"type": "Point", "coordinates": [113.591544, 24.801322]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "湛江市", "adcode": "440800"},
+      "geometry": {"type": "Point", "coordinates": [110.364977, 21.274898]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "肇庆市", "adcode": "441200"},
+      "geometry": {"type": "Point", "coordinates": [112.472529, 23.051546]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "江门市", "adcode": "440700"},
+      "geometry": {"type": "Point", "coordinates": [113.094942, 22.590431]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "茂名市", "adcode": "440900"},
+      "geometry": {"type": "Point", "coordinates": [110.919229, 21.659751]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "惠州市", "adcode": "441300"},
+      "geometry": {"type": "Point", "coordinates": [114.412599, 23.079404]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "梅州市", "adcode": "441400"},
+      "geometry": {"type": "Point", "coordinates": [116.117582, 24.299112]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "汕尾市", "adcode": "441500"},
+      "geometry": {"type": "Point", "coordinates": [115.364238, 22.774485]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "河源市", "adcode": "441600"},
+      "geometry": {"type": "Point", "coordinates": [114.697802, 23.746266]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "阳江市", "adcode": "441700"},
+      "geometry": {"type": "Point", "coordinates": [111.975107, 21.859222]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "清远市", "adcode": "441800"},
+      "geometry": {"type": "Point", "coordinates": [113.051227, 23.685022]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "东莞市", "adcode": "441900"},
+      "geometry": {"type": "Point", "coordinates": [113.746262, 23.046237]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "中山市", "adcode": "442000"},
+      "geometry": {"type": "Point", "coordinates": [113.382391, 22.521113]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "潮州市", "adcode": "445100"},
+      "geometry": {"type": "Point", "coordinates": [116.632301, 23.661701]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "揭阳市", "adcode": "445200"},
+      "geometry": {"type": "Point", "coordinates": [116.355733, 23.543778]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "云浮市", "adcode": "445300"},
+      "geometry": {"type": "Point", "coordinates": [112.044439, 22.929801]}
+    }
+  ]
+}

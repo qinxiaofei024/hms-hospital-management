@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单导航测试</title>
+</head>
+<body>
+    <h1>简单导航测试</h1>
+    <div id="navigation-container"></div>
+    
+    <script>
+        console.log('页面开始加载...');
+    </script>
+    
+    <script src="/js/navigation-loader.js"></script>
+    
+    <script>
+        console.log('navigation-loader.js脚本标签后的代码');
+        console.log('NavigationLoader类型:', typeof NavigationLoader);
+        console.log('navigationLoader实例:', window.navigationLoader);
+    </script>
+</body>
+</html>

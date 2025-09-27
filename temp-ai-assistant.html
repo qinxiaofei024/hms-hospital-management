@@ -1,0 +1,481 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIè¿è¥å©ç - ä½å±±å¸åæµ·åºä¸­å»é¢æ°æ®ä¸­å¿ç®¡çå¹³å°</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="../js/common.js"></script>
+    <style>
+        /* AIè¿è¥å©çç¹ææ ·å¼ */
+        .ai-assistant-container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .chat-container {
+            display: flex;
+            height: 600px;
+            background-color: #f5f7fa;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .sidebar {
+            width: 280px;
+            background-color: #fff;
+            border-right: 1px solid #e8e8e8;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .query-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .history-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background-color: #f5f7fa;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .history-item:hover {
+            background-color: #e6f7ff;
+            border-left: 3px solid #0066cc;
+        }
+        
+        .history-item.active {
+            background-color: #e6f7ff;
+            border-left: 3px solid #0066cc;
+        }
+        
+        .history-item .query-text {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .history-item .time-stamp {
+            font-size: 11px;
+            color: #999;
+        }
+        
+        .main-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #f5f7fa;
+        }
+        
+        .chat-header {
+            padding: 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .chat-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+        }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message.ai {
+            justify-content: flex-start;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            word-wrap: break-word;
+        }
+        
+        .message.user .message-content {
+            background-color: #0066cc;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.ai .message-content {
+            background-color: #fff;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 10px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .message.user .message-avatar {
+            background-image: url('../images/user-avatar.png');
+        }
+        
+        .message.ai .message-avatar {
+            background-image: url('../images/ai-avatar.png');
+        }
+        
+        .chat-input {
+            padding: 20px;
+            background-color: #fff;
+            border-top: 1px solid #e8e8e8;
+        }
+        
+        .input-container {
+            display: flex;
+            align-items: flex-end;
+        }
+        
+        .textarea-container {
+            flex: 1;
+            margin-right: 12px;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 60px;
+            max-height: 120px;
+            padding: 12px 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            resize: vertical;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            border-color: #0066cc;
+        }
+        
+        .btn-send {
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            height: 40px;
+        }
+        
+        .btn-send:hover {
+            background-color: #0052a3;
+        }
+        
+        .btn-send:disabled {
+            background-color: #d9d9d9;
+            cursor: not-allowed;
+        }
+        
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .quick-action-btn {
+            background-color: #f5f7fa;
+            color: #666;
+            border: 1px solid #d9d9d9;
+            padding: 8px 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        .quick-action-btn:hover {
+            background-color: #e6f7ff;
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        .features-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .tab-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab-item.active {
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .system-documents {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .document-item {
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .document-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .document-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .document-brief {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .chat-container {
+                flex-direction: column;
+                height: 500px;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: 150px;
+                border-right: none;
+                border-bottom: 1px solid #e8e8e8;
+            }
+            
+            .query-history {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 10px;
+            }
+            
+            .history-item {
+                flex: 0 0 auto;
+                max-width: 200px;
+                margin-bottom: 0;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ç»ä¸å¯¼èªç»ä»¶ -->
+    <div id="navigation-container"></div>
+
+    <div class="main-container">
+        <!-- å³ä¾§åå®¹åº -->
+        <main class="content">
+            <div class="page-header">
+                <h2>AIè¿è¥å©ç<span class="english-title">AI Operation Assistant</span></h2>
+                <div class="breadcrumb">
+                    <a href="../index.html">é¦é¡µ</a> &gt; 
+                    <a href="#ai-tools">AIå·¥å·</a> &gt; 
+                    <span>AIè¿è¥å©ç</span>
+                </div>
+                <div class="page-actions">
+                    <button class="btn-primary">ä¿å­å¯¹è¯</button>
+                    <button class="btn-default">æ¸é¤è®°å½</button>
+                </div>
+            </div>
+
+            <div class="ai-assistant-container">
+                <!-- åè½æ ç­¾ -->
+                <div class="features-tabs">
+                    <div class="tab-item active" data-tab="intelligent-query">æºè½æ¥è¯¢</div>
+                    <div class="tab-item" data-tab="system-qa">å¶åº¦é®ç­</div>
+                </div>
+
+                <!-- æºè½æ¥è¯¢åå®¹ -->
+                <div class="tab-content active" id="intelligent-query">
+                    <div class="chat-container">
+                        <!-- å·¦ä¾§åå²è®°å½ -->
+                        <div class="sidebar">
+                            <div class="sidebar-header">
+                                <h3>æ¥è¯¢åå²</h3>
+                            </div>
+                            <div class="query-history">
+                                <!-- åå²è®°å½é¡¹ä¼éè¿JSå¨ææ·»å  -->
+                            </div>
+                        </div>
+
+                        <!-- ä¸»èå¤©åºå -->
+                        <div class="main-chat">
+                            <div class="chat-header">
+                                <h3>æºè½è¿è¥å©æ</h3>
+                            </div>
+                            <div class="chat-messages">
+                                <!-- æ¬¢è¿æ¶æ¯ -->
+                                <div class="message ai">
+                                    <div class="message-avatar"></div>
+                                    <div class="message-content">
+                                        æ¨å¥½ï¼ææ¯æ¨çAIè¿è¥å©çï¼è¯·é®æä»ä¹å¯ä»¥å¸®å©æ¨äºè§£å»é¢è¿è¥æ°æ®çé®é¢ï¼
+                                    </div>
+                                </div>
+                                <!-- æ¶æ¯ä¼éè¿JSå¨ææ·»å  -->
+                            </div>
+                            <div class="chat-input">
+                                <div class="quick-actions">
+                                    <button class="quick-action-btn" data-query="æè¿ä¸ä¸ªæçé¨è¯éè¶å¿">æè¿ä¸ä¸ªæçé¨è¯éè¶å¿</button>
+                                    <button class="quick-action-btn" data-query="åç§å®¤æ¶å¥æå">åç§å®¤æ¶å¥æå</button>
+                                    <button class="quick-action-btn" data-query="è®¾å¤ä½¿ç¨çç»è®¡">è®¾å¤ä½¿ç¨çç»è®¡</button>
+                                    <button class="quick-action-btn" data-query="ä½é¢æ£èå¹³åä½é¢å¤©æ°">ä½é¢æ£èå¹³åä½é¢å¤©æ°</button>
+                                </div>
+                                <div class="input-container">
+                                    <div class="textarea-container">
+                                        <textarea id="query-input" placeholder="è¯·è¾å¥æ¨çé®é¢ï¼ä¾å¦ï¼æè¿ä¸ä¸ªæçé¨è¯éè¶å¿å¦ä½ï¼"></textarea>
+                                    </div>
+                                    <button class="btn-send" id="send-btn">åé</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- å¶åº¦é®ç­åå®¹ -->
+                <div class="tab-content" id="system-qa">
+                    <div class="chat-container">
+                        <!-- å·¦ä¾§å¶åº¦åè¡¨ -->
+                        <div class="sidebar">
+                            <div class="sidebar-header">
+                                <h3>å¸¸ç¨å¶åº¦</h3>
+                            </div>
+                            <div class="system-documents">
+                                <div class="document-item" data-document="å»é¢è¿è¥ç®¡çå¶åº¦">
+                                    <div class="document-title">å»é¢è¿è¥ç®¡çå¶åº¦</div>
+                                    <div class="document-brief">åå«å»é¢è¿è¥ç®¡ççåºæ¬ååãç»ç»æ¶æåå·¥ä½æµç¨</div>
+                                </div>
+                                <div class="document-item" data-document="å»çè´¨éç®¡çåæ³">
+                                    <div class="document-title">å»çè´¨éç®¡çåæ³</div>
+                                    <div class="document-brief">è§å®å»çè´¨éæ§å¶æ åãè¯ä»·ä½ç³»åæ¹è¿æªæ½</div>
+                                </div>
+                                <div class="document-item" data-document="å»é¢æ°æ®ç®¡çè§è">
+                                    <div class="document-title">å»é¢æ°æ®ç®¡çè§è</div>
+                                    <div class="document-brief">æ°æ®æ¶éãå­å¨ãä½¿ç¨åå±äº«çæ ååå®å¨è¦æ±</div>
+                                </div>
+                                <div class="document-item" data-document="è´¢å¡ç®¡çå¶åº¦">
+                                    <div class="document-title">è´¢å¡ç®¡çå¶åº¦</div>
+                                    <div class="document-brief">å»é¢è´¢å¡ç®¡ççåé¡¹è§å®åæä½æµç¨</div>
+                                </div>
+                                <div class="document-item" data-document="äººåèµæºç®¡çåæ³">
+                                    <div class="document-title">äººåèµæºç®¡çåæ³</div>
+                                    <div class="document-brief">äººåæèãå¹è®­ãèæ ¸åèªé¬ç®¡ççç¸å³å¶åº¦</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ä¸»èå¤©åºå -->
+                        <div class="main-chat">
+                            <div class="chat-header">
+                                <h3>å¶åº¦é®ç­å©æ</h3>
+                            </div>
+                            <div class="chat-messages">
+                                <!-- æ¬¢è¿æ¶æ¯ -->
+                                <div class="message ai">
+                                    <div class="message-avatar"></div>
+                                    <div class="message-content">
+                                        æ¨å¥½ï¼ææ¯å¶åº¦é®ç­å©æï¼è¯·é®æ¨æ³äºè§£åªæ¹é¢çå»é¢å¶åº¦åå®¹ï¼
+                                    </div>
+                                </div>
+                                <!-- æ¶æ¯ä¼éè¿JSå¨ææ·»å  -->
+                            </div>
+                            <div class="chat-input">
+                                <div class="quick-actions">
+                                    <button class="quick-action-btn" data-query="å»é¢è¿è¥ç®¡ççåºæ¬åå">å»é¢è¿è¥ç®¡ççåºæ¬åå</button>
+                                    <button class="quick-action-btn" data-query="å»çè´¨éæ§å¶çä¸»è¦ææ ">å»çè´¨éæ§å¶çä¸»è¦ææ </button>
+                                    <button class="quick-action-btn" data-query="æ°æ®å®å¨ç®¡çè¦æ±">æ°æ®å®å¨ç®¡çè¦æ±</button>
+                                    <button class="quick-action-btn" data-query="è´¢å¡æ¥éæµç¨">è´¢å¡æ¥éæµç¨</button>
+                                </div>
+                                <div class="input-container">
+                                    <div class="textarea-container">
+                                        <textarea id="qa-input" placeholder="è¯·è¾å¥æ¨çé®é¢ï¼ä¾å¦ï¼å»é¢è¿è¥ç®¡ççåºæ¬ååæ¯ä»ä¹ï¼"></textarea>
+                                    </div>
+                                    <button class="btn-send" id="qa-send-btn">åé</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- å è½½ç»ä¸å¯¼èªç»ä»¶ -->
+    <script src="../js/navigation-loader.js"></script>
+    
+    <script src="../js/ai-assistant.js"></script>
+</body>
+</html>

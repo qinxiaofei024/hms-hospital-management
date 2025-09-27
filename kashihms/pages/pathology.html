@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>病理检验运营分析 - 喀什地区第一人民医院数据中心管理平台</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/medical-analysis.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="../js/common.js"></script>
+    <!-- ECharts增强版诊断工具 -->
+
+    <script src="../js/pathology.js"></script>
+</head>
+<body>
+    <!-- 统一导航组件 -->
+    <div id="navigation-container"></div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="content-wrapper" style="margin-left: 250px;">
+            <!-- 右侧内容区 -->
+        <div class="content-area">
+            <div class="page-header">
+                <h1>病理检验运营分析</h1>
+                <div class="header-actions">
+                    <div class="date-filter">
+                        <select id="time-period">
+                            <option value="year">年度</option>
+                            <option value="quarter">季度</option>
+                            <option value="month" selected>月度</option>
+                        </select>
+                        <select id="year-select">
+                            <option value="2023">2023年</option>
+                            <option value="2024">2024年</option>
+                            <option value="2025" selected>2025年</option>
+                        </select>
+                        <select id="quarter-select">
+                            <option value="1">第一季度</option>
+                            <option value="2">第二季度</option>
+                            <option value="3">第三季度</option>
+                            <option value="4">第四季度</option>
+                        </select>
+                    </div>
+                    <button id="refresh-btn" class="btn btn-primary">
+                        <i class="icon-refresh"></i> 刷新
+                    </button>
+                    <button id="export-btn" class="btn btn-secondary">
+                        <i class="icon-export"></i> 导出
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 数据概览卡片 -->
+            <div class="overview-section">
+                <div class="overview-cards">
+                    <div class="overview-card" data-metric="specimens">
+                        <div class="card-icon">
+                            <i class="fas fa-vial"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="total-specimens">0</h3>
+                            <p>总标本量</p>
+                            <span class="card-unit">例</span>
+                            <div class="card-trend">
+                                <span class="trend-value" id="specimens-trend">+7.5%</span>
+                                <span class="trend-label">较上月</span>
+                                <button class="trend-btn" onclick="showTrendModal('specimens')">
+                                    <i class="fas fa-chart-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overview-card" data-metric="revenue">
+                        <div class="card-icon">
+                            <i class="fas fa-yen-sign"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="total-revenue">0</h3>
+                            <p>总收入</p>
+                            <span class="card-unit">万元</span>
+                            <div class="card-trend">
+                                <span class="trend-value" id="revenue-trend">+11.2%</span>
+                                <span class="trend-label">较上月</span>
+                                <button class="trend-btn" onclick="showTrendModal('revenue')">
+                                    <i class="fas fa-chart-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overview-card" data-metric="timeliness">
+                        <div class="card-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="report-timeliness">0</h3>
+                            <p>报告及时率</p>
+                            <span class="card-unit">%</span>
+                            <div class="card-trend">
+                                <span class="trend-value" id="timeliness-trend">+2.3%</span>
+                                <span class="trend-label">较上月</span>
+                                <button class="trend-btn" onclick="showTrendModal('timeliness')">
+                                    <i class="fas fa-chart-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overview-card" data-metric="staining">
+                        <div class="card-icon">
+                            <i class="fas fa-microscope"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3 id="special-stain-rate">0</h3>
+                            <p>特殊染色率</p>
+                            <span class="card-unit">%</span>
+                            <div class="card-trend">
+                                <span class="trend-value" id="staining-trend">+1.8%</span>
+                                <span class="trend-label">较上月</span>
+                                <button class="trend-btn" onclick="showTrendModal('staining')">
+                                    <i class="fas fa-chart-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 图表区域 -->
+            <div class="charts-section">
+                <div class="chart-row">
+                    <!-- 标本量趋势图 -->
+                    <div class="chart-container two-thirds">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3>标本量趋势分析</h3>
+                                <p class="chart-subtitle">月度标本量与收入变化趋势</p>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="chart-btn" data-period="7" onclick="refreshChart('specimen-volume-chart', 7)">7天</button>
+                                <button class="chart-btn active" data-period="30" onclick="refreshChart('specimen-volume-chart', 30)">30天</button>
+                                <button class="chart-btn" data-period="90" onclick="refreshChart('specimen-volume-chart', 90)">90天</button>
+                                <button class="chart-btn refresh-btn" onclick="refreshChart('specimen-volume-chart')">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-content" id="specimen-volume-chart"></div>
+                    </div>
+                    
+                    <!-- 病理类型分布图 -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3>病理类型分布</h3>
+                                <p class="chart-subtitle">各类病理检验占比分析</p>
+                            </div>
+                            <div class="chart-controls">
+                                <select class="chart-select">
+                                    <option value="type">按类型</option>
+                                    <option value="department">按科室</option>
+                                </select>
+                                <button class="chart-btn refresh-btn" onclick="refreshChart('pathology-type-chart')">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-content" id="pathology-type-chart"></div>
+                    </div>
+                </div>
+                
+                <div class="chart-row">
+                    <!-- 报告周转时间分析 -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3>报告周转时间分析</h3>
+                                <p class="chart-subtitle">各类报告平均周转时间统计</p>
+                            </div>
+                            <div class="chart-controls">
+                                <select class="chart-select">
+                                    <option value="day">日统计</option>
+                                    <option value="week">周统计</option>
+                                    <option value="month">月统计</option>
+                                </select>
+                                <button class="chart-btn refresh-btn" onclick="refreshChart('report-turnaround-chart')">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-content" id="report-turnaround-chart"></div>
+                    </div>
+                    
+                    <!-- 临床科室送检量排名 -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title-group">
+                                <h3>临床科室送检量排名</h3>
+                                <p class="chart-subtitle">各科室病理检验申请量统计</p>
+                            </div>
+                            <div class="chart-controls">
+                                <select class="chart-select">
+                                    <option value="volume">按送检量</option>
+                                    <option value="revenue">按收入</option>
+                                </select>
+                                <button class="chart-btn refresh-btn" onclick="refreshChart('department-ranking-chart')">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-content" id="department-ranking-chart"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 数据表格 -->
+            <div class="data-table-section">
+                <div class="table-header">
+                    <h3>病理检验项目明细数据</h3>
+                    <div class="table-actions">
+                        <input type="text" placeholder="搜索病理项目..." class="search-input">
+                        <button class="btn btn-secondary">
+                            <i class="icon-search"></i> 搜索
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>检验项目</th>
+                                <th>标本量</th>
+                                <th>收入(万元)</th>
+                                <th>平均报告时间(天)</th>
+                                <th>冰冻切片率(%)</th>
+                                <th>诊断符合率(%)</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="test-detail-table">
+                            <!-- 数据通过JavaScript动态填充 -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button class="btn btn-secondary">上一页</button>
+                    <button class="btn btn-primary">1</button>
+                    <button class="btn btn-secondary">2</button>
+                    <button class="btn btn-secondary">3</button>
+                    <button class="btn btn-secondary">下一页</button>
+                </div>
+            </div>
+            
+            <!-- 关键指标分析 -->
+            <div class="kpi-section">
+                <h3>关键绩效指标分析</h3>
+                <div class="kpi-cards">
+                    <div class="kpi-card">
+                        <div class="kpi-name">报告及时率</div>
+                        <div class="kpi-value">95.2%</div>
+                        <div class="kpi-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 95.2%"></div>
+                            </div>
+                            <span class="kpi-target">目标: 94%</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-name">诊断准确率</div>
+                        <div class="kpi-value">98.5%</div>
+                        <div class="kpi-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 98.5%"></div>
+                            </div>
+                            <span class="kpi-target">目标: 98%</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-name">冰冻切片准确率</div>
+                        <div class="kpi-value">97.8%</div>
+                        <div class="kpi-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 97.8%"></div>
+                            </div>
+                            <span class="kpi-target">目标: 97%</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-name">分子病理检测率</div>
+                        <div class="kpi-value">32.4%</div>
+                        <div class="kpi-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 32.4%"></div>
+                            </div>
+                            <span class="kpi-target">目标: 30%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载统一导航组件 -->
+    <script src="../js/navigation-loader.js?v=20250125-fix3"></script>
+    
+
+</body>
+</html>

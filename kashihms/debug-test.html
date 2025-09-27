@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .log { 
+            background: #f8f9fa; 
+            border: 1px solid #ddd; 
+            padding: 10px; 
+            margin: 10px 0;
+            max-height: 400px; 
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        #navigation-container { 
+            border: 2px solid #007bff; 
+            min-height: 100px; 
+            margin: 20px 0; 
+            padding: 10px;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <h1>调试测试页面</h1>
+    
+    <div id="navigation-container">
+        <p>等待导航加载...</p>
+    </div>
+    
+    <h2>控制台日志</h2>
+    <div id="console-log" class="log"></div>
+    
+    <h2>测试按钮</h2>
+    <button onclick="checkStatus()">检查状态</button>
+    <button onclick="manualInit()">手动初始化</button>
+    <button onclick="testFetch()">测试Fetch</button>
+    
+    <script>
+        // 捕获所有控制台输出
+        const logDiv = document.getElementById('console-log');
+        
+        function addToLog(type, ...args) {
+            const timestamp = new Date().toLocaleTimeString();
+            const message = `[${timestamp}] ${type}: ${args.join(' ')}\n`;
+            logDiv.textContent += message;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        // 重写console方法
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn,
+            info: console.info
+        };
+        
+        console.log = function(...args) {
+            originalConsole.log.apply(console, args);
+            addToLog('LOG', ...args);
+        };
+        
+        console.error = function(...args) {
+            originalConsole.error.apply(console, args);
+            addToLog('ERROR', ...args);
+        };
+        
+        console.warn = function(...args) {
+            originalConsole.warn.apply(console, args);
+            addToLog('WARN', ...args);
+        };
+        
+        console.info = function(...args) {
+            originalConsole.info.apply(console, args);
+            addToLog('INFO', ...args);
+        };
+        
+        // 捕获未处理的错误
+        window.addEventListener('error', function(event) {
+            addToLog('ERROR', 'Uncaught error:', event.error?.message || event.message);
+        });
+        
+        window.addEventListener('unhandledrejection', function(event) {
+            addToLog('ERROR', 'Unhandled promise rejection:', event.reason);
+        });
+        
+        addToLog('INIT', '页面初始化开始');
+        addToLog('INIT', '当前路径:', window.location.pathname);
+        addToLog('INIT', '文档状态:', document.readyState);
+        
+        function checkStatus() {
+            addToLog('CHECK', '=== 状态检查 ===');
+            addToLog('CHECK', 'NavigationLoader类:', typeof NavigationLoader);
+            addToLog('CHECK', 'navigationLoader实例:', typeof window.navigationLoader);
+            
+            if (window.navigationLoader) {
+                addToLog('CHECK', '初始化状态:', window.navigationLoader.initialized);
+                addToLog('CHECK', '初始化中:', window.navigationLoader._initializing);
+                addToLog('CHECK', '导航路径:', window.navigationLoader.navPath);
+                addToLog('CHECK', '侧栏路径:', window.navigationLoader.sidebarPath);
+            }
+            
+            const container = document.getElementById('navigation-container');
+            if (container) {
+                addToLog('CHECK', '容器内容长度:', container.innerHTML.length);
+                addToLog('CHECK', '容器内容预览:', container.innerHTML.substring(0, 100));
+            }
+        }
+        
+        async function manualInit() {
+            addToLog('MANUAL', '开始手动初始化');
+            if (window.navigationLoader) {
+                try {
+                    await window.navigationLoader.init();
+                    addToLog('MANUAL', '手动初始化完成');
+                } catch (error) {
+                    addToLog('MANUAL', '手动初始化失败:', error.message);
+                }
+            } else {
+                addToLog('MANUAL', 'navigationLoader实例不存在');
+            }
+        }
+        
+        async function testFetch() {
+            addToLog('FETCH', '开始测试fetch');
+            try {
+                const response = await fetch('components/nav.html');
+                addToLog('FETCH', '响应状态:', response.status, response.statusText);
+                
+                if (response.ok) {
+                    const text = await response.text();
+                    addToLog('FETCH', '内容长度:', text.length);
+                    addToLog('FETCH', '内容预览:', text.substring(0, 200));
+                }
+            } catch (error) {
+                addToLog('FETCH', '错误:', error.message);
+            }
+        }
+        
+        // 监听页面加载事件
+        document.addEventListener('DOMContentLoaded', function() {
+            addToLog('EVENT', 'DOMContentLoaded事件触发');
+            setTimeout(checkStatus, 1000);
+        });
+        
+        window.addEventListener('load', function() {
+            addToLog('EVENT', 'load事件触发');
+            setTimeout(checkStatus, 1000);
+        });
+        
+        // 监听导航加载事件
+        document.addEventListener('navigationLoaded', function(event) {
+            addToLog('EVENT', 'navigationLoaded事件触发:', JSON.stringify(event.detail));
+        });
+        
+        addToLog('INIT', '页面脚本初始化完成');
+    </script>
+    
+    <!-- 加载navigation-loader.js -->
+    <script src="js/navigation-loader.js"></script>
+    
+    <script>
+        addToLog('INIT', 'navigation-loader.js加载完成');
+        setTimeout(checkStatus, 500);
+    </script>
+</body>
+</html>

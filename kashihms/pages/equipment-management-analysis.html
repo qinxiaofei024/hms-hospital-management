@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备管理分析 - 医院管理系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/equipment-management-analysis.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 导航栏容器 -->
+        <div id="navigation-container"></div>
+        
+        <div class="main-content">
+            <!-- 页面头部 -->
+            <div class="page-header">
+                <h2>设备管理分析 <span class="english-title">Equipment Management Analysis</span></h2>
+                <div class="breadcrumb">
+                    <span>首页</span> > <span>设备管理分析</span>
+                </div>
+            </div>
+
+            <!-- 筛选控件 -->
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="department">科室：</label>
+                    <select id="department">
+                        <option value="all">全部科室</option>
+                        <option value="internal">内科</option>
+                        <option value="surgery">外科</option>
+                        <option value="pediatrics">儿科</option>
+                        <option value="obstetrics">妇产科</option>
+                        <option value="emergency">急诊科</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="equipment-type">设备类型：</label>
+                    <select id="equipment-type">
+                        <option value="all">全部类型</option>
+                        <option value="imaging">影像设备</option>
+                        <option value="laboratory">检验设备</option>
+                        <option value="surgical">手术设备</option>
+                        <option value="monitoring">监护设备</option>
+                        <option value="life-support">生命支持设备</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="time-range">时间范围：</label>
+                    <select id="time-range">
+                        <option value="month">本月</option>
+                        <option value="quarter">本季度</option>
+                        <option value="year">本年度</option>
+                        <option value="custom">自定义</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- 关键指标 -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: #1890ff;">🏥</div>
+                    <div class="metric-value">1,256</div>
+                    <div class="metric-label">设备总数</div>
+                    <div class="metric-change positive">+12 较上月</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: #52c41a;">✅</div>
+                    <div class="metric-value">94.8%</div>
+                    <div class="metric-label">设备完好率</div>
+                    <div class="metric-change positive">+1.2% 较上月</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: #fa8c16;">⚠️</div>
+                    <div class="metric-value">23</div>
+                    <div class="metric-label">故障设备数</div>
+                    <div class="metric-change negative">+3 较上月</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: #722ed1;">💰</div>
+                    <div class="metric-value">156万</div>
+                    <div class="metric-label">维护成本</div>
+                    <div class="metric-change positive">-8.5% 较上月</div>
+                </div>
+            </div>
+            
+            <!-- 图表区域 -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3 data-subtitle="Equipment Status Distribution">设备状态分布</h3>
+                    <div id="equipment-status-chart" class="chart"></div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 data-subtitle="Equipment Utilization Rate">设备使用率分析</h3>
+                    <div id="utilization-chart" class="chart"></div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 data-subtitle="Maintenance Trend Analysis">维护趋势分析</h3>
+                    <div id="maintenance-trend-chart" class="chart"></div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 data-subtitle="Equipment Cost Analysis">设备成本分析</h3>
+                    <div id="cost-analysis-chart" class="chart"></div>
+                </div>
+            </div>
+            
+            <!-- 设备详情表格 -->
+            <div class="table-container">
+                <h3 data-subtitle="Equipment Details">设备详情列表</h3>
+                <table class="equipment-table">
+                    <thead>
+                        <tr>
+                            <th>设备编号</th>
+                            <th>设备名称</th>
+                            <th>所属科室</th>
+                            <th>设备类型</th>
+                            <th>状态</th>
+                            <th>使用率</th>
+                            <th>最后维护</th>
+                            <th>下次维护</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>EQ001</td>
+                            <td>CT扫描仪</td>
+                            <td>影像科</td>
+                            <td>影像设备</td>
+                            <td><span class="status-badge normal">正常</span></td>
+                            <td>85%</td>
+                            <td>2024-01-15</td>
+                            <td>2024-04-15</td>
+                        </tr>
+                        <tr>
+                            <td>EQ002</td>
+                            <td>MRI设备</td>
+                            <td>影像科</td>
+                            <td>影像设备</td>
+                            <td><span class="status-badge normal">正常</span></td>
+                            <td>92%</td>
+                            <td>2024-01-20</td>
+                            <td>2024-04-20</td>
+                        </tr>
+                        <tr>
+                            <td>EQ003</td>
+                            <td>血液分析仪</td>
+                            <td>检验科</td>
+                            <td>检验设备</td>
+                            <td><span class="status-badge warning">维护中</span></td>
+                            <td>78%</td>
+                            <td>2024-01-10</td>
+                            <td>2024-04-10</td>
+                        </tr>
+                        <tr>
+                            <td>EQ004</td>
+                            <td>手术显微镜</td>
+                            <td>外科</td>
+                            <td>手术设备</td>
+                            <td><span class="status-badge normal">正常</span></td>
+                            <td>67%</td>
+                            <td>2024-01-25</td>
+                            <td>2024-04-25</td>
+                        </tr>
+                        <tr>
+                            <td>EQ005</td>
+                            <td>心电监护仪</td>
+                            <td>ICU</td>
+                            <td>监护设备</td>
+                            <td><span class="status-badge error">故障</span></td>
+                            <td>45%</td>
+                            <td>2024-01-05</td>
+                            <td>2024-04-05</td>
+                        </tr>
+                        <tr>
+                            <td>EQ006</td>
+                            <td>呼吸机</td>
+                            <td>ICU</td>
+                            <td>生命支持设备</td>
+                            <td><span class="status-badge normal">正常</span></td>
+                            <td>88%</td>
+                            <td>2024-01-30</td>
+                            <td>2024-04-30</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/equipment-management-analysis.js?v=2"></script>
+    
+    <!-- 加载统一导航组件 -->
+    <script src="../js/navigation-loader.js"></script>
+</body>
+</html>

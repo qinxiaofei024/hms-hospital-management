@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>佛山市南海区中医院数据中心管理平台</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #e6f3ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at 80% 20%, rgba(147, 197, 253, 0.12) 0%, transparent 60%),
+                radial-gradient(circle at 40% 40%, rgba(96, 165, 250, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 50px 40px;
+            border-radius: 16px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.06),
+                0 1px 2px rgba(0, 0, 0, 0.02);
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(147, 197, 253, 0.08) 100%);
+            border-radius: 16px;
+            pointer-events: none;
+        }
+        h1 {
+            color: #1e40af;
+            margin-bottom: 8px;
+            font-size: 24px;
+            font-weight: 600;
+            position: relative;
+            z-index: 2;
+        }
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #3b82f6, #2563eb, #3b82f6, transparent);
+            opacity: 0.6;
+            border-radius: 2px;
+        }
+        h2 {
+            color: #334155;
+            margin-bottom: 8px;
+            font-size: 20px;
+            font-weight: 500;
+        }
+        .hospital-subtitle {
+            color: #64748b;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 40px;
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border-color: rgba(37, 99, 235, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 
+                0 8px 25px rgba(59, 130, 246, 0.25),
+                0 2px 8px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>佛山市南海区中医院</h1>
+        <div class="hospital-subtitle">Foshan Nanhai District Traditional Chinese Medicine Hospital</div>
+        <h2>数据中心管理平台</h2>
+        <div class="subtitle">Hospital Data Center Platform</div>
+        
+        <div class="btn-group">
+            <a href="/hms/" class="btn btn-primary">进入HDCP</a>
+        </div>
+    </div>
+
+    <script>
+        // 自动检测API服务状态
+        fetch('http://localhost:5000/api/health')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('✅ API服务正常运行');
+                }
+            })
+            .catch(error => {
+                console.log('⚠️ API服务可能未启动');
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2124 @@
+/**
+ * 科室收入分析页面
+ * 提供科室收入数据的可视化展示、趋势分析、结构分析和对比分析功能
+ */
+var DepartmentRevenuePage = {
+    // 页面状态
+    state: {
+        currentTimeRange: 'month',
+        currentDepartment: 'cardiology',
+        currentRevenueType: 'all',
+        loading: false,
+        charts: {}
+    },
+    
+    // 模拟数据
+    mockData: {
+        // 科室列表
+        departments: [
+            { id: 'cardiology', name: '心内科', type: 'internal' },
+            { id: 'orthopedics', name: '骨科', type: 'surgery' },
+            { id: 'neurosurgery', name: '神经外科', type: 'surgery' },
+            { id: 'digestive', name: '消化内科', type: 'internal' },
+            { id: 'respiratory', name: '呼吸内科', type: 'internal' },
+            { id: 'neurology', name: '神经内科', type: 'internal' },
+            { id: 'obstetrics', name: '妇产科', type: 'specialized' },
+            { id: 'pediatrics', name: '儿科', type: 'specialized' }
+        ],
+        
+        // 收入趋势数据 - 月度
+        monthlyRevenue: [
+            { month: '1月', revenue: 260000000, growthRate: 9.2, cumulativeRevenue: 260000000, cumulativeGrowthRate: 9.2, target: 240000000, completionRate: 108.3 },
+            { month: '2月', revenue: 240000000, growthRate: 11.1, cumulativeRevenue: 500000000, cumulativeGrowthRate: 10.1, target: 240000000, completionRate: 104.2 },
+            { month: '3月', revenue: 280000000, growthRate: 12.0, cumulativeRevenue: 780000000, cumulativeGrowthRate: 10.8, target: 240000000, completionRate: 108.3 },
+            { month: '4月', revenue: 270000000, growthRate: 10.2, cumulativeRevenue: 1050000000, cumulativeGrowthRate: 10.7, target: 240000000, completionRate: 109.4 },
+            { month: '5月', revenue: 290000000, growthRate: 11.5, cumulativeRevenue: 1340000000, cumulativeGrowthRate: 10.9, target: 240000000, completionRate: 111.7 },
+            { month: '6月', revenue: 300000000, growthRate: 12.3, cumulativeRevenue: 1640000000, cumulativeGrowthRate: 11.1, target: 240000000, completionRate: 113.9 },
+            { month: '7月', revenue: 290000000, growthRate: 10.9, cumulativeRevenue: 1930000000, cumulativeGrowthRate: 11.0, target: 240000000, completionRate: 114.9 },
+            { month: '8月', revenue: 300000000, growthRate: 11.1, cumulativeRevenue: 2230000000, cumulativeGrowthRate: 11.0, target: 240000000, completionRate: 116.1 },
+            { month: '9月', revenue: 280000000, growthRate: 10.2, cumulativeRevenue: 2510000000, cumulativeGrowthRate: 10.9, target: 240000000, completionRate: 116.2 },
+            { month: '10月', revenue: 320000000, growthRate: 11.5, cumulativeRevenue: 2830000000, cumulativeGrowthRate: 11.0, target: 240000000, completionRate: 117.9 }
+        ],
+        
+        // 收入结构数据
+        revenueStructure: [
+            { type: 'medical-service', name: '医疗服务收入', amount: 120000000, percentage: 38.2, lastMonthAmount: 110000000, lastMonthPercentage: 39.7, growthRate: 9.1, percentageChange: -1.5, targetPercentage: 43, status: 'danger' },
+            { type: 'drug', name: '药品收入', amount: 140000000, percentage: 42.5, lastMonthAmount: 120000000, lastMonthPercentage: 41.8, growthRate: 16.7, percentageChange: 0.7, targetPercentage: 40, status: 'danger' },
+            { type: 'material', name: '卫生材料收入', amount: 62000000, percentage: 19.3, lastMonthAmount: 52000000, lastMonthPercentage: 18.5, growthRate: 19.2, percentageChange: 0.8, targetPercentage: 20, status: 'good' },
+            { type: 'inspection', name: '检查收入', amount: 45000000, percentage: 14.1, lastMonthAmount: 41000000, lastMonthPercentage: 14.4, growthRate: 9.8, percentageChange: -0.3, targetPercentage: null, status: 'good' },
+            { type: 'treatment', name: '治疗收入', amount: 38000000, percentage: 11.9, lastMonthAmount: 35000000, lastMonthPercentage: 12.2, growthRate: 8.6, percentageChange: -0.3, targetPercentage: null, status: 'good' },
+            { type: 'operation', name: '手术收入', amount: 58000000, percentage: 18.1, lastMonthAmount: 51000000, lastMonthPercentage: 17.9, growthRate: 13.7, percentageChange: 0.2, targetPercentage: 18, status: 'good' },
+            { type: 'bed', name: '床位收入', amount: 21000000, percentage: 6.6, lastMonthAmount: 20000000, lastMonthPercentage: 6.9, growthRate: 5.0, percentageChange: -0.3, targetPercentage: null, status: 'good' }
+        ],
+        
+        // 科室收入对比数据
+        departmentRevenueComparison: [
+            { department: '心内科', revenue: 320000000, yearOnYearGrowth: 11.5, monthOnMonthGrowth: 14.3, medicalServicePercentage: 38.2, drugPercentage: 42.5, materialPercentage: 19.3, rank: 1 },
+            { department: '骨科', revenue: 300000000, yearOnYearGrowth: 10.2, monthOnMonthGrowth: 12.5, medicalServicePercentage: 39.8, drugPercentage: 41.2, materialPercentage: 19.0, rank: 2 },
+            { department: '神经外科', revenue: 280000000, yearOnYearGrowth: 9.8, monthOnMonthGrowth: 11.7, medicalServicePercentage: 40.5, drugPercentage: 40.8, materialPercentage: 18.7, rank: 3 },
+            { department: '消化内科', revenue: 260000000, yearOnYearGrowth: 10.5, monthOnMonthGrowth: 13.0, medicalServicePercentage: 39.2, drugPercentage: 41.5, materialPercentage: 19.3, rank: 4 },
+            { department: '呼吸内科', revenue: 250000000, yearOnYearGrowth: 9.7, monthOnMonthGrowth: 12.3, medicalServicePercentage: 38.8, drugPercentage: 42.1, materialPercentage: 19.1, rank: 5 },
+            { department: '神经内科', revenue: 240000000, yearOnYearGrowth: 10.1, monthOnMonthGrowth: 11.9, medicalServicePercentage: 39.5, drugPercentage: 41.3, materialPercentage: 19.2, rank: 6 },
+            { department: '妇产科', revenue: 220000000, yearOnYearGrowth: 9.4, monthOnMonthGrowth: 11.5, medicalServicePercentage: 40.2, drugPercentage: 40.5, materialPercentage: 19.3, rank: 7 },
+            { department: '儿科', revenue: 200000000, yearOnYearGrowth: 9.2, monthOnMonthGrowth: 10.8, medicalServicePercentage: 39.6, drugPercentage: 41.8, materialPercentage: 18.6, rank: 8 }
+        ],
+        
+        // 次均费用数据
+        averageCost: [
+            { type: 'discharge', name: '出院者平均费用', current: 35600, lastMonth: 34380, monthOnMonthGrowth: 3.5, lastYear: 33250, yearOnYearGrowth: 7.1, target: 36000, status: 'good' },
+            { type: 'visit', name: '门诊次均费用', current: 265, lastMonth: 261, monthOnMonthGrowth: 1.5, lastYear: 256, yearOnYearGrowth: 3.5, target: 270, status: 'good' },
+            { type: 'drug', name: '住院次均药品费用', current: 15130, lastMonth: 14670, monthOnMonthGrowth: 3.1, lastYear: 14210, yearOnYearGrowth: 6.5, target: 15500, status: 'good' },
+            { type: 'material', name: '住院次均材料费用', current: 6870, lastMonth: 6390, monthOnMonthGrowth: 7.5, lastYear: 6290, yearOnYearGrowth: 9.2, target: 7000, status: 'good' },
+            { type: 'inspection', name: '住院次均检查费用', current: 6010, lastMonth: 5870, monthOnMonthGrowth: 2.4, lastYear: 5680, yearOnYearGrowth: 5.8, target: 6200, status: 'good' },
+            { type: 'treatment', name: '住院次均治疗费用', current: 4120, lastMonth: 3980, monthOnMonthGrowth: 3.5, lastYear: 3890, yearOnYearGrowth: 6.0, target: 4300, status: 'good' }
+        ],
+        
+        // 收入增长因素分析
+        revenueGrowthFactors: [
+            { factor: '工作量增长', contribution: 12.5, percentage: 72.5, performance: '门急诊人次+8.2%，出院人次+3.5%', analysis: '科室服务量持续增长，患者需求增加，市场份额扩大' },
+            { factor: '服务价格调整', contribution: 3.2, percentage: 18.7, performance: '部分医疗服务项目价格上调', analysis: '政策因素影响，合理补偿医疗服务成本' },
+            { factor: '病种结构变化', contribution: 1.5, percentage: 8.8, performance: 'CMI值+0.05，疑难病例占比+1.4%', analysis: '专科能力提升，疑难重症诊疗能力增强' },
+            { factor: '其他因素', contribution: -1.0, percentage: 0.0, performance: '部分药品和材料价格下调', analysis: '政策调控和市场竞争影响' }
+        ],
+        
+        // 收入优化建议
+        optimizationSuggestions: [
+            {
+                category: '收入结构不合理',
+                problem: '医疗服务收入占比未达目标（38.2% < 43%）',
+                reason: '医疗服务价格调整滞后，部分医疗技术项目开展不足',
+                suggestion: '1. 积极开展新技术、新项目；2. 优化服务流程，提高医疗服务效率；3. 加强医疗服务收费管理',
+                responsible: '心内科、医务科、财务科',
+                deadline: '2023-12-31',
+                expectedEffect: '医疗服务收入占比提升至40%以上'
+            },
+            {
+                category: '药品收入占比过高',
+                problem: '药品收入占比超标（42.5% > 40%）',
+                reason: '部分医生用药结构不合理，辅助用药使用过多',
+                suggestion: '1. 加强处方点评和用药监管；2. 优化用药目录；3. 推广临床路径和合理用药',
+                responsible: '心内科、药剂科',
+                deadline: '2023-11-30',
+                expectedEffect: '药品收入占比降至40%以下'
+            },
+            {
+                category: '卫生材料管控',
+                problem: '卫生材料收入增长较快（+19.2%）',
+                reason: '部分高值耗材使用增加，成本控制措施不够严格',
+                suggestion: '1. 建立高值耗材使用评估机制；2. 推行耗材集中采购和议价；3. 加强耗材使用监控',
+                responsible: '心内科、设备科、财务科',
+                deadline: '2023-12-15',
+                expectedEffect: '卫生材料收入占比控制在20%以内'
+            },
+            {
+                category: '科室发展不平衡',
+                problem: '部分亚专业收入增长缓慢',
+                reason: '亚专业发展规划不够明确，资源配置不合理',
+                suggestion: '1. 制定亚专业发展规划；2. 优化资源配置；3. 加强亚专业人才培养和引进',
+                responsible: '心内科、人事科、医务科',
+                deadline: '2024-03-31',
+                expectedEffect: '各亚专业均衡发展，整体收入结构优化'
+            }
+        ],
+        
+        // 关键指标数据
+        keyIndicators: [
+            { name: '医疗收入', value: 320000000, unit: '¥', changeRate: 14.3, isPositive: true },
+            { name: '收支结余', value: 180000000, unit: '¥', changeRate: -3.2, isPositive: false },
+            { name: '医疗服务收入占比', value: 38.2, unit: '%', changeRate: -1.5, isPositive: false },
+            { name: '药品收入占比', value: 42.5, unit: '%', changeRate: 0.7, isPositive: false },
+            { name: '卫生材料收入占比', value: 19.3, unit: '%', changeRate: 0.8, isPositive: false },
+            { name: '同比增长率', value: 11.5, unit: '%', changeRate: 2.3, isPositive: true },
+            { name: '环比增长率', value: 14.3, unit: '%', changeRate: 3.8, isPositive: true },
+            { name: '次均费用', value: 11200, unit: '¥', changeRate: 3.2, isPositive: true },
+            { name: '出院者平均费用', value: 35600, unit: '¥', changeRate: 2.8, isPositive: true },
+            { name: '门诊次均费用', value: 265, unit: '¥', changeRate: 1.5, isPositive: true },
+            { name: '年度目标完成率', value: 112.5, unit: '%', changeRate: 2.5, isPositive: true },
+            { name: '收支结余率', value: 96.8, unit: '%', changeRate: -3.2, isPositive: false }
+        ]
+    },
+    
+    // 初始化页面
+    init: function() {
+        // 初始化页面状态
+        this.state.currentTimeRange = document.getElementById('time-range').value;
+        this.state.currentDepartment = document.getElementById('department-select').value;
+        this.state.currentRevenueType = document.getElementById('revenue-type').value;
+        
+        // 初始化事件监听
+        this.initEventListeners();
+        
+        // 加载数据
+        this.loadData();
+        
+        // 初始化图表
+        this.initCharts();
+    },
+    
+    // 初始化事件监听
+    initEventListeners: function() {
+        var self = this;
+        
+        // 时间范围选择变化
+        document.getElementById('time-range').addEventListener('change', function() {
+            self.state.currentTimeRange = this.value;
+            self.refreshData();
+        });
+        
+        // 科室选择变化
+        document.getElementById('department-select').addEventListener('change', function() {
+            self.state.currentDepartment = this.value;
+            self.refreshData();
+        });
+        
+        // 收入类型选择变化
+        document.getElementById('revenue-type').addEventListener('change', function() {
+            self.state.currentRevenueType = this.value;
+            self.refreshData();
+        });
+        
+        // 刷新数据按钮
+        document.getElementById('refresh-data-btn').addEventListener('click', function() {
+            self.refreshData();
+        });
+        
+        // 导出按钮
+        var exportButtons = document.querySelectorAll('.export-actions button');
+        exportButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                self.exportReport(this.textContent);
+            });
+        });
+        
+        // 分页按钮
+        var paginationButtons = document.querySelectorAll('.pagination-btn:not(:disabled)');
+        paginationButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                if (this.textContent === '上一页' || this.textContent === '下一页') {
+                    // 实际项目中处理分页逻辑
+                } else {
+                    // 实际项目中切换页码
+                }
+            });
+        });
+    },
+    
+    // 加载数据
+    loadData: function() {
+        var self = this;
+        self.state.loading = true;
+        
+        // 模拟数据加载延迟
+        setTimeout(function() {
+            // 显示关键指标
+            self.renderKeyIndicators();
+            
+            // 渲染数据表格
+            self.renderDataTables();
+            
+            self.state.loading = false;
+        }, 500);
+    },
+    
+    // 刷新数据
+    refreshData: function() {
+        var self = this;
+        self.state.loading = true;
+        
+        // 模拟数据加载延迟
+        setTimeout(function() {
+            // 更新关键指标
+            self.renderKeyIndicators();
+            
+            // 更新数据表格
+            self.renderDataTables();
+            
+            // 更新图表
+            self.updateCharts();
+            
+            self.state.loading = false;
+        }, 800);
+    },
+    
+    // 初始化图表
+    initCharts: function() {
+        // 医疗收入月度趋势图
+        this.state.charts.revenueMonthlyTrendChart = echarts.init(document.getElementById('revenueMonthlyTrendChart'));
+        this.initRevenueMonthlyTrendChart();
+        
+        // 医疗收入季度趋势图
+        this.state.charts.revenueQuarterlyTrendChart = echarts.init(document.getElementById('revenueQuarterlyTrendChart'));
+        this.initRevenueQuarterlyTrendChart();
+        
+        // 医疗收入年度对比图
+        this.state.charts.revenueYearlyComparisonChart = echarts.init(document.getElementById('revenueYearlyComparisonChart'));
+        this.initRevenueYearlyComparisonChart();
+        
+        // 医疗收入构成图
+        this.state.charts.revenueStructureChart = echarts.init(document.getElementById('revenueStructureChart'));
+        this.initRevenueStructureChart();
+        
+        // 医疗收入结构月度变化图
+        this.state.charts.revenueStructureMonthlyChart = echarts.init(document.getElementById('revenueStructureMonthlyChart'));
+        this.initRevenueStructureMonthlyChart();
+        
+        // 门诊收入结构图
+        this.state.charts.outpatientRevenueStructureChart = echarts.init(document.getElementById('outpatientRevenueStructureChart'));
+        this.initOutpatientRevenueStructureChart();
+        
+        // 住院收入结构图
+        this.state.charts.inpatientRevenueStructureChart = echarts.init(document.getElementById('inpatientRevenueStructureChart'));
+        this.initInpatientRevenueStructureChart();
+        
+        // 各科室收入排名图
+        this.state.charts.departmentsRevenueRankingChart = echarts.init(document.getElementById('departmentsRevenueRankingChart'));
+        this.initDepartmentsRevenueRankingChart();
+        
+        // 本科室与标杆科室对比图
+        this.state.charts.departmentVsBenchmarkChart = echarts.init(document.getElementById('departmentVsBenchmarkChart'));
+        this.initDepartmentVsBenchmarkChart();
+        
+        // 科室收入增长速度对比图
+        this.state.charts.revenueGrowthComparisonChart = echarts.init(document.getElementById('revenueGrowthComparisonChart'));
+        this.initRevenueGrowthComparisonChart();
+        
+        // 科室收入结构雷达图
+        this.state.charts.revenueStructureRadarChart = echarts.init(document.getElementById('revenueStructureRadarChart'));
+        this.initRevenueStructureRadarChart();
+        
+        // 出院者平均费用趋势图
+        this.state.charts.averageCostPerDischargeTrendChart = echarts.init(document.getElementById('averageCostPerDischargeTrendChart'));
+        this.initAverageCostPerDischargeTrendChart();
+        
+        // 门诊次均费用趋势图
+        this.state.charts.averageCostPerVisitTrendChart = echarts.init(document.getElementById('averageCostPerVisitTrendChart'));
+        this.initAverageCostPerVisitTrendChart();
+        
+        // 各科室次均费用对比图
+        this.state.charts.departmentsAverageCostComparisonChart = echarts.init(document.getElementById('departmentsAverageCostComparisonChart'));
+        this.initDepartmentsAverageCostComparisonChart();
+        
+        // 次均费用构成图
+        this.state.charts.averageCostStructureChart = echarts.init(document.getElementById('averageCostStructureChart'));
+        this.initAverageCostStructureChart();
+        
+        // 收入增长因素贡献度图
+        this.state.charts.revenueGrowthFactorsChart = echarts.init(document.getElementById('revenueGrowthFactorsChart'));
+        this.initRevenueGrowthFactorsChart();
+        
+        // 工作量增长贡献图
+        this.state.charts.workloadGrowthContributionChart = echarts.init(document.getElementById('workloadGrowthContributionChart'));
+        this.initWorkloadGrowthContributionChart();
+        
+        // 窗口大小变化时重新调整图表大小
+        window.addEventListener('resize', function() {
+            for (var chartKey in this.state.charts) {
+                if (this.state.charts.hasOwnProperty(chartKey)) {
+                    this.state.charts[chartKey].resize();
+                }
+            }
+        }.bind(this));
+    },
+    
+    // 更新图表
+    updateCharts: function() {
+        // 更新所有图表
+        this.updateRevenueMonthlyTrendChart();
+        this.updateRevenueQuarterlyTrendChart();
+        this.updateRevenueYearlyComparisonChart();
+        this.updateRevenueStructureChart();
+        this.updateRevenueStructureMonthlyChart();
+        this.updateOutpatientRevenueStructureChart();
+        this.updateInpatientRevenueStructureChart();
+        this.updateDepartmentsRevenueRankingChart();
+        this.updateDepartmentVsBenchmarkChart();
+        this.updateRevenueGrowthComparisonChart();
+        this.updateRevenueStructureRadarChart();
+        this.updateAverageCostPerDischargeTrendChart();
+        this.updateAverageCostPerVisitTrendChart();
+        this.updateDepartmentsAverageCostComparisonChart();
+        this.updateAverageCostStructureChart();
+        this.updateRevenueGrowthFactorsChart();
+        this.updateWorkloadGrowthContributionChart();
+    },
+    
+    // 渲染关键指标
+    renderKeyIndicators: function() {
+        var keyMetricsContainer = document.querySelector('.key-metrics');
+        keyMetricsContainer.innerHTML = '';
+        
+        this.mockData.keyIndicators.forEach(function(indicator) {
+            var metricCard = document.createElement('div');
+            metricCard.className = 'metric-card';
+            
+            var formattedValue = indicator.unit === '¥' ? 
+                this.formatCurrency(indicator.value) : 
+                (indicator.value + indicator.unit);
+            
+            var changeClass = indicator.isPositive ? 'positive' : 'negative';
+            var changeSymbol = indicator.isPositive ? '+' : '';
+            
+            metricCard.innerHTML = `
+                <div class="metric-card-value">${formattedValue}</div>
+                <div class="metric-card-label">${indicator.name}</div>
+                <div class="metric-card-change ${changeClass}">${changeSymbol}${indicator.changeRate}% 较上月</div>
+            `;
+            
+            keyMetricsContainer.appendChild(metricCard);
+        }, this);
+    },
+    
+    // 渲染数据表格
+    renderDataTables: function() {
+        // 收入趋势表格
+        this.renderRevenueTrendTable();
+        
+        // 收入结构表格
+        this.renderRevenueStructureTable();
+        
+        // 科室收入对比表格
+        this.renderDepartmentRevenueComparisonTable();
+        
+        // 次均费用表格
+        this.renderAverageCostTable();
+        
+        // 收入增长因素表格
+        this.renderRevenueGrowthFactorsTable();
+        
+        // 收入优化建议表格
+        this.renderOptimizationSuggestionsTable();
+    },
+    
+    // 导出报告
+    exportReport: function(type) {
+        // 模拟导出功能
+        alert('正在导出' + type + '...');
+        // 实际项目中实现具体的导出逻辑
+    },
+    
+    // 格式化货币
+    formatCurrency: function(value) {
+        if (value >= 100000000) {
+            return '¥' + (value / 100000000).toFixed(1) + '亿';
+        } else if (value >= 10000) {
+            return '¥' + (value / 10000).toFixed(0) + '万';
+        } else {
+            return '¥' + value.toLocaleString();
+        }
+    },
+    
+    // 初始化医疗收入月度趋势图
+    initRevenueMonthlyTrendChart: function() {
+        var option = {
+            title: {
+                text: '医疗收入月度趋势',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    label: {
+                        backgroundColor: '#6a7985'
+                    }
+                },
+                formatter: function(params) {
+                    var result = params[0].name + '<br/>';
+                    params.forEach(function(param) {
+                        var value = param.seriesName === '医疗收入' ? 
+                            DepartmentRevenuePage.formatCurrency(param.value) : 
+                            param.value + '%';
+                        result += param.marker + param.seriesName + ': ' + value + '<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['医疗收入', '同比增长率', '累计完成率'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: this.mockData.monthlyRevenue.map(function(item) { return item.month; })
+            },
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '收入',
+                    position: 'left',
+                    axisLabel: {
+                        formatter: function(value) {
+                            if (value >= 100000000) {
+                                return (value / 100000000).toFixed(0) + '亿';
+                            } else {
+                                return (value / 10000000).toFixed(1) + '千万';
+                            }
+                        }
+                    }
+                },
+                {
+                    type: 'value',
+                    name: '增长率',
+                    position: 'right',
+                    axisLabel: {
+                        formatter: '{value}%'
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: '医疗收入',
+                    type: 'line',
+                    data: this.mockData.monthlyRevenue.map(function(item) { return item.revenue; }),
+                    smooth: true,
+                    areaStyle: {
+                        opacity: 0.3
+                    }
+                },
+                {
+                    name: '同比增长率',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    data: this.mockData.monthlyRevenue.map(function(item) { return item.growthRate; }),
+                    smooth: true
+                },
+                {
+                    name: '累计完成率',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    data: this.mockData.monthlyRevenue.map(function(item) { return item.completionRate; }),
+                    smooth: true
+                }
+            ]
+        };
+        
+        this.state.charts.revenueMonthlyTrendChart.setOption(option);
+    },
+    
+    // 更新医疗收入月度趋势图
+    updateRevenueMonthlyTrendChart: function() {
+        this.state.charts.revenueMonthlyTrendChart.setOption({
+            series: [
+                {
+                    data: this.mockData.monthlyRevenue.map(function(item) { return item.revenue; })
+                },
+                {
+                    data: this.mockData.monthlyRevenue.map(function(item) { return item.growthRate; })
+                },
+                {
+                    data: this.mockData.monthlyRevenue.map(function(item) { return item.completionRate; })
+                }
+            ]
+        });
+    },
+    
+    // 初始化医疗收入季度趋势图
+    initRevenueQuarterlyTrendChart: function() {
+        // 季度数据 - 模拟
+        var quarterlyData = [
+            { quarter: 'Q1', revenue: 780000000, growthRate: 10.8 },
+            { quarter: 'Q2', revenue: 860000000, growthRate: 11.3 },
+            { quarter: 'Q3', revenue: 870000000, growthRate: 10.7 },
+            { quarter: 'Q4', revenue: 900000000, growthRate: 11.4 }
+        ];
+        
+        var option = {
+            title: {
+                text: '医疗收入季度趋势',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: function(params) {
+                    var result = params[0].name + '<br/>';
+                    params.forEach(function(param) {
+                        var value = param.seriesName === '医疗收入' ? 
+                            DepartmentRevenuePage.formatCurrency(param.value) : 
+                            param.value + '%';
+                        result += param.marker + param.seriesName + ': ' + value + '<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['医疗收入', '同比增长率'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: quarterlyData.map(function(item) { return item.quarter; })
+            },
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '收入',
+                    position: 'left',
+                    axisLabel: {
+                        formatter: function(value) {
+                            if (value >= 100000000) {
+                                return (value / 100000000).toFixed(0) + '亿';
+                            } else {
+                                return (value / 10000000).toFixed(1) + '千万';
+                            }
+                        }
+                    }
+                },
+                {
+                    type: 'value',
+                    name: '增长率',
+                    position: 'right',
+                    axisLabel: {
+                        formatter: '{value}%'
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: '医疗收入',
+                    type: 'bar',
+                    data: quarterlyData.map(function(item) { return item.revenue; }),
+                    itemStyle: {
+                        borderRadius: [4, 4, 0, 0]
+                    }
+                },
+                {
+                    name: '同比增长率',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    data: quarterlyData.map(function(item) { return item.growthRate; }),
+                    smooth: true
+                }
+            ]
+        };
+        
+        this.state.charts.revenueQuarterlyTrendChart.setOption(option);
+    },
+    
+    // 更新医疗收入季度趋势图
+    updateRevenueQuarterlyTrendChart: function() {
+        // 季度数据 - 模拟
+        var quarterlyData = [
+            { quarter: 'Q1', revenue: 780000000, growthRate: 10.8 },
+            { quarter: 'Q2', revenue: 860000000, growthRate: 11.3 },
+            { quarter: 'Q3', revenue: 870000000, growthRate: 10.7 },
+            { quarter: 'Q4', revenue: 900000000, growthRate: 11.4 }
+        ];
+        
+        this.state.charts.revenueQuarterlyTrendChart.setOption({
+            series: [
+                {
+                    data: quarterlyData.map(function(item) { return item.revenue; })
+                },
+                {
+                    data: quarterlyData.map(function(item) { return item.growthRate; })
+                }
+            ]
+        });
+    },
+    
+    // 初始化医疗收入年度对比图
+    initRevenueYearlyComparisonChart: function() {
+        // 年度数据 - 模拟
+        var yearlyData = [
+            { year: '2018', revenue: 2500000000 },
+            { year: '2019', revenue: 2700000000 },
+            { year: '2020', revenue: 2900000000 },
+            { year: '2021', revenue: 3100000000 },
+            { year: '2022', revenue: 3200000000 },
+            { year: '2023', revenue: 3400000000 }
+        ];
+        
+        var option = {
+            title: {
+                text: '医疗收入年度对比',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: function(params) {
+                    var result = params[0].name + '<br/>';
+                    params.forEach(function(param) {
+                        var value = DepartmentRevenuePage.formatCurrency(param.value);
+                        result += param.marker + param.seriesName + ': ' + value + '<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['医疗收入'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: yearlyData.map(function(item) { return item.year; })
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: function(value) {
+                        return (value / 100000000).toFixed(0) + '亿';
+                    }
+                }
+            },
+            series: [
+                {
+                    name: '医疗收入',
+                    type: 'bar',
+                    data: yearlyData.map(function(item) { return item.revenue; }),
+                    itemStyle: {
+                        borderRadius: [4, 4, 0, 0]
+                    }
+                }
+            ]
+        };
+        
+        this.state.charts.revenueYearlyComparisonChart.setOption(option);
+    },
+    
+    // 更新医疗收入年度对比图
+    updateRevenueYearlyComparisonChart: function() {
+        // 年度数据 - 模拟
+        var yearlyData = [
+            { year: '2018', revenue: 2500000000 },
+            { year: '2019', revenue: 2700000000 },
+            { year: '2020', revenue: 2900000000 },
+            { year: '2021', revenue: 3100000000 },
+            { year: '2022', revenue: 3200000000 },
+            { year: '2023', revenue: 3400000000 }
+        ];
+        
+        this.state.charts.revenueYearlyComparisonChart.setOption({
+            series: [
+                {
+                    data: yearlyData.map(function(item) { return item.revenue; })
+                }
+            ]
+        });
+    },
+    
+    // 初始化医疗收入构成图
+    initRevenueStructureChart: function() {
+        // 筛选主要收入类型
+        var mainRevenueTypes = this.mockData.revenueStructure.filter(function(item) {
+            return ['medical-service', 'drug', 'material'].includes(item.type);
+        });
+        
+        var option = {
+            title: {
+                text: '医疗收入构成',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}: {c} ({d}%)'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                bottom: '10%',
+                data: mainRevenueTypes.map(function(item) { return item.name; })
+            },
+            series: [
+                {
+                    name: '收入构成',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: '18',
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: mainRevenueTypes.map(function(item) {
+                        return {
+                            value: item.amount,
+                            name: item.name
+                        };
+                    })
+                }
+            ]
+        };
+        
+        this.state.charts.revenueStructureChart.setOption(option);
+    },
+    
+    // 更新医疗收入构成图
+    updateRevenueStructureChart: function() {
+        // 筛选主要收入类型
+        var mainRevenueTypes = this.mockData.revenueStructure.filter(function(item) {
+            return ['medical-service', 'drug', 'material'].includes(item.type);
+        });
+        
+        this.state.charts.revenueStructureChart.setOption({
+            series: [
+                {
+                    data: mainRevenueTypes.map(function(item) {
+                        return {
+                            value: item.amount,
+                            name: item.name
+                        };
+                    })
+                }
+            ]
+        });
+    },
+    
+    // 初始化医疗收入结构月度变化图
+    initRevenueStructureMonthlyChart: function() {
+        // 月度结构数据 - 模拟
+        var monthlyStructureData = [
+            { month: '7月', medicalService: 37.8, drug: 42.3, material: 19.9 },
+            { month: '8月', medicalService: 38.0, drug: 42.2, material: 19.8 },
+            { month: '9月', medicalService: 38.1, drug: 42.4, material: 19.5 },
+            { month: '10月', medicalService: 38.2, drug: 42.5, material: 19.3 }
+        ];
+        
+        var option = {
+            title: {
+                text: '医疗收入结构月度变化',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    label: {
+                        backgroundColor: '#6a7985'
+                    }
+                },
+                formatter: function(params) {
+                    var result = params[0].name + '<br/>';
+                    params.forEach(function(param) {
+                        result += param.marker + param.seriesName + ': ' + param.value + '%<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['医疗服务收入', '药品收入', '卫生材料收入'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: monthlyStructureData.map(function(item) { return item.month; })
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}%'
+                }
+            },
+            series: [
+                {
+                    name: '医疗服务收入',
+                    type: 'line',
+                    data: monthlyStructureData.map(function(item) { return item.medicalService; }),
+                    smooth: true
+                },
+                {
+                    name: '药品收入',
+                    type: 'line',
+                    data: monthlyStructureData.map(function(item) { return item.drug; }),
+                    smooth: true
+                },
+                {
+                    name: '卫生材料收入',
+                    type: 'line',
+                    data: monthlyStructureData.map(function(item) { return item.material; }),
+                    smooth: true
+                }
+            ]
+        };
+        
+        this.state.charts.revenueStructureMonthlyChart.setOption(option);
+    },
+    
+    // 更新医疗收入结构月度变化图
+    updateRevenueStructureMonthlyChart: function() {
+        // 月度结构数据 - 模拟
+        var monthlyStructureData = [
+            { month: '7月', medicalService: 37.8, drug: 42.3, material: 19.9 },
+            { month: '8月', medicalService: 38.0, drug: 42.2, material: 19.8 },
+            { month: '9月', medicalService: 38.1, drug: 42.4, material: 19.5 },
+            { month: '10月', medicalService: 38.2, drug: 42.5, material: 19.3 }
+        ];
+        
+        this.state.charts.revenueStructureMonthlyChart.setOption({
+            series: [
+                {
+                    data: monthlyStructureData.map(function(item) { return item.medicalService; })
+                },
+                {
+                    data: monthlyStructureData.map(function(item) { return item.drug; })
+                },
+                {
+                    data: monthlyStructureData.map(function(item) { return item.material; })
+                }
+            ]
+        });
+    },
+    
+    // 初始化门诊收入结构图
+    initOutpatientRevenueStructureChart: function() {
+        // 门诊收入结构数据 - 模拟
+        var outpatientRevenueStructure = [
+            { name: '诊查收入', value: 35 },
+            { name: '药品收入', value: 30 },
+            { name: '检查收入', value: 15 },
+            { name: '治疗收入', value: 10 },
+            { name: '其他收入', value: 10 }
+        ];
+        
+        var option = {
+            title: {
+                text: '门诊收入结构',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}: {c}%'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                bottom: '10%',
+                data: outpatientRevenueStructure.map(function(item) { return item.name; })
+            },
+            series: [
+                {
+                    name: '门诊收入结构',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: '18',
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: outpatientRevenueStructure
+                }
+            ]
+        };
+        
+        this.state.charts.outpatientRevenueStructureChart.setOption(option);
+    },
+    
+    // 更新门诊收入结构图
+    updateOutpatientRevenueStructureChart: function() {
+        // 门诊收入结构数据 - 模拟
+        var outpatientRevenueStructure = [
+            { name: '诊查收入', value: 35 },
+            { name: '药品收入', value: 30 },
+            { name: '检查收入', value: 15 },
+            { name: '治疗收入', value: 10 },
+            { name: '其他收入', value: 10 }
+        ];
+        
+        this.state.charts.outpatientRevenueStructureChart.setOption({
+            series: [
+                {
+                    data: outpatientRevenueStructure
+                }
+            ]
+        });
+    },
+    
+    // 初始化住院收入结构图
+    initInpatientRevenueStructureChart: function() {
+        // 住院收入结构数据 - 模拟
+        var inpatientRevenueStructure = [
+            { name: '药品收入', value: 35 },
+            { name: '卫生材料收入', value: 25 },
+            { name: '手术收入', value: 15 },
+            { name: '床位收入', value: 10 },
+            { name: '检查收入', value: 10 },
+            { name: '治疗收入', value: 5 }
+        ];
+        
+        var option = {
+            title: {
+                text: '住院收入结构',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}: {c}%'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                bottom: '10%',
+                data: inpatientRevenueStructure.map(function(item) { return item.name; })
+            },
+            series: [
+                {
+                    name: '住院收入结构',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: '18',
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: inpatientRevenueStructure
+                }
+            ]
+        };
+        
+        this.state.charts.inpatientRevenueStructureChart.setOption(option);
+    },
+    
+    // 更新住院收入结构图
+    updateInpatientRevenueStructureChart: function() {
+        // 住院收入结构数据 - 模拟
+        var inpatientRevenueStructure = [
+            { name: '药品收入', value: 35 },
+            { name: '卫生材料收入', value: 25 },
+            { name: '手术收入', value: 15 },
+            { name: '床位收入', value: 10 },
+            { name: '检查收入', value: 10 },
+            { name: '治疗收入', value: 5 }
+        ];
+        
+        this.state.charts.inpatientRevenueStructureChart.setOption({
+            series: [
+                {
+                    data: inpatientRevenueStructure
+                }
+            ]
+        });
+    },
+    
+    // 初始化各科室收入排名图
+    initDepartmentsRevenueRankingChart: function() {
+        var option = {
+            title: {
+                text: '各科室收入排名',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: function(params) {
+                    var result = params[0].name + '<br/>';
+                    params.forEach(function(param) {
+                        var value = DepartmentRevenuePage.formatCurrency(param.value);
+                        result += param.marker + param.seriesName + ': ' + value + '<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['医疗收入'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: function(value) {
+                        if (value >= 100000000) {
+                            return (value / 100000000).toFixed(0) + '亿';
+                        } else {
+                            return (value / 10000000).toFixed(1) + '千万';
+                        }
+                    }
+                }
+            },
+            yAxis: {
+                type: 'category',
+                data: this.mockData.departmentRevenueComparison.map(function(item) { return item.department; }).reverse()
+            },
+            series: [
+                {
+                    name: '医疗收入',
+                    type: 'bar',
+                    data: this.mockData.departmentRevenueComparison.map(function(item) { return item.revenue; }).reverse(),
+                    itemStyle: {
+                        borderRadius: [0, 4, 4, 0]
+                    }
+                }
+            ]
+        };
+        
+        this.state.charts.departmentsRevenueRankingChart.setOption(option);
+    },
+    
+    // 更新各科室收入排名图
+    updateDepartmentsRevenueRankingChart: function() {
+        this.state.charts.departmentsRevenueRankingChart.setOption({
+            yAxis: {
+                data: this.mockData.departmentRevenueComparison.map(function(item) { return item.department; }).reverse()
+            },
+            series: [
+                {
+                    data: this.mockData.departmentRevenueComparison.map(function(item) { return item.revenue; }).reverse()
+                }
+            ]
+        });
+    },
+    
+    // 初始化本科室与标杆科室对比图
+    initDepartmentVsBenchmarkChart: function() {
+        // 标杆科室数据 - 模拟
+        var benchmarkData = [
+            { name: '心内科', revenue: 320000000, growthRate: 11.5, medicalServicePercentage: 38.2 },
+            { name: '标杆科室', revenue: 350000000, growthRate: 12.8, medicalServicePercentage: 42.0 }
+        ];
+        
+        var option = {
+            title: {
+                text: '本科室与标杆科室对比',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: function(params) {
+                    var result = params[0].name + '<br/>';
+                    params.forEach(function(param) {
+                        var value = param.seriesName === '医疗收入' ? 
+                            DepartmentRevenuePage.formatCurrency(param.value) : 
+                            param.value + '%';
+                        result += param.marker + param.seriesName + ': ' + value + '<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['医疗收入', '同比增长率', '医疗服务收入占比'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: benchmarkData.map(function(item) { return item.name; })
+            },
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '收入',
+                    position: 'left',
+                    axisLabel: {
+                        formatter: function(value) {
+                            if (value >= 100000000) {
+                                return (value / 100000000).toFixed(0) + '亿';
+                            } else {
+                                return (value / 10000000).toFixed(1) + '千万';
+                            }
+                        }
+                    }
+                },
+                {
+                    type: 'value',
+                    name: '百分比',
+                    position: 'right',
+                    axisLabel: {
+                        formatter: '{value}%'
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: '医疗收入',
+                    type: 'bar',
+                    data: benchmarkData.map(function(item) { return item.revenue; }),
+                    itemStyle: {
+                        borderRadius: [4, 4, 0, 0]
+                    }
+                },
+                {
+                    name: '同比增长率',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    data: benchmarkData.map(function(item) { return item.growthRate; }),
+                    smooth: true
+                },
+                {
+                    name: '医疗服务收入占比',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    data: benchmarkData.map(function(item) { return item.medicalServicePercentage; }),
+                    smooth: true
+                }
+            ]
+        };
+        
+        this.state.charts.departmentVsBenchmarkChart.setOption(option);
+    },
+    
+    // 更新本科室与标杆科室对比图
+    updateDepartmentVsBenchmarkChart: function() {
+        // 标杆科室数据 - 模拟
+        var benchmarkData = [
+            { name: '心内科', revenue: 320000000, growthRate: 11.5, medicalServicePercentage: 38.2 },
+            { name: '标杆科室', revenue: 350000000, growthRate: 12.8, medicalServicePercentage: 42.0 }
+        ];
+        
+        this.state.charts.departmentVsBenchmarkChart.setOption({
+            series: [
+                {
+                    data: benchmarkData.map(function(item) { return item.revenue; })
+                },
+                {
+                    data: benchmarkData.map(function(item) { return item.growthRate; })
+                },
+                {
+                    data: benchmarkData.map(function(item) { return item.medicalServicePercentage; })
+                }
+            ]
+        });
+    },
+    
+    // 初始化科室收入增长速度对比图
+    initRevenueGrowthComparisonChart: function() {
+        var option = {
+            title: {
+                text: '科室收入增长速度对比',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: function(params) {
+                    var result = params[0].name + '<br/>';
+                    params.forEach(function(param) {
+                        result += param.marker + param.seriesName + ': ' + param.value + '%<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['同比增长率', '环比增长率'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: this.mockData.departmentRevenueComparison.map(function(item) { return item.department; })
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}%'
+                }
+            },
+            series: [
+                {
+                    name: '同比增长率',
+                    type: 'bar',
+                    data: this.mockData.departmentRevenueComparison.map(function(item) { return item.yearOnYearGrowth; }),
+                    itemStyle: {
+                        borderRadius: [4, 4, 0, 0]
+                    }
+                },
+                {
+                    name: '环比增长率',
+                    type: 'bar',
+                    data: this.mockData.departmentRevenueComparison.map(function(item) { return item.monthOnMonthGrowth; }),
+                    itemStyle: {
+                        borderRadius: [4, 4, 0, 0]
+                    }
+                }
+            ]
+        };
+        
+        this.state.charts.revenueGrowthComparisonChart.setOption(option);
+    },
+    
+    // 更新科室收入增长速度对比图
+    updateRevenueGrowthComparisonChart: function() {
+        this.state.charts.revenueGrowthComparisonChart.setOption({
+            xAxis: {
+                data: this.mockData.departmentRevenueComparison.map(function(item) { return item.department; })
+            },
+            series: [
+                {
+                    data: this.mockData.departmentRevenueComparison.map(function(item) { return item.yearOnYearGrowth; })
+                },
+                {
+                    data: this.mockData.departmentRevenueComparison.map(function(item) { return item.monthOnMonthGrowth; })
+                }
+            ]
+        });
+    },
+    
+    // 初始化科室收入结构雷达图
+    initRevenueStructureRadarChart: function() {
+        // 选择前3个科室进行雷达图对比
+        var topDepartments = this.mockData.departmentRevenueComparison.slice(0, 3);
+        
+        var option = {
+            title: {
+                text: '科室收入结构雷达图',
+                left: 'center'
+            },
+            tooltip: {},
+            legend: {
+                data: topDepartments.map(function(item) { return item.department; }),
+                bottom: 10
+            },
+            radar: {
+                indicator: [
+                    { name: '医疗服务收入占比', max: 50 },
+                    { name: '药品收入占比', max: 50 },
+                    { name: '卫生材料收入占比', max: 30 }
+                ]
+            },
+            series: [
+                {
+                    name: '收入结构',
+                    type: 'radar',
+                    data: topDepartments.map(function(item) {
+                        return {
+                            value: [item.medicalServicePercentage, item.drugPercentage, item.materialPercentage],
+                            name: item.department
+                        };
+                    })
+                }
+            ]
+        };
+        
+        this.state.charts.revenueStructureRadarChart.setOption(option);
+    },
+    
+    // 更新科室收入结构雷达图
+    updateRevenueStructureRadarChart: function() {
+        // 选择前3个科室进行雷达图对比
+        var topDepartments = this.mockData.departmentRevenueComparison.slice(0, 3);
+        
+        this.state.charts.revenueStructureRadarChart.setOption({
+            legend: {
+                data: topDepartments.map(function(item) { return item.department; })
+            },
+            series: [
+                {
+                    data: topDepartments.map(function(item) {
+                        return {
+                            value: [item.medicalServicePercentage, item.drugPercentage, item.materialPercentage],
+                            name: item.department
+                        };
+                    })
+                }
+            ]
+        });
+    },
+    
+    // 初始化出院者平均费用趋势图
+    initAverageCostPerDischargeTrendChart: function() {
+        // 月度数据 - 模拟
+        var monthlyAverageCostData = [
+            { month: '1月', averageCost: 34800 },
+            { month: '2月', averageCost: 34600 },
+            { month: '3月', averageCost: 34900 },
+            { month: '4月', averageCost: 35100 },
+            { month: '5月', averageCost: 35200 },
+            { month: '6月', averageCost: 35300 },
+            { month: '7月', averageCost: 35400 },
+            { month: '8月', averageCost: 35500 },
+            { month: '9月', averageCost: 35550 },
+            { month: '10月', averageCost: 35600 }
+        ];
+        
+        var option = {
+            title: {
+                text: '出院者平均费用趋势',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                formatter: function(params) {
+                    var result = params[0].name + '<br/>';
+                    params.forEach(function(param) {
+                        result += param.marker + param.seriesName + ': ¥' + param.value.toLocaleString() + '<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['出院者平均费用'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: monthlyAverageCostData.map(function(item) { return item.month; })
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: function(value) {
+                        return '¥' + (value / 1000).toFixed(0) + 'k';
+                    }
+                }
+            },
+            series: [
+                {
+                    name: '出院者平均费用',
+                    type: 'line',
+                    data: monthlyAverageCostData.map(function(item) { return item.averageCost; }),
+                    smooth: true,
+                    areaStyle: {
+                        opacity: 0.3
+                    }
+                }
+            ]
+        };
+        
+        this.state.charts.averageCostPerDischargeTrendChart.setOption(option);
+    },
+    
+    // 更新出院者平均费用趋势图
+    updateAverageCostPerDischargeTrendChart: function() {
+        // 月度数据 - 模拟
+        var monthlyAverageCostData = [
+            { month: '1月', averageCost: 34800 },
+            { month: '2月', averageCost: 34600 },
+            { month: '3月', averageCost: 34900 },
+            { month: '4月', averageCost: 35100 },
+            { month: '5月', averageCost: 35200 },
+            { month: '6月', averageCost: 35300 },
+            { month: '7月', averageCost: 35400 },
+            { month: '8月', averageCost: 35500 },
+            { month: '9月', averageCost: 35550 },
+            { month: '10月', averageCost: 35600 }
+        ];
+        
+        this.state.charts.averageCostPerDischargeTrendChart.setOption({
+            xAxis: {
+                data: monthlyAverageCostData.map(function(item) { return item.month; })
+            },
+            series: [
+                {
+                    data: monthlyAverageCostData.map(function(item) { return item.averageCost; })
+                }
+            ]
+        });
+    },
+    
+    // 初始化门诊次均费用趋势图
+    initAverageCostPerVisitTrendChart: function() {
+        // 月度数据 - 模拟
+        var monthlyAverageVisitCostData = [
+            { month: '1月', averageCost: 260 },
+            { month: '2月', averageCost: 262 },
+            { month: '3月', averageCost: 261 },
+            { month: '4月', averageCost: 263 },
+            { month: '5月', averageCost: 262 },
+            { month: '6月', averageCost: 264 },
+            { month: '7月', averageCost: 263 },
+            { month: '8月', averageCost: 264 },
+            { month: '9月', averageCost: 265 },
+            { month: '10月', averageCost: 265 }
+        ];
+        
+        var option = {
+            title: {
+                text: '门诊次均费用趋势',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                formatter: function(params) {
+                    var result = params[0].name + '<br/>';
+                    params.forEach(function(param) {
+                        result += param.marker + param.seriesName + ': ¥' + param.value + '<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['门诊次均费用'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: monthlyAverageVisitCostData.map(function(item) { return item.month; })
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '¥{value}'
+                }
+            },
+            series: [
+                {
+                    name: '门诊次均费用',
+                    type: 'line',
+                    data: monthlyAverageVisitCostData.map(function(item) { return item.averageCost; }),
+                    smooth: true,
+                    areaStyle: {
+                        opacity: 0.3
+                    }
+                }
+            ]
+        };
+        
+        this.state.charts.averageCostPerVisitTrendChart.setOption(option);
+    },
+    
+    // 更新门诊次均费用趋势图
+    updateAverageCostPerVisitTrendChart: function() {
+        // 月度数据 - 模拟
+        var monthlyAverageVisitCostData = [
+            { month: '1月', averageCost: 260 },
+            { month: '2月', averageCost: 262 },
+            { month: '3月', averageCost: 261 },
+            { month: '4月', averageCost: 263 },
+            { month: '5月', averageCost: 262 },
+            { month: '6月', averageCost: 264 },
+            { month: '7月', averageCost: 263 },
+            { month: '8月', averageCost: 264 },
+            { month: '9月', averageCost: 265 },
+            { month: '10月', averageCost: 265 }
+        ];
+        
+        this.state.charts.averageCostPerVisitTrendChart.setOption({
+            xAxis: {
+                data: monthlyAverageVisitCostData.map(function(item) { return item.month; })
+            },
+            series: [
+                {
+                    data: monthlyAverageVisitCostData.map(function(item) { return item.averageCost; })
+                }
+            ]
+        });
+    },
+    
+    // 初始化各科室次均费用对比图
+    initDepartmentsAverageCostComparisonChart: function() {
+        // 科室次均费用数据 - 模拟
+        var departmentsAverageCostData = [
+            { department: '心内科', averageCost: 35600 },
+            { department: '骨科', averageCost: 38200 },
+            { department: '神经外科', averageCost: 41500 },
+            { department: '消化内科', averageCost: 32100 },
+            { department: '呼吸内科', averageCost: 31800 },
+            { department: '神经内科', averageCost: 33200 },
+            { department: '妇产科', averageCost: 28500 },
+            { department: '儿科', averageCost: 22100 }
+        ];
+        
+        var option = {
+            title: {
+                text: '各科室次均费用对比',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: function(params) {
+                    var result = params[0].name + '<br/>';
+                    params.forEach(function(param) {
+                        result += param.marker + param.seriesName + ': ¥' + param.value.toLocaleString() + '<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['出院者平均费用'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: departmentsAverageCostData.map(function(item) { return item.department; })
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: function(value) {
+                        return '¥' + (value / 1000).toFixed(0) + 'k';
+                    }
+                }
+            },
+            series: [
+                {
+                    name: '出院者平均费用',
+                    type: 'bar',
+                    data: departmentsAverageCostData.map(function(item) { return item.averageCost; }),
+                    itemStyle: {
+                        borderRadius: [4, 4, 0, 0]
+                    }
+                }
+            ]
+        };
+        
+        this.state.charts.departmentsAverageCostComparisonChart.setOption(option);
+    },
+    
+    // 更新各科室次均费用对比图
+    updateDepartmentsAverageCostComparisonChart: function() {
+        // 科室次均费用数据 - 模拟
+        var departmentsAverageCostData = [
+            { department: '心内科', averageCost: 35600 },
+            { department: '骨科', averageCost: 38200 },
+            { department: '神经外科', averageCost: 41500 },
+            { department: '消化内科', averageCost: 32100 },
+            { department: '呼吸内科', averageCost: 31800 },
+            { department: '神经内科', averageCost: 33200 },
+            { department: '妇产科', averageCost: 28500 },
+            { department: '儿科', averageCost: 22100 }
+        ];
+        
+        this.state.charts.departmentsAverageCostComparisonChart.setOption({
+            xAxis: {
+                data: departmentsAverageCostData.map(function(item) { return item.department; })
+            },
+            series: [
+                {
+                    data: departmentsAverageCostData.map(function(item) { return item.averageCost; })
+                }
+            ]
+        });
+    },
+    
+    // 初始化次均费用构成图
+    initAverageCostStructureChart: function() {
+        // 次均费用构成数据 - 模拟
+        var averageCostStructure = [
+            { name: '药品费用', value: 15130, percentage: 42.5 },
+            { name: '卫生材料费用', value: 6870, percentage: 19.3 },
+            { name: '检查费用', value: 6010, percentage: 16.9 },
+            { name: '治疗费用', value: 4120, percentage: 11.6 },
+            { name: '手术费用', value: 2800, percentage: 7.9 },
+            { name: '床位费用', value: 670, percentage: 1.9 }
+        ];
+        
+        var option = {
+            title: {
+                text: '次均费用构成',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: function(params) {
+                    return params.name + ': ¥' + params.value.toLocaleString() + ' (' + params.percent + '%)';
+                }
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                bottom: '10%',
+                data: averageCostStructure.map(function(item) { return item.name; })
+            },
+            series: [
+                {
+                    name: '次均费用构成',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: '18',
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: averageCostStructure.map(function(item) {
+                        return {
+                            value: item.value,
+                            name: item.name
+                        };
+                    })
+                }
+            ]
+        };
+        
+        this.state.charts.averageCostStructureChart.setOption(option);
+    },
+    
+    // 更新次均费用构成图
+    updateAverageCostStructureChart: function() {
+        // 次均费用构成数据 - 模拟
+        var averageCostStructure = [
+            { name: '药品费用', value: 15130, percentage: 42.5 },
+            { name: '卫生材料费用', value: 6870, percentage: 19.3 },
+            { name: '检查费用', value: 6010, percentage: 16.9 },
+            { name: '治疗费用', value: 4120, percentage: 11.6 },
+            { name: '手术费用', value: 2800, percentage: 7.9 },
+            { name: '床位费用', value: 670, percentage: 1.9 }
+        ];
+        
+        this.state.charts.averageCostStructureChart.setOption({
+            series: [
+                {
+                    data: averageCostStructure.map(function(item) {
+                        return {
+                            value: item.value,
+                            name: item.name
+                        };
+                    })
+                }
+            ]
+        });
+    },
+    
+    // 初始化收入增长因素贡献度图
+    initRevenueGrowthFactorsChart: function() {
+        var option = {
+            title: {
+                text: '收入增长因素贡献度',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: function(params) {
+                    var result = params[0].name + '<br/>';
+                    params.forEach(function(param) {
+                        result += param.marker + param.seriesName + ': ' + param.value + '%<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['贡献度'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: this.mockData.revenueGrowthFactors.map(function(item) { return item.factor; })
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}%'
+                }
+            },
+            series: [
+                {
+                    name: '贡献度',
+                    type: 'bar',
+                    data: this.mockData.revenueGrowthFactors.map(function(item) { return item.contribution; }),
+                    itemStyle: {
+                        borderRadius: [4, 4, 0, 0],
+                        color: function(params) {
+                            return params.value >= 0 ? '#52c41a' : '#ff4d4f';
+                        }
+                    }
+                }
+            ]
+        };
+        
+        this.state.charts.revenueGrowthFactorsChart.setOption(option);
+    },
+    
+    // 更新收入增长因素贡献度图
+    updateRevenueGrowthFactorsChart: function() {
+        this.state.charts.revenueGrowthFactorsChart.setOption({
+            xAxis: {
+                data: this.mockData.revenueGrowthFactors.map(function(item) { return item.factor; })
+            },
+            series: [
+                {
+                    data: this.mockData.revenueGrowthFactors.map(function(item) { return item.contribution; })
+                }
+            ]
+        });
+    },
+    
+    // 初始化工作量增长贡献图
+    initWorkloadGrowthContributionChart: function() {
+        // 工作量增长贡献数据 - 模拟
+        var workloadGrowthContribution = [
+            { name: '门急诊人次增长', contribution: 8.2 },
+            { name: '出院人次增长', contribution: 3.5 },
+            { name: '手术量增长', contribution: 2.1 },
+            { name: '平均住院日缩短', contribution: 1.2 },
+            { name: '床位使用率提高', contribution: 0.8 }
+        ];
+        
+        var option = {
+            title: {
+                text: '工作量增长贡献',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: function(params) {
+                    var result = params[0].name + '<br/>';
+                    params.forEach(function(param) {
+                        result += param.marker + param.seriesName + ': ' + param.value + '%<br/>';
+                    });
+                    return result;
+                }
+            },
+            legend: {
+                data: ['增长率'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: workloadGrowthContribution.map(function(item) { return item.name; })
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value}%'
+                }
+            },
+            series: [
+                {
+                    name: '增长率',
+                    type: 'bar',
+                    data: workloadGrowthContribution.map(function(item) { return item.contribution; }),
+                    itemStyle: {
+                        borderRadius: [4, 4, 0, 0]
+                    }
+                }
+            ]
+        };
+        
+        this.state.charts.workloadGrowthContributionChart.setOption(option);
+    },
+    
+    // 更新工作量增长贡献图
+    updateWorkloadGrowthContributionChart: function() {
+        // 工作量增长贡献数据 - 模拟
+        var workloadGrowthContribution = [
+            { name: '门急诊人次增长', contribution: 8.2 },
+            { name: '出院人次增长', contribution: 3.5 },
+            { name: '手术量增长', contribution: 2.1 },
+            { name: '平均住院日缩短', contribution: 1.2 },
+            { name: '床位使用率提高', contribution: 0.8 }
+        ];
+        
+        this.state.charts.workloadGrowthContributionChart.setOption({
+            xAxis: {
+                data: workloadGrowthContribution.map(function(item) { return item.name; })
+            },
+            series: [
+                {
+                    data: workloadGrowthContribution.map(function(item) { return item.contribution; })
+                }
+            ]
+        });
+    },
+    
+    // 渲染收入趋势表格
+    renderRevenueTrendTable: function() {
+        var revenueTrendTableBody = document.querySelector('#revenueTrendTable tbody');
+        revenueTrendTableBody.innerHTML = '';
+        
+        this.mockData.monthlyRevenue.forEach(function(item) {
+            var row = document.createElement('tr');
+            
+            var growthRateClass = item.growthRate >= 0 ? 'positive' : 'negative';
+            var growthRateSymbol = item.growthRate >= 0 ? '+' : '';
+            
+            var completionRateClass = item.completionRate >= 100 ? 'positive' : 'negative';
+            
+            row.innerHTML = `
+                <td>${item.month}</td>
+                <td>${DepartmentRevenuePage.formatCurrency(item.revenue)}</td>
+                <td class="${growthRateClass}">${growthRateSymbol}${item.growthRate}%</td>
+                <td>${DepartmentRevenuePage.formatCurrency(item.cumulativeRevenue)}</td>
+                <td class="${growthRateClass}">${growthRateSymbol}${item.cumulativeGrowthRate}%</td>
+                <td>${DepartmentRevenuePage.formatCurrency(item.target)}</td>
+                <td class="${completionRateClass}">${item.completionRate}%</td>
+            `;
+            
+            revenueTrendTableBody.appendChild(row);
+        });
+    },
+    
+    // 渲染收入结构表格
+    renderRevenueStructureTable: function() {
+        var revenueStructureTableBody = document.querySelector('#revenueStructureTable tbody');
+        revenueStructureTableBody.innerHTML = '';
+        
+        this.mockData.revenueStructure.forEach(function(item) {
+            var row = document.createElement('tr');
+            
+            var growthRateClass = item.growthRate >= 0 ? 'positive' : 'negative';
+            var growthRateSymbol = item.growthRate >= 0 ? '+' : '';
+            
+            var percentageChangeClass = item.percentageChange >= 0 ? 'positive' : 'negative';
+            var percentageChangeSymbol = item.percentageChange >= 0 ? '+' : '';
+            
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>${DepartmentRevenuePage.formatCurrency(item.amount)}</td>
+                <td>${item.percentage}%</td>
+                <td>${DepartmentRevenuePage.formatCurrency(item.lastMonthAmount)}</td>
+                <td>${item.lastMonthPercentage}%</td>
+                <td class="${growthRateClass}">${growthRateSymbol}${item.growthRate}%</td>
+                <td class="${percentageChangeClass}">${percentageChangeSymbol}${item.percentageChange}%</td>
+                <td>${item.targetPercentage ? item.targetPercentage + '%' : '-'}</td>
+                <td>
+                    <span class="status-indicator ${item.status}">
+                        ${item.status === 'good' ? '✓' : '⚠'}
+                    </span>
+                </td>
+            `;
+            
+            revenueStructureTableBody.appendChild(row);
+        });
+    },
+    
+    // 渲染科室收入对比表格
+    renderDepartmentRevenueComparisonTable: function() {
+        var departmentRevenueComparisonTableBody = document.querySelector('#departmentRevenueComparisonTable tbody');
+        departmentRevenueComparisonTableBody.innerHTML = '';
+        
+        this.mockData.departmentRevenueComparison.forEach(function(item) {
+            var row = document.createElement('tr');
+            
+            var yearOnYearGrowthClass = item.yearOnYearGrowth >= 0 ? 'positive' : 'negative';
+            var yearOnYearGrowthSymbol = item.yearOnYearGrowth >= 0 ? '+' : '';
+            
+            var monthOnMonthGrowthClass = item.monthOnMonthGrowth >= 0 ? 'positive' : 'negative';
+            var monthOnMonthGrowthSymbol = item.monthOnMonthGrowth >= 0 ? '+' : '';
+            
+            row.innerHTML = `
+                <td>${item.rank}</td>
+                <td>${item.department}</td>
+                <td>${DepartmentRevenuePage.formatCurrency(item.revenue)}</td>
+                <td class="${yearOnYearGrowthClass}">${yearOnYearGrowthSymbol}${item.yearOnYearGrowth}%</td>
+                <td class="${monthOnMonthGrowthClass}">${monthOnMonthGrowthSymbol}${item.monthOnMonthGrowth}%</td>
+                <td>${item.medicalServicePercentage}%</td>
+                <td>${item.drugPercentage}%</td>
+                <td>${item.materialPercentage}%</td>
+            `;
+            
+            departmentRevenueComparisonTableBody.appendChild(row);
+        });
+    },
+    
+    // 渲染次均费用表格
+    renderAverageCostTable: function() {
+        var averageCostTableBody = document.querySelector('#averageCostTable tbody');
+        averageCostTableBody.innerHTML = '';
+        
+        this.mockData.averageCost.forEach(function(item) {
+            var row = document.createElement('tr');
+            
+            var monthOnMonthGrowthClass = item.monthOnMonthGrowth >= 0 ? 'positive' : 'negative';
+            var monthOnMonthGrowthSymbol = item.monthOnMonthGrowth >= 0 ? '+' : '';
+            
+            var yearOnYearGrowthClass = item.yearOnYearGrowth >= 0 ? 'positive' : 'negative';
+            var yearOnYearGrowthSymbol = item.yearOnYearGrowth >= 0 ? '+' : '';
+            
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.current}</td>
+                <td>${item.lastMonth}</td>
+                <td class="${monthOnMonthGrowthClass}">${monthOnMonthGrowthSymbol}${item.monthOnMonthGrowth}%</td>
+                <td>${item.lastYear}</td>
+                <td class="${yearOnYearGrowthClass}">${yearOnYearGrowthSymbol}${item.yearOnYearGrowth}%</td>
+                <td>${item.target}</td>
+                <td>
+                    <span class="status-indicator ${item.status}">
+                        ${item.status === 'good' ? '✓' : '⚠'}
+                    </span>
+                </td>
+            `;
+            
+            averageCostTableBody.appendChild(row);
+        });
+    },
+    
+    // 渲染收入增长因素表格
+    renderRevenueGrowthFactorsTable: function() {
+        var revenueGrowthFactorsTableBody = document.querySelector('#revenueGrowthFactorsTable tbody');
+        revenueGrowthFactorsTableBody.innerHTML = '';
+        
+        this.mockData.revenueGrowthFactors.forEach(function(item) {
+            var row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td>${item.factor}</td>
+                <td>${item.contribution}%</td>
+                <td>${item.percentage}%</td>
+                <td>${item.performance}</td>
+                <td>${item.analysis}</td>
+            `;
+            
+            revenueGrowthFactorsTableBody.appendChild(row);
+        });
+    },
+    
+    // 渲染收入优化建议表格
+    renderOptimizationSuggestionsTable: function() {
+        var optimizationSuggestionsTableBody = document.querySelector('#optimizationSuggestionsTable tbody');
+        optimizationSuggestionsTableBody.innerHTML = '';
+        
+        this.mockData.optimizationSuggestions.forEach(function(item, index) {
+            var row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${item.category}</td>
+                <td>${item.problem}</td>
+                <td>${item.reason}</td>
+                <td>${item.suggestion}</td>
+                <td>${item.responsible}</td>
+                <td>${item.deadline}</td>
+                <td>${item.expectedEffect}</td>
+                <td>
+                    <button class="btn btn-primary btn-sm">查看详情</button>
+                </td>
+            `;
+            
+            optimizationSuggestionsTableBody.appendChild(row);
+        });
+    }
+};
+
+// 页面加载完成后初始化
+window.addEventListener('load', function() {
+    // 检查是否有ECharts库
+    if (typeof echarts === 'undefined') {
+        console.error('ECharts库未加载');
+        return;
+    }
+    
+    // 初始化页面
+    DepartmentRevenuePage.init();
+});

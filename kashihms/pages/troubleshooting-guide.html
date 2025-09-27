@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HMS 故障排除指南（预览）</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/medical-analysis.css" />
+  <style>
+    /* 仅用于本页面预览的兜底样式，确保卡片与图形布局符合预期 */
+    .main-content { display: block; padding: 24px; }
+    .overview-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .overview-card.card { display: flex; flex-direction: column; }
+    .charts-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .chart-container { display: flex; flex-direction: column; }
+    .chart-wrapper { background: #fff; border-radius: 8px; }
+    .page-title { margin: 8px 0 16px; }
+    .page-subtitle { color: #666; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <div class="main-content">
+    <h1 class="page-title">HMS医院管理系统故障排除与修复指南</h1>
+    <p class="page-subtitle">以下仅为 .md 文档顶部“卡片式导航 + 图形一行3个”布局的视觉预览，风格对齐 index。</p>
+
+    <!-- 对齐 index 风格的卡片式导航（来自 .md 顶部新增的 HTML 结构） -->
+    <div class="overview-cards" style="margin-top: 12px;">
+      <div class="overview-card card">
+        <div class="card-header">
+          <div class="card-title">导航栏相关问题</div>
+        </div>
+        <div class="card-content">
+          <p>定位侧边栏折叠、样式错乱、加载失败等问题。</p>
+          <a href="#导航栏相关问题" class="btn btn-primary">查看章节</a>
+        </div>
+      </div>
+      <div class="overview-card card">
+        <div class="card-header">
+          <div class="card-title">JavaScript错误问题</div>
+        </div>
+        <div class="card-content">
+          <p>事件绑定、函数未定义、缓存导致旧脚本等。</p>
+          <a href="#javascript错误问题" class="btn btn-primary">查看章节</a>
+        </div>
+      </div>
+      <div class="overview-card card">
+        <div class="card-header">
+          <div class="card-title">页面布局问题</div>
+        </div>
+        <div class="card-content">
+          <p>内容横向排列、响应式失效、网格配置异常。</p>
+          <a href="#页面布局问题" class="btn btn-primary">查看章节</a>
+        </div>
+      </div>
+      <div class="overview-card card">
+        <div class="card-header">
+          <div class="card-title">资源加载问题</div>
+        </div>
+        <div class="card-content">
+          <p>CSS/JS/组件加载失败与排查路径。</p>
+          <a href="#资源加载问题" class="btn btn-primary">查看章节</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 图形一行3个（示例），对齐 index/analysis 页面风格 -->
+    <div class="charts-section" style="margin-top: 24px;">
+      <div class="chart-container">
+        <div class="chart-header">
+          <div class="chart-title-group">
+            <h3 class="chart-title">示例图 1</h3>
+            <p class="chart-subtitle">占位说明：将实际图表容器放入 chart-wrapper</p>
+          </div>
+        </div>
+        <div class="chart-wrapper" style="min-height: 220px; display: flex; align-items: center; justify-content: center; color: #888; border: 1px dashed #ddd;">图表示例区域</div>
+      </div>
+      <div class="chart-container">
+        <div class="chart-header">
+          <div class="chart-title-group">
+            <h3 class="chart-title">示例图 2</h3>
+            <p class="chart-subtitle">同一行展示第二个图</p>
+          </div>
+        </div>
+        <div class="chart-wrapper" style="min-height: 220px; display: flex; align-items: center; justify-content: center; color: #888; border: 1px dashed #ddd;">图表示例区域</div>
+      </div>
+      <div class="chart-container">
+        <div class="chart-header">
+          <div class="chart-title-group">
+            <h3 class="chart-title">示例图 3</h3>
+            <p class="chart-subtitle">同一行展示第三个图</p>
+          </div>
+        </div>
+        <div class="chart-wrapper" style="min-height: 220px; display: flex; align-items: center; justify-content: center; color: #888; border: 1px dashed #ddd;">图表示例区域</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px; color: #666;">
+      <strong>说明：</strong>
+      <ul>
+        <li>.md 文件顶部已添加与 index 对齐的 HTML 结构（overview-cards 与 charts-section），用于卡片一行、图形一行3个的统一风格。</li>
+        <li>当该 .md 被站点 markdown 渲染器处理并引入 ../css/style.css 与 ../css/medical-analysis.css 后，将呈现与此预览一致的风格。</li>
+        <li>直接在浏览器打开 .md 原始文件不会应用站点样式；此页面仅用于视觉验证排版效果。</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
