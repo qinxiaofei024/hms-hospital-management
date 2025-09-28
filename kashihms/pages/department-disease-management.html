@@ -1120,7 +1120,7 @@
                 <button class="tab-button active" onclick="switchTab('overall', event)">总体效益</button>
                 <button class="tab-button" onclick="switchTab('outpatient', event)">门诊效益</button>
                 <button class="tab-button" onclick="switchTab('inpatient', event)">住院效益</button>
-                <button class="tab-button" onclick="switchTab('disease', event)">病种效益</button>
+                <button class="tab-button" onclick="switchTab('disease', event)">病种效益（医保）</button>
                 <button class="tab-button" onclick="switchTab('service', event)">医疗服务项目效益</button>
                 <button class="tab-button" onclick="switchTab('cost', event)">成本分析</button>
                 <button class="tab-button" onclick="switchTab('breakeven', event)">本量利分析</button>
@@ -1234,7 +1234,7 @@
                         </div>
                         
                         <div class="chart-container">
-                            <div class="chart-title">DRG/DIP效益分析</div>
+                            <div class="chart-title">DRG/DIP（医保）效益分析</div>
                             <div id="drg-benefit-chart" class="chart-content"></div>
                         </div>
                     </div>
@@ -1288,8 +1288,8 @@
                                     <th class="breakeven-column">保本例数</th>
                                     <th>平均收入</th>
                                     <th>平均成本</th>
-                                    <th>平均结余</th>
-                                    <th>结余率</th>
+                                    <th>医保平均结余</th>
+                                    <th>医保平均结余率</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
