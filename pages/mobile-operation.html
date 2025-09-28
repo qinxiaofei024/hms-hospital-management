@@ -1934,15 +1934,15 @@
                                         <i class="icon-stat"></i>运营概览
                                     </div>
                                     <div class="mobile-stats">
-                                        <div class="mobile-stat-item">
+                                        <div class="mobile-stat-item clickable" onclick="openMobileStatDetail('今日门诊', this)" style="cursor: pointer;">
                                             <div class="mobile-stat-value">1,286</div>
                                             <div class="mobile-stat-label">今日门诊</div>
                                         </div>
-                                        <div class="mobile-stat-item">
+                                        <div class="mobile-stat-item clickable" onclick="openMobileStatDetail('今日住院', this)" style="cursor: pointer;">
                                             <div class="mobile-stat-value">352</div>
                                             <div class="mobile-stat-label">今日住院</div>
                                         </div>
-                                        <div class="mobile-stat-item">
+                                        <div class="mobile-stat-item clickable" onclick="openMobileStatDetail('今日收入', this)" style="cursor: pointer;">
                                             <div class="mobile-stat-value">¥128万</div>
                                             <div class="mobile-stat-label">今日收入</div>
                                         </div>
@@ -3336,6 +3336,117 @@
             if (window.currentMobileMaintenanceModal) {
                 window.currentMobileMaintenanceModal.remove();
                 window.currentMobileMaintenanceModal = null;
+            }
+        }
+
+        // 在手机屏幕内显示“今日门诊/今日住院/今日收入详情”的弹窗
+        function openMobileStatDetail(type, el) {
+            const device = el ? el.closest('.mobile-device-frame') : null;
+            if (!device) return;
+            const deviceDisplay = device.querySelector('.device-display');
+            if (!deviceDisplay) return;
+
+            // 若已有弹窗，先移除
+            if (window.currentMobileStatModal && window.currentMobileStatModal.parentNode) {
+                window.currentMobileStatModal.parentNode.removeChild(window.currentMobileStatModal);
+                window.currentMobileStatModal = null;
+            }
+
+            const modal = document.createElement('div');
+            modal.className = 'mobile-stat-modal';
+            modal.style.cssText = `
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.55);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1200;
+                border-radius: 20px;
+            `;
+
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                width: 88%;
+                max-height: 78%;
+                background: #fff;
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+                overflow: hidden;
+                font-size: 12px;
+            `;
+
+            const titleMap = {
+                '今日门诊': '今日门诊详情',
+                '今日住院': '今日住院详情',
+                '今日收入': '今日收入详情'
+            };
+
+            const header = document.createElement('div');
+            header.style.cssText = `
+                background: linear-gradient(135deg,#1890ff,#096dd9);
+                color:#fff; padding:10px 12px; position: relative;
+            `;
+            header.innerHTML = `<h3 style="margin:0; font-size:14px;">${titleMap[type] || '详情'}</h3>`;
+
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = '×';
+            closeBtn.setAttribute('aria-label','close');
+            closeBtn.style.cssText = `position:absolute; right:10px; top:6px; width:24px; height:24px; border:none; background:transparent; color:#fff; font-size:18px; cursor:pointer;`;
+            closeBtn.onclick = closeMobileStatDetail;
+            header.appendChild(closeBtn);
+
+            const body = document.createElement('div');
+            body.style.cssText = `padding:12px; color:#333; overflow:auto; max-height: calc(78vh - 90px); line-height:1.5;`;
+            body.innerHTML = `
+                <div style="font-size:12px; color:#666; margin-bottom:8px;">以下为${type}的概览详情示例：</div>
+                <ul style="margin:0 0 8px 16px; padding:0;">
+                    <li>总量：<strong style="color:#1890ff;">自动读取当前卡片数值</strong></li>
+                    <li>对比昨日：+3.2%</li>
+                    <li>对比上周同日：+5.6%</li>
+                </ul>
+                <div style="background:#fafafa; border:1px solid #f0f0f0; border-radius:8px; padding:8px;">
+                    <div style="margin-bottom:6px; font-weight:600; color:#555;">明细示例</div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>时段 08:00-10:00</span><span>环比 +2.1%</span></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>时段 10:00-12:00</span><span>环比 +1.4%</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>时段 14:00-16:00</span><span>环比 +0.7%</span></div>
+                </div>
+            `;
+
+            const footer = document.createElement('div');
+            footer.style.cssText = `display:flex; justify-content:flex-end; gap:8px; padding:10px 12px; border-top:1px solid #f0f0f0; background:#fff;`;
+            const okBtn = document.createElement('button');
+            okBtn.textContent = '我知道了';
+            okBtn.style.cssText = `background:#1890ff; color:#fff; border:none; border-radius:4px; padding:6px 10px; cursor:pointer; font-size:12px;`;
+            okBtn.onclick = closeMobileStatDetail;
+            footer.appendChild(okBtn);
+
+            modalContent.appendChild(header);
+            modalContent.appendChild(body);
+            modalContent.appendChild(footer);
+            modal.appendChild(modalContent);
+
+            // 背景点击关闭
+            modal.addEventListener('click', function(e){ if (e.target === modal) closeMobileStatDetail(); });
+
+            deviceDisplay.style.position = 'relative';
+            deviceDisplay.appendChild(modal);
+            window.currentMobileStatModal = modal;
+
+            // 将当前卡片数值填入“总量”处
+            try {
+                const valueEl = el.querySelector('.mobile-stat-value');
+                const strongEl = body.querySelector('strong');
+                if (valueEl && strongEl) strongEl.textContent = valueEl.textContent.trim();
+            } catch (e) {}
+        }
+
+        function closeMobileStatDetail() {
+            if (window.currentMobileStatModal && window.currentMobileStatModal.parentNode) {
+                window.currentMobileStatModal.parentNode.removeChild(window.currentMobileStatModal);
+                window.currentMobileStatModal = null;
             }
         }
 
